@@ -1,0 +1,25 @@
+{
+    "name": "systemverilog",
+    "displayName": "System Verilog - Language Support",
+    "version": "0.0.1",
+    "publisher": "eirikpre",
+    "engines": {
+        "vscode": "^1.19.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "systemverilog",
+            "aliases": ["SystemVerilog", "systemverilog", "System Verilog", "Systemverilog"],
+            "extensions": [".sv",".v", ".SV"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "systemverilog",
+            "scopeName": "source.sv",
+            "path": "./syntaxes/systemverilog.tmLanguage.json"
+        }]
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "comments": {
+        // symbol used for single line comment. Remove this entry if your language does not support line comments
+        "lineComment": "//",
+        // symbols used for start and end a block comment. Remove this entry if your language does not support block comments
+        "blockComment": [ "/*", "*/" ]
+    },
+    // symbols used as brackets
+    "brackets": [
+        ["'{", "}"],
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["begin", "end"],
+        ["task", "endtask"],
+        ["class", "endclass"],
+        ["module", "endmodule"],
+        ["package", "endpackage"],
+        ["program", "endprogram"],
+        ["property", "endproperty"],
+        ["sequence", "endsequence"],
+        ["function", "endfunction"],
+        ["clocking", "endclocking"],
+        ["interface", "endinterface"]
+    ],
+    // symbols that are auto closed when typing
+    "autoClosingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""]
+    ],
+    // symbols that that can be used to surround a selection
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
+    ]
+}
