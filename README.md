@@ -8,7 +8,7 @@ This package add language support for Verilog/SystemVerilog. It supports systemv
 - Syntax Highlighting
 
 ## Known Issues
-- Corner case with `'{ ... }`
+- None (yet)
 
 ## Release Notes
 ### 0.0.1 - Initial alpha release

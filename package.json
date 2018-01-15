@@ -3,6 +3,10 @@
     "displayName": "System Verilog - Language Support",
     "version": "0.0.1",
     "publisher": "eirikpre",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/eirikpre/VSCode-SystemVerilog"
+    },
     "engines": {
         "vscode": "^1.19.0"
     },

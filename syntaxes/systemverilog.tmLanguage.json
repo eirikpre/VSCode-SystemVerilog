@@ -28,7 +28,7 @@
 				},
 				{
 					"name": "keyword.control.procedural.sv",
-					"match": "\\b(initial|final|always_(comb|ff|latch)\\b"
+					"match": "\\b(initial|final|always_(comb|ff|latch))\\b"
 				},
 				{
 					"name": "keyword.control.subroutines.sv",
