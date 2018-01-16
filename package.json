@@ -22,7 +22,7 @@
         }],
         "grammars": [{
             "language": "systemverilog",
-            "scopeName": "source.sv",
+            "scopeName": "text.systemverilog",
             "path": "./syntaxes/systemverilog.tmLanguage.json"
         }]
     }
