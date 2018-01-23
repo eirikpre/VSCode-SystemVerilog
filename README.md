@@ -6,9 +6,16 @@ This package add language support for Verilog/SystemVerilog. It supports systemv
 
 ## Features
 - Syntax Highlighting
+- Go to symbol in document
+- Go to symbol in workspace folder
 
 ## Known Issues
-- None (yet)
+- WorkspaceSymbolProvider only support The workspace folder, because searching a SV hierarchy quickly becomes to slow.
+
+## Future
+- IntelliSense support
+- Back-end Language server for Systemverilog
+- 100% Complete syntax highlighting
 
 ## Release Notes
-### 0.0.1 - Initial alpha release
+### See Changelog
