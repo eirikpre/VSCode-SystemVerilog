@@ -2,7 +2,8 @@
 //						www.verificationguide.com 
 //-------------------------------------------------------------------------
 class transaction;
-  
+  $support()
+  $support()
   //declaring the transaction items
   rand bit [3:0] a;
   rand bit [3:0] b;

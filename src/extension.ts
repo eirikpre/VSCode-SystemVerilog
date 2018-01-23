@@ -17,6 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
         new SystemVerilogWorkspaceSymbolProvider()
     ));
 
+    console.log("Extension SystemVerilog loaded successfully")
 }
 
 // this method is called when your extension is deactivated
