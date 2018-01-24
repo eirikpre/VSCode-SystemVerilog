@@ -5,7 +5,7 @@ import * as console from 'console';
 // FIXME: Only a copy of DocumentSymbolProvider
 
 export class SystemVerilogWorkspaceSymbolProvider implements vscode.WorkspaceSymbolProvider {
-    private regex = /^\s*(module|program|class)\s+(\w+)/;
+    private regex = /^\s*(module|program|class|interface)\s+(\w+)/;
 
     public provideWorkspaceSymbols(query: string, token: vscode.CancellationToken): Thenable<vscode.SymbolInformation[]> {
         return new Promise((resolve, reject) => {
