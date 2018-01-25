@@ -1,7 +1,7 @@
 {
     "name": "systemverilog",
-    "displayName": "System Verilog - Language Support",
-    "description": "Language support for Verilog / System Verilog",
+    "displayName": "SystemVerilog - Language Support",
+    "description": "Language support for Verilog / SystemVerilog",
     "version": "0.1.0",
     "publisher": "eirikpre",
     "keywords": [
