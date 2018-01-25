@@ -11,7 +11,7 @@ This package add language support for Verilog/SystemVerilog. It supports systemv
 - Go to symbol in workspace folder
 
 ## Known Issues
-- WorkspaceSymbolProvider only support The workspace folder, because searching a SV hierarchy quickly becomes to slow.
+- Go to symbol stops at 50 files (to stay responsive/quick).
 
 ## Future
 - IntelliSense support
@@ -19,4 +19,7 @@ This package add language support for Verilog/SystemVerilog. It supports systemv
 - 100% Complete syntax highlighting
 
 ## Release Notes
-### See Changelog
+### 0.1.0
+- Alpha 1 release with syntax highligthing, and go to symbols
+
+- See changelog for details

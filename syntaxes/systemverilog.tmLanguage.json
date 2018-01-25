@@ -52,7 +52,7 @@
 				},
 				{
 					"name": "keyword.control.assignment.systemverilog",
-					"match": "\\b(assign|deassign)\\b"
+					"match": "\\b(assign|deassign|force|release)\\b"
 				},
 				{
 					"name": "keyword.control.selection.systemverilog",
@@ -68,23 +68,19 @@
 				},
 				{
 					"name": "keyword.control.clocking.systemverilog",
-					"match": "\\b(clocking|endclocking|default|wait|wait_order|iff|posedge|negedge|edge)\\b"
+					"match": "\\b(default|wait|wait_order|iff|(pos|neg)?edge)\\b"
                 },
                 {
                     "name": "keyword.control.misc.systemverilog",
-                    "match": "\\b(import|extends|typedef)\\b"
+                    "match": "\\b(import|extends|typedef|new)\\b"
                 },
-				{
-					"name": "keyword.control.force.systemverilog",
-					"match": "\\b(force|release)\\b"
-				},
 				{
 					"name": "keyword.other.clause.systemverilog",
 					"match": "\\b(begin|end)\\b"
 				},
 				{
 					"name": "keyword.other.clause.systemverilog",
-					"match": "\\b(end)?(task|function|class|program|module)\\b"
+					"match": "\\b(end)?(task|function|class|program|module|generate|clocking)\\b"
 				}
 			]
 		},
@@ -111,13 +107,12 @@
                 },
                 {
                     "name": "meta.inst.variable.systemverilog",
-                    "match": "^(automatic|static)?\\s+(?!release|disable)(\\w+)(?:\\s*\\[(\\d+:\\d+)\\]|\\s+)+(\\w+)(\\s+,\\s+\\w+)*\\s*;",
+                    "match": "^\\s+(?:(automatic|static|virtual)\\s+)?(?!task|function|class|module|release|disable)(\\b\\w+\\b)([\\[\\]\\w\\s]*)?(\\b\\w+\\b)\\s*;",
                     "captures": {
-                        "1": { "name": "storage.modifier.systemverilog" },
-                        "2": { "name": "storage.type.systemverilog" },
-                        "3": { "name": "constant.numeric.systemverilog"},
-                        "4": { "name": "variable.name.systemverilog"},
-                        "5": { "name": "variable.name.systemverilog"}
+                        "1": { "name": "storage.modifier.systemverilog"},
+                        "2": { "name": "storage.name.systemverilog"},
+                        "3": { "patterns": [{ "include": "#storage-arrays" }]},
+                        "4": { "name": "variable.name.type.systemverilog"}
                     }
                 }
             ]
@@ -136,7 +131,7 @@
                 },
 				{
 					"name": "meta.declaration.function.systemverilog",
-					"match": "(function|task|module|program|package)(?:\\s(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
+					"match": "(function|task|module|program|package)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
 					"captures": {
 						"1": { "name": "storage.type.function.systemverilog"},
 						"2": { "name": "storage.modifier.systemverilog"},
@@ -159,7 +154,7 @@
                 },
 				{
                     "name": "meta.function.systemverilog",
-                    "begin": "[\\.\\s](?!do|while|for|foreach|repeat|if|case|wait|new)(\\w+)\\(",
+                    "begin": "[\\.\\s](?!do|while|for|foreach|repeat|if|case|wait|new)(\\w+)\\s*\\(",
                     "end": "\\)",
                     "patterns": [
                         {
@@ -174,6 +169,9 @@
         },
 		"storage": {
 			"patterns": [
+                {
+                    "include": "#storage-arrays"
+                },
 				{
 					"name": "storage.type.nets.systemverilog",
 					"match": "\\b(wire|wand|wor|tri|triand|trior|tri0|tri1|trireg|supply0|supply1|uwire)\\b"
@@ -192,13 +190,31 @@
 				},
 				{
 					"name": "storage.modifier.systemverilog",
-					"match": "\\b(input|output|unpacked|signed|unsigned|automatic|static|virtual)\\b"
+					"match": "\\b((in|out)put|(un)?packed|(un)?signed|automatic|static|virtual)\\b"
 				},
 				{
 					"name": "storage.type.systemverilog",
 					"match": "\\b(module|program|class|interface|function|task)\\b"
-				}
-			]
+                }
+			],
+            "repository": {
+                "storage-arrays": {
+                    "patterns": [
+                        {
+                            "name": "meta.variable.modifier.array",
+                            "begin": "\\[",
+                            "end": "\\]",
+                            "patterns":[
+                                { "include": "#constants" },
+                                { 
+                                    "name": "constant.numeric.parameter.systemverilog", 
+                                    "match": "\\b([A-Z]+)\\b"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
 		},
 		"comment": {
 			"patterns": [
@@ -244,14 +260,10 @@
                     "match": "(?=\\s|\\.| )(?!`)\\w+(?=\\.)"
                 },
                 {
-                    "name": "variable.name.array.systemverilog",
-                    "match": "(\\w+)(?=\\[)"
-                },
-                {
                     "name": "variable.name.systemverilog",
                     "match": "(?=\\.)\\w+"
                 }
-			]
+            ]
         },
         "macros": {
             "patterns": [

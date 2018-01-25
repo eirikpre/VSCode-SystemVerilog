@@ -14,7 +14,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements vscode.WorkspaceSym
             symbolProvider.regex = this.regex;
             var results = [];
             
-            vscode.workspace.findFiles('*.sv').then(uris => {
+            vscode.workspace.findFiles('**/*.sv', undefined, 50, token).then(uris => {
                 for(let uri of uris) {
                     vscode.workspace.openTextDocument(uri).then(function(document) {
                         symbolProvider.provideDocumentSymbols(document, token).then(symbols => {
