@@ -31,7 +31,7 @@ module adder(
    
   // Waddition operation
   always @(posedge clk) 
-    if (valid)    tmp_c <= a + b;
+    if(valid)    tmp_c <= a + b;
   
   assign c = tmp_c;
 
