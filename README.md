@@ -22,4 +22,4 @@ This package add language support for Verilog/SystemVerilog. It supports systemv
 ### 0.1.0
 - Alpha 1 release with syntax highligthing, and go to symbols
 
-- See changelog for details
+- See changelog for more

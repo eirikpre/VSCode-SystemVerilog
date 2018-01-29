@@ -7,7 +7,10 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
-## [0.1.0]
+## [0.1.1] - 2018-01-29
+- Relaxed some of the textmate rules
+
+## [0.1.0] - 2018-01-25
 - Elaborate syntax highlighting
 - Go to symbol covers entire workspace (max 50 results)
 

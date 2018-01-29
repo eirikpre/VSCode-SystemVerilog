@@ -3,6 +3,8 @@
 //-------------------------------------------------------------------------
 //gets the packet from generator and drive the transaction paket items into interface (interface is connected to DUT, so the items driven into interface signal will get driven in to DUT) 
 
+`define MY_MACRO HELP! :-)
+
 class driver;
   
   //used to count the number of transactions
