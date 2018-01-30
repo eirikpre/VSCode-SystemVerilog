@@ -7,8 +7,10 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
-## [0.1.1] - 2018-01-29
-- Relaxed some of the textmate rules
+## [0.1.4] - 2018-01-30
+- Make sure that uppercase objects do not get colorized as parameter, eg. intf.GPIO
+- Added additional bracket entries, thanks goes to n-badri for input
+- Added filetype associations `vh` and `svh`, thanks goes to n-badri for input
 
 ## [0.1.0] - 2018-01-25
 - Elaborate syntax highlighting
