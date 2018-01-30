@@ -74,7 +74,7 @@
 				},
 				{
 					"name": "keyword.other.clause.systemverilog",
-					"match": "\\b(end)?(task|function|class|program|module|generate|clocking|interface)\\b"
+					"match": "\\b(end)?(task|function|class|program|module|generate|clocking|interface|primitive|table)\\b"
 				}
 			]
 		},
@@ -172,11 +172,11 @@
 				},
 				{
 					"name": "storage.type.data.systemverilog",
-					"match": "\\b(integer|int|longint|shortint|logic|bit|byte|real|shortreal|string|void)\\b"
+					"match": "\\b(integer|int|longint|shortint|logic|bit|byte|real|shortreal|string|void|reg)\\b"
 				},
 				{
 					"name": "storage.type.parameters.systemverilog",
-					"match": "\\b(parameter|localparam)\\b"
+					"match": "\\b(parameter|localparam|specparam|defparam)\\b"
 				},
 				{
 					"name": "storage.type.other.systemverilog",
