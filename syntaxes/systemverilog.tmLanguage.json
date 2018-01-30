@@ -20,7 +20,10 @@
 		},
         {
             "include": "#declarations"
-        },
+		},
+		{
+			"include": "#instantations"
+		},
 		{
             "include": "#storage"
 		},
@@ -91,30 +94,55 @@
 		},
         "instantations": {
             "patterns": [
-                {
-                    "name": "meta.inst.package.systemverilog",
-                    "match": "(\\w+)(::)",
-                    "captures": {
-                        "1": { "name": "entity.name.type.systemverilog"},
-                        "2": { "name": "keyword.operator.systemverilog"}
-                    }
-                },
-                {
-                    "name": "meta.inst.variable.systemverilog",
-                    "match": "^\\s+(?:(automatic|static|virtual)\\s+)?(?!task|function|class|module|release|disable)(\\b\\w+\\b)([\\[.*\\]\\s]*)?((?:\\s*)\\b\\w+\\b(?:\\s*,)?)*\\s*;",
-                    "captures": {
-                        "1": { "name": "storage.modifier.systemverilog"},
-                        "2": { "name": "storage.name.systemverilog"},
-                        "3": { "patterns": [{ "include": "#storage-arrays" }]},
-                        "4": { "name": "variable.name.type.systemverilog"}
-                    }
-                }
-            ]
+				{ "include": "#inst-functions" },
+				{ "include": "#inst-packages"}
+			],
+			"repository": {
+				"inst-functions": {
+					"patterns": [
+						{
+							"name": "meta.function.systemverilog",
+							"begin": "\\b(?!do|while|for|foreach|repeat|if|case|wait|new)(\\w+)\\s*\\(",
+							"end": "\\)",
+							"patterns": [{ "include": "$self" }],
+							"beginCaptures": {
+								"1": { "name": "entity.name.function.systemverilog"}
+							}
+						}
+					]
+				},
+				"inst-packages": {
+					"patterns": [
+						{
+							"name": "meta.inst.package.systemverilog",
+							"match": "(\\w+)(::)",
+							"captures": {
+								"1": { "name": "entity.name.type.systemverilog"},
+								"2": { "name": "keyword.operator.systemverilog"}
+                   			}
+                		}
+					]
+				},
+				"inst-instantiation-prototype": {
+					"patterns": [
+						{
+							"name": "meta.inst.variable.systemverilog",
+							"match": "^\\s+(?:(automatic|static|virtual)\\s+)?(?!task|function|class|module|release|disable)(\\b\\w+\\b)([\\[.*\\]\\s]*)?((?:\\s*)\\b\\w+\\b(?:\\s*,)?)*\\s*;",
+							"captures": {
+								"1": { "name": "storage.modifier.systemverilog"},
+								"2": { "name": "storage.name.systemverilog"},
+								"3": { "patterns": [{ "include": "#storage-arrays" }]},
+								"4": { "name": "variable.name.type.systemverilog"}
+							}
+						}
+					]
+				}
+			}
         },
 		"declarations": {
 			"patterns": [
                 {
-                    "name": "meta.declaration.class.systemverilog",
+                    "name": "meta.decl.class.systemverilog",
                     "match": "(class|interface)\\s+(\\w+)(?:\\s+(extends|implements)\\s+(\\w+))?",
                     "captures": {
                         "1": { "name": "storage.type.class.systemverilog"},
@@ -124,7 +152,7 @@
                     }
                 },
 				{
-					"name": "meta.declaration.function.systemverilog",
+					"name": "meta.decl.function.systemverilog",
 					"match": "(function|task|module|program|package)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
 					"captures": {
 						"1": { "name": "storage.type.function.systemverilog"},
@@ -134,32 +162,6 @@
 					}
 				}
 			]
-        },
-        "assignments": {
-            "patterns": [
-                {
-                    "name": "meta.assignment.systemverilog",
-                    "match": "\\b(?:(assign|force)\\s+)?(\\w+)\\s*(\\*=|\\+=|=|\\-=|/=|%=|&=|\\|=|\\^=|<<=|<<<=|>>=|>>>=|=~)",
-                    "captures": {
-                        "1": { "name": "keyword.control.assign.systemverilog" },
-                        "2": { "name": "variable.name.systemverilog"},
-                        "3": { "name": "keyword.operator.assignment.systemverilog"}
-                    }
-                },
-				{
-                    "name": "meta.function.systemverilog",
-                    "begin": "[\\.\\s](?!do|while|for|foreach|repeat|if|case|wait|new)(\\w+)\\s*\\(",
-                    "end": "\\)",
-                    "patterns": [
-                        {
-                            "include": "$self"
-                        }
-                    ],
-                    "beginCaptures": {
-                        "1":{ "name": "variable.name.function.systemverilog"}
-                    }
-				}
-            ]
         },
 		"storage": {
 			"patterns": [
@@ -251,7 +253,7 @@
 			"patterns": [
 				{
 					"name": "variable.language.systemverilog",
-					"match": "\\b(this)\\."
+					"match": "\\b(this)(?=\\.)"
 				},
 				{
 					"name": "variable.name.systemverilog",
