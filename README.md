@@ -1,6 +1,6 @@
-# System Verilog - Language Support
+# SystemVerilog - Language Support
 
-This package add language support for Verilog/SystemVerilog. It supports systemverilog syntax, with planned support for signal intelliSense.
+This package adds language support for Verilog/SystemVerilog. It supports systemverilog syntax, with planned support for signal intelliSense.
 
 - [GitHub](https://github.com/eirikpre/VSCode-SystemVerilog)
 - If you find a bug, or would like a feature; Add it as an [Issue](https://github.com/eirikpre/VSCode-SystemVerilog/issues) or a [Pull-Request](https://github.com/eirikpre/VSCode-SystemVerilog/pulls)
@@ -14,9 +14,11 @@ This package add language support for Verilog/SystemVerilog. It supports systemv
 - Go to symbol stops at 50 files (to stay responsive/quick).
 
 ## Future
+- 100% Complete syntax highlighting
+- Tree view of module hierarchy
+- References document
 - IntelliSense support
 - Back-end Language server for Systemverilog
-- 100% Complete syntax highlighting
 
 ## Release Notes
 ### 0.1.0
