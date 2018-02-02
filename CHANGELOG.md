@@ -3,9 +3,13 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 
 
 ## [Unreleased]
+- Tree view of module hierarchy
 - IntelliSense support
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
+
+## [0.2.0] - 2018-02-02
+- Added snippets and Alpha 2 published
 
 ## [0.1.5] - 2018-02-02
 - Syntax highligthing covers every keyword and module instantiation

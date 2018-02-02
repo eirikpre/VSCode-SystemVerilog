@@ -1,0 +1,189 @@
+{
+    "assign": {
+        "prefix": "assign",
+        "description": "Snippet for an assignment",
+        "body": [
+            "assign ${1:var} = ${2:value};$0"
+        ]
+    },
+    "force": {
+        "prefix": "force",
+        "description": "Snippet for a force assignment",
+        "body": [
+            "force ${1:var} = ${2:value};$0"
+        ]
+    },
+    "always_ff": {
+        "prefix": "always_ff",
+        "description": "Snippet for an always_comb block",
+        "body": [
+            "always_ff @(posedge ${1:ck}, posedge ${2:arst})} begin",
+            "\t$0",
+            "end"
+        ]
+    },
+    "always_comb": {
+        "prefix": "always_comb",
+        "description": "Snippet for an always_comb block",
+        "body": [
+            "always_comb begin",
+            "\t$0",
+            "end"
+        ]
+    },
+    "if": {
+        "prefix": "if",
+        "body": [
+            "if (${1:condition}) begin",
+            "\t${2:pass}",
+            "end"
+        ],
+        "description": "Snippet for an if statement"
+    },
+    "if/else": {
+        "prefix": "if/else",
+        "body": [
+            "if (${1:condition}) begin",
+            "\t${2:pass}",
+            "end",
+            "else begin",
+            "\t${3:pass}",
+            "end"
+        ],
+        "description": "Snippet for an if statement with else"
+    },
+    "elseif": {
+        "prefix": "else if",
+        "body": [
+            "else if ${1:condition} begin",
+            "\t${2:pass}",
+            "end"
+        ],
+        "description": "Snippet for an else if"
+    },
+    "else": {
+        "prefix": "else",
+        "body": [
+            "else begin",
+            "\t${1:pass}",
+            "end"
+        ],
+        "description": "Snippet for an else"
+    },
+    "case": {
+        "prefix": "case",
+        "body": [
+            "case (${1:variable})",
+            "\t$0",
+            "endcase"
+        ],
+        "description": "Snippet for a case statement"
+    },
+    "case/default": {
+        "prefix": "case/default",
+        "body": [
+            "case (${1:variable})",
+            "\t$0",
+            "\tdefault: begin",
+            "\t\t${2:pass}",
+            "\tend",
+            "endcase"
+        ],
+        "description": "Snippet for a case statement with default"
+    },
+    "while": {
+        "prefix": "while",
+        "body": [
+            "while (${1:expression}) begin",
+            "\t${2:pass}",
+            "end"
+        ],
+        "description": "Snippet for a while loop"
+    },
+    "for": {
+        "prefix": "for",
+        "body": [
+            "for (int ${1:i}=0; ${1:i}<${2:MAX}; ${1:i}++) begin",
+            "\t${3:pass}",
+            "end"
+        ],
+        "description": "Snippet for a for loop"
+    },
+    "function": {
+        "prefix": "function",
+        "body": [
+            "function ${1:return_value} ${2:name}(${3:port_list});",
+            "\t${0:pass}",
+            "endfunction"
+        ],
+        "description": "Snippet for a function definition"
+    },
+    "task": {
+        "prefix": "task",
+        "body": [
+            "task ${1:name}(${2:port_list});",
+            "\t${0:pass}",
+            "endtask"
+        ],
+        "description": "Snippet for a task definition"
+    },
+    "class": {
+        "prefix": "class",
+        "body": [
+            "class ${1:name};",
+            "\t${0:pass}",
+            "endclass"
+        ],
+        "description": "Snippet for a class definition"
+    },
+    "program": {
+        "prefix": "program",
+        "body": [
+            "program ${1:name}(${2:port_list});",
+            "\t${0:pass}",
+            "endprogram"
+        ],
+        "description": "Snippet for a program definition"
+    },
+    "module": {
+        "prefix": "module",
+        "body": [
+            "module ${1:modulename}(",
+            "\t${2:port_list}",
+            ");",
+            "\t$0",
+            "endmodule"
+        ],
+        "description": "Snippet for a module definition"
+    },
+    "module#(param)": {
+        "prefix": "module #(",
+        "body": [
+            "module ${1:name} #(",
+            "\t${2:parameters}",
+            ")(",
+            "\t${3:port_list}",
+            ");",
+            "\t$0",
+            "endmodule"
+        ],
+        "description": "Snippet for a parameterized module definition"
+    },
+    "assert": {
+        "prefix": "assert",
+        "body": [
+            "${1:label}: assert (${2:test})",
+            "\telse \\$error(\"${0:Assertion ${1:label} failed!}\");"
+        ],
+        "description": "Snippet for an immidiate assertion"
+    },
+    "property": {
+        "prefix": "property",
+        "description": "Snippet for a property",
+        "body": [
+            "property ${1:name};",
+            "\t@(posedge ${2:clk}) ${0:test}",
+            "endproperty"
+        ]
+    }
+}
