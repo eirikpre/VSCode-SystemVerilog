@@ -22,8 +22,8 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 
 ## Release Notes
 ### 0.2
-- Alpha 2 release with expanded syntax highligthing and snippets
+- Alpha 2 release with expanded syntax highlighting and snippets
 ### 0.1
-- Alpha 1 release with syntax highligthing, and go to symbols
+- Alpha 1 release with syntax highlighting, and go to symbols
 - See changelog for more details
 

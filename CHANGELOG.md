@@ -12,7 +12,7 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Added snippets and Alpha 2 published
 
 ## [0.1.5] - 2018-02-02
-- Syntax highligthing covers every keyword and module instantiation
+- Syntax highlighting covers every keyword and module instantiation
 
 ## [0.1.4] - 2018-01-30
 - Make sure that uppercase objects do not get colorized as parameter, eg. intf.GPIO
@@ -33,4 +33,4 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 
 ## [0.0.1] - 2018-01-15
 - Initial release
-- Initial Syntax highligthing (Not complete)
+- Initial Syntax highlighting (Not complete)
