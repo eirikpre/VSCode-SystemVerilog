@@ -27,7 +27,7 @@
         ["function", "endfunction"],
         ["clocking", "endclocking"],
         ["primitive", "endprimitive"],
-        ["interface", "endinterface"]
+        ["interface", "endinterface"],
     ],
     // symbols that are auto closed when typing
     "autoClosingPairs": [
@@ -41,5 +41,12 @@
         ["[", "]"],
         ["(", ")"],
         ["'", "'"]
-    ]
+    ],
+    "folding": {
+        "offSide": false,
+        "markers": {
+            "start": "^\\s*`(ifdef|elsif|else)",
+            "end": "^\\s*`(elsif|else|endif)"
+        },
+    }
 }

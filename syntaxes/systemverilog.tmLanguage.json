@@ -11,11 +11,11 @@
         {   "include": "#support"       },
         {   "include": "#variables"     },
         {   "include": "#declarations"  },
-        {   "include": "#instantations" },
+        {   "include": "#instantation" },
         {   "include": "#storage"       },
         {   "include": "#macros"        },
         {   "include": "#keywords"      },
-        {   "include": "#constants"     }
+        {   "include": "#constant"     }
     ],
     "repository": {
         "keywords": {
@@ -81,36 +81,31 @@
                 }
             ]
         },
-        "instantations": {
+        "instantation": {
             "patterns": [
-                {   "include": "#inst-module-param" },
-                {   "include": "#inst-module-simple" },
-                {   "include": "#inst-function" },
-                {   "include": "#inst-packages" }
+                {   "include": "#inst-module-param"     },
+                {   "include": "#inst-module-simple"    },
+                {   "include": "#inst-function"         },
+                {   "include": "#inst-packages"         }
             ],
             "repository": {
                 "inst-module-param":{
                     "patterns": [
                         {
                             "name": "meta.inst.module-param.systemverilog",
-                            "begin": "^\\s*\\b(\\w+)\\b\\s*(#)\\(",
+                            "begin": "^\\s*\\b(\\w+)\\b\\s*(#)",
                             "end": ";",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.class.module.systemverilog" },
                                 "2": { "name": "keyword.operator.parameterlist.systemverilog" }
                             },
                             "patterns": [
+                                {   "include": "#inst-portlist" },
                                 {
-                                    "name": "meta.inst.module.systemverilog",
-                                    "begin": "\\b(\\w+)\\b\\s*\\(",
-                                    "beginCaptures": {
-                                        "1": { "name": "variable.name.module.systemverilog" }
-                                    },
-                                    "end": ";",
-                                    "patterns": [
-                                        {   "include": "#constants" }
-                                    ]
-                                }
+                                    "name": "variable.name.module.systemverilog",
+                                    "match": "\\b(\\w+)\\b"
+                                },
+                                {   "include": "$self"          }
                             ]
                         }
                     ]
@@ -126,7 +121,8 @@
                             },
                             "end": ";",
                             "patterns": [
-                                {   "include": "#constants" }
+                                {   "include": "$self"          },
+                                {   "include": "#inst-portlist"  }
                             ]
                         }
                     ]
@@ -135,12 +131,12 @@
                     "patterns": [
                         {
                             "name": "meta.function.systemverilog",
-                            "begin": "\\b(?!do|while|for|foreach|repeat|if|case|wait|new)(\\w+)\\s*\\(",
+                            "begin": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new)\\b(\\w+)\\s*\\(",
                             "end": "\\)",
-                            "patterns": [{ "include": "$self" }],
                             "beginCaptures": {
                                 "1": { "name": "entity.name.function.systemverilog"}
-                            }
+                            },
+                            "patterns": [{ "include": "#inst-portlist" }]
                         }
                     ]
                 },
@@ -153,6 +149,32 @@
                                 "1": { "name": "entity.name.type.systemverilog"},
                                 "2": { "name": "keyword.operator.systemverilog"}
                                }
+                        }
+                    ]
+                },
+                "inst-portlist": {
+                    "patterns": [
+                        {
+                            "name": "meta.inst.portlist.systemverilog",
+                            "begin": "\\(",
+                            "end": "\\)",
+                            "patterns": [
+                                {   "include": "#comment"    },
+                                {   "include": "#inst-port"  },
+                                {   "include": "$self"      }
+                            ]
+                        }
+                    ]
+                },
+                "inst-port": {
+                    "patterns": [
+                        {
+                            "name": "meta.inst.port.systemverilog",
+                            "begin": "\\.(\\w+)\\s*\\(",
+                            "end": "\\)",
+                            "patterns": [
+                                {   "include": "$self"  }
+                            ]
                         }
                     ]
                 },
@@ -234,7 +256,7 @@
                             "begin": "\\[",
                             "end": "\\]",
                             "patterns":[
-                                { "include": "#constants" }
+                                { "include": "$self" }
                             ]
                         }
                     ]
@@ -254,7 +276,7 @@
                 }
             ]
         },
-        "constants": {
+        "constant": {
             "patterns":[
                 {
                     "name": "constant.numeric.casted.systemverilog",
