@@ -7,6 +7,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.1.5] - 2018-02-02
+- Syntax highligthing covers every keyword and module instantiation
+
 ## [0.1.4] - 2018-01-30
 - Make sure that uppercase objects do not get colorized as parameter, eg. intf.GPIO
 - Added additional bracket entries, thanks goes to n-badri for input

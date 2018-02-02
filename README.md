@@ -21,7 +21,7 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 - Back-end Language server for Systemverilog
 
 ## Release Notes
-### 0.1.0
+### 0.1
 - Alpha 1 release with syntax highligthing, and go to symbols
+- See changelog for more details
 
-- See changelog for more
