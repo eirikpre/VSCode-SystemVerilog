@@ -45,7 +45,7 @@
     "folding": {
         "offSide": false,
         "markers": {
-            "start": "^\\s*`(ifdef|elsif|else)",
+            "start": "^\\s*`(ifdef|ifndef|elsif|else)",
             "end": "^\\s*`(elsif|else|endif)"
         },
     }

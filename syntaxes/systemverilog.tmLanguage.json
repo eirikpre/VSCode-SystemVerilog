@@ -45,7 +45,7 @@
                 },
                 {
                     "name": "keyword.control.defines.systemverilog",
-                    "match": "(?<=`)(define|undef|ifdef|elsif|else|endif|include)\\b"
+                    "match": "(?<=`)(define|undef|ifdef|ifndef|elsif|else|endif|include)\\b"
                 },
                 {
                     "name": "keyword.control.clocking.systemverilog",
@@ -292,7 +292,7 @@
                 },
                 {
                     "name": "constant.numeric.macro.systemverilog",
-                    "match": "`(?!define|undef|ifdef|elsif|else|endif|include)\\w+"
+                    "match": "`(?!define|undef|ifdef|ifndef|elsif|else|endif|include)\\w+"
                 }
             ]
         },
