@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "publisher": "eirikpre",
     "license": "MIT",
     "keywords": [
@@ -29,7 +29,8 @@
     ],
     "main": "./out/extension",
     "activationEvents": [
-        "onLanguage:systemverilog"
+        "onLanguage:systemverilog",
+        "onLanguage:verilog"
     ],
     "contributes": {
         "snippets": [
@@ -49,7 +50,17 @@
                 ],
                 "extensions": [
                     ".sv",
-                    ".svh",
+                    ".svh"
+                ],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "verilog",
+                "aliases": [
+                    "Verilog",
+                    "verilog"
+                ],
+                "extensions": [
                     ".v",
                     ".vh"
                 ],

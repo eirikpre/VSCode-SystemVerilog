@@ -8,6 +8,10 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.0.3] - 2018-02-03
+- Added extension icon
+- Updated description
+
 ## [0.2.0] - 2018-02-02
 - Added snippets and Alpha 2 published
 
