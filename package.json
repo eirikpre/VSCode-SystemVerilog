@@ -4,6 +4,10 @@
     "description": "Language support for Verilog / SystemVerilog",
     "version": "0.2.3",
     "publisher": "eirikpre",
+    "author": {
+        "name": "Eirik Prestegårdshus",
+        "email": "eirikpre@gmail.com"
+    },
     "license": "MIT",
     "keywords": [
         "verilog",
@@ -33,12 +37,6 @@
         "onLanguage:verilog"
     ],
     "contributes": {
-        "snippets": [
-            {
-                "language": "systemverilog",
-                "path": "./snippets/systemverilog.json"
-            }
-        ],
         "languages": [
             {
                 "id": "systemverilog",
@@ -67,9 +65,24 @@
                 "configuration": "./language-configuration.json"
             }
         ],
+        "snippets": [
+            {
+                "language": "systemverilog",
+                "path": "./snippets/systemverilog.json"
+            },
+            {
+                "language": "verilog",
+                "path": "./snippets/systemverilog.json"
+            }
+        ],
         "grammars": [
             {
                 "language": "systemverilog",
+                "scopeName": "text.systemverilog",
+                "path": "./syntaxes/systemverilog.tmLanguage.json"
+            },
+            {
+                "language": "verilog",
                 "scopeName": "text.systemverilog",
                 "path": "./syntaxes/systemverilog.tmLanguage.json"
             }

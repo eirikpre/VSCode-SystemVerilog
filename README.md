@@ -10,6 +10,9 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 - Go to symbol in workspace folder
 - Code snippets for common blocks
 
+## Recommendation
+- For `.sv`/`.v` icons, I recommend you to try you [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
+
 ## Known Issues
 - Go to symbol stops at 50 files (to stay responsive/quick).
 

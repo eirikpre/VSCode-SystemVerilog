@@ -114,7 +114,7 @@
                     "patterns": [
                         {
                             "name": "meta.inst.module.simple.systemverilog",
-                            "begin": "^\\s*(\\w+)\\s+(\\w+)\\s*\\(",
+                            "begin": "^\\s*(?!module|function|task|interface|clocking|property|primitive|program)(\\w+)\\s+(\\w+)\\s*\\(",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.class.module.systemverilog" },
                                 "2": { "name": "variable.name.module.systemverilog" }
