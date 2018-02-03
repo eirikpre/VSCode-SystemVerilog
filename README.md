@@ -9,6 +9,7 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 - Syntax Highlighting
 - Go to symbol in document
 - Go to symbol in workspace folder
+- Code snippets for common blocks
 
 ## Known Issues
 - Go to symbol stops at 50 files (to stay responsive/quick).

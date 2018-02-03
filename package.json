@@ -2,8 +2,9 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "publisher": "eirikpre",
+    "license": "MIT",
     "keywords": [
         "verilog",
         "systemverilog",
@@ -11,7 +12,11 @@
         "highlighting",
         "hdl"
     ],
-    "license": "MIT",
+    "icon": "icon.png",
+    "galleryBanner": {
+        "color": "#1e415e",
+        "theme": "dark"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/eirikpre/VSCode-SystemVerilog"
