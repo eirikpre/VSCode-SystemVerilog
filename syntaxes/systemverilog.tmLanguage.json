@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
     "name": "SystemVerilog",
     "scopeName": "text.systemverilog",
-    "fileTypes": [".sv", ".svh", ".v", ".vh"],
+    "fileTypes": [ ".sv", ".svh", ".v", ".vh" ],
     "foldingStartMarker": "begin",
     "foldingStopMarker": "end",
     "patterns": [
@@ -11,11 +11,11 @@
         {   "include": "#support"       },
         {   "include": "#variables"     },
         {   "include": "#declarations"  },
-        {   "include": "#instantation" },
+        {   "include": "#instantation"  },
         {   "include": "#storage"       },
         {   "include": "#macros"        },
         {   "include": "#keywords"      },
-        {   "include": "#constant"     }
+        {   "include": "#constant"      }
     ],
     "repository": {
         "keywords": {
@@ -96,7 +96,7 @@
                             "begin": "^\\s*\\b(\\w+)\\b\\s*(#)",
                             "end": ";",
                             "beginCaptures": {
-                                "1": { "name": "entity.name.class.module.systemverilog" },
+                                "1": { "name": "entity.name.class.module.systemverilog"       },
                                 "2": { "name": "keyword.operator.parameterlist.systemverilog" }
                             },
                             "patterns": [
@@ -117,11 +117,11 @@
                             "begin": "^\\s*(?!module|function|task|interface|clocking|property|primitive|program)(\\w+)\\s+(\\w+)\\s*\\(",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.class.module.systemverilog" },
-                                "2": { "name": "variable.name.module.systemverilog" }
+                                "2": { "name": "variable.name.module.systemverilog"     }
                             },
                             "end": ";",
                             "patterns": [
-                                {   "include": "$self"          },
+                                {   "include": "$self"           },
                                 {   "include": "#inst-portlist"  }
                             ]
                         }
@@ -146,8 +146,8 @@
                             "name": "meta.inst.package.systemverilog",
                             "match": "(\\w+)(::)",
                             "captures": {
-                                "1": { "name": "entity.name.type.systemverilog"},
-                                "2": { "name": "keyword.operator.systemverilog"}
+                                "1": { "name": "entity.name.type.systemverilog" },
+                                "2": { "name": "keyword.operator.systemverilog" }
                                }
                         }
                     ]
@@ -161,7 +161,7 @@
                             "patterns": [
                                 {   "include": "#comment"    },
                                 {   "include": "#inst-port"  },
-                                {   "include": "$self"      }
+                                {   "include": "$self"       }
                             ]
                         }
                     ]
@@ -184,10 +184,10 @@
                             "name": "meta.inst.variable.systemverilog",
                             "match": "^\\s+(?:(automatic|static|virtual|extern)\\s+)?(?!task|function|class|module|release|disable)(\\b\\w+\\b)([\\[.*\\]\\s]*)?((?:\\s*)\\b\\w+\\b(?:\\s*,)?)*\\s*;",
                             "captures": {
-                                "1": { "name": "storage.modifier.systemverilog"},
-                                "2": { "name": "storage.name.systemverilog"},
-                                "3": { "patterns": [{ "include": "#storage-arrays" }]},
-                                "4": { "name": "variable.name.type.systemverilog"}
+                                "1": { "name": "storage.modifier.systemverilog"       },
+                                "2": { "name": "storage.name.systemverilog"           },
+                                "3": { "patterns": [{ "include": "#storage-arrays" }] },
+                                "4": { "name": "variable.name.type.systemverilog"     }
                             }
                         }
                     ]
@@ -200,20 +200,20 @@
                     "name": "meta.decl.class.systemverilog",
                     "match": "(class|interface)\\s+(\\w+)(?:\\s+(extends|implements)\\s+(\\w+))?",
                     "captures": {
-                        "1": { "name": "storage.type.class.systemverilog"},
-                        "2": { "name": "entity.name.type.systemverilog"},
-                        "3": { "name": "keyword.control.systemverilog"},
-                        "4": { "name": "entity.name.type.systemverilog"}
+                        "1": { "name": "storage.type.class.systemverilog" },
+                        "2": { "name": "entity.name.type.systemverilog"   },
+                        "3": { "name": "keyword.control.systemverilog"    },
+                        "4": { "name": "entity.name.type.systemverilog"   }
                     }
                 },
                 {
                     "name": "meta.decl.function.systemverilog",
                     "match": "(function|task|module|program|package)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
                     "captures": {
-                        "1": { "name": "storage.type.function.systemverilog"},
-                        "2": { "name": "storage.modifier.systemverilog"},
-                        "3": { "name": "storage.type.systemverilog"},
-                        "4": { "name": "entity.name.function.systemverilog"}
+                        "1": { "name": "storage.type.function.systemverilog" },
+                        "2": { "name": "storage.modifier.systemverilog"      },
+                        "3": { "name": "storage.type.systemverilog"          },
+                        "4": { "name": "entity.name.function.systemverilog"  }
                     }
                 }
             ]
