@@ -44,13 +44,25 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     ));
                 }
             }
-            let r_multiline = new RegExp('^\s*(\w+)[\s\r\n]*(?:#[\s\r\n]*\((?!;).*\))?[\s\r\n]*(\w+)[\s\r\n]+\(.*?\)[\s\r\n]+;', 'm');
-            let m_multiline = r_multiline.exec(document.getText())
-            if (m_multiline !== null) {
-                m_multiline.forEach(match => {
-                    console.log("Match!")
-                });
-            }
+            let text = document.getText()
+            let r_multiline = new RegExp('^\\s*(\\w+)[\\s\\n\\r]*(?:#[\\s\\n\\r]*\\([\\n\\r.]*\\))?[\\s\\n\\r]*(\\w+)[\\s\\n\\r]*\\([\\n\\r.]*?\\)\\s*;','mg');
+            // let r_multiline = new RegExp('^\\s*(\\w+)[\\s\\n\\r]*(?>#[\\s\\n\\r]*(?>(?>'open'\\(.*)+(?>'-open'\\)+)))(\\w+)[\\s\\n\\r]*\\([\\s\\S]*?\\)\\s*;','mg');
+            // Attempt at balancing group
+            // ^(?:(?'open'o)+(?'-open'c)+)+(?(open)(?!))$
+            var match;
+            do {
+                match = r_multiline.exec(text)
+                if (match) {
+                    if (symbols.indexOf(match[2]) == -1) {
+                        symbols.push(new SymbolInformation(
+                            match[2],
+                            SymbolKind.Module,
+                            match[1],
+                            new Location(document.uri, new Position(0,0))
+                        ));
+                    }
+                }
+            } while (match != null);
             resolve(symbols);
         });
     }
