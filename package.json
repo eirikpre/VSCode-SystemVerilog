@@ -16,7 +16,7 @@
         "highlighting",
         "hdl"
     ],
-    "icon": "icon.png",
+    "icon": "docs/icon.png",
     "galleryBanner": {
         "color": "#1e415e",
         "theme": "dark"
