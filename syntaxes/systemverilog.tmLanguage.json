@@ -94,7 +94,7 @@
                     "patterns": [
                         {
                             "name": "meta.inst.module-param.systemverilog",
-                            "begin": "^\\s*\\b(\\w+)\\b\\s*(#)",
+                            "begin": "^\\s*\\b(\\w+)\\b\\s*(#)(?!\\d)",
                             "end": "(?<=\\))\\s*;",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.class.module.systemverilog"       },

@@ -1,27 +1,30 @@
-import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
-import * as vscode from 'vscode';
-import * as console from 'console';
+import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace } from 'vscode';
+import { getSymbolKind } from './DocumentSymbolProvider';
 
 // FIXME: Only a copy of DocumentSymbolProvider
 
-export class SystemVerilogWorkspaceSymbolProvider implements vscode.WorkspaceSymbolProvider {
+export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
     private regex = /^\s*(module|program|class|interface)\s+(\w+)/;
 
-    public provideWorkspaceSymbols(query: string, token: vscode.CancellationToken): Thenable<vscode.SymbolInformation[]> {
+    public provideWorkspaceSymbols(query: string, token: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
-
-            var symbolProvider = new(SystemVerilogDocumentSymbolProvider);
-            symbolProvider.regex = this.regex;
             var results = [];
             
-            vscode.workspace.findFiles('**/*.sv', undefined, 50, token).then(uris => {
+            workspace.findFiles('**/*.sv', undefined, 250, token).then(uris => {
                 for(let uri of uris) {
-                    vscode.workspace.openTextDocument(uri).then(function(document) {
-                        symbolProvider.provideDocumentSymbols(document, token).then(symbols => {
-                            for (let symbol of symbols) {
-                                results.push(symbol);
+                    workspace.openTextDocument(uri).then( document => {
+                        for (let i = 0; i < document.lineCount; i++) {
+                            let line = document.lineAt(i);
+                            let match = this.regex.exec(line.text);
+                            if (match) {
+                                results.push( new SymbolInformation(
+                                    match[2], getSymbolKind(match[1]), document.fileName,
+                                    new Location(document.uri,
+                                        new Range(
+                                            i, line.text.indexOf(match[2]),
+                                            i, line.text.indexOf(match[2])+match[2].length))));
                             }
-                        });
+                        }
                     });
                 }
                 return results

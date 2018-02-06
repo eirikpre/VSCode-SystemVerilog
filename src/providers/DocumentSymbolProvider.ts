@@ -1,7 +1,7 @@
 import {DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Location, Position, SymbolKind, Range} from 'vscode'
 
 // See test/SymbolKind_icons.png for an overview of the icons
-function getSymbolKind(name: String): SymbolKind {
+export function getSymbolKind(name: String): SymbolKind {
     switch (name) {
         case 'parameter':
         case 'localparam': return SymbolKind.Constant;
@@ -17,8 +17,8 @@ function getSymbolKind(name: String): SymbolKind {
         case 'interface': return SymbolKind.Interface;
         case 'event': return SymbolKind.Event;
         case 'struct': return SymbolKind.Struct;
-        case 'program':
-        case 'module': return SymbolKind.Module;
+        case 'program':  return SymbolKind.Module;
+        case 'module':
         default: return SymbolKind.Variable;
     }
     /* Not used! / Free SymbolKind icons
@@ -60,9 +60,10 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     ));
                 }
             } while (match != null);
-            console.log(symbols)
+
             /*
                 Second loop finds the position of every symbol
+                and sets name based on containerName and TODO setup containerName correctly
             */
 
             // TODO: Find container name and inside comment block (track current scope)
