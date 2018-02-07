@@ -67,6 +67,9 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             */
 
             // TODO: Find container name and inside comment block (track current scope)
+            var scope: string[] = [""];
+            var scopeType: string[] = [""];
+            // var commentBlock: Boolean = false;
             // XXX: Does not match multiple in sequence, eg. logic a, b;
             var line_no: number = 0;
             symbols.forEach( function(symbol) {
@@ -80,9 +83,20 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     }
                     let match = regex.exec(line);
                     if (match) {
-                        symbol.name = "type word".replace('type', symbol.containerName).replace('word', symbol.name);
+                        let type = symbol.containerName;
+                        let name = symbol.name;
+                        symbol.name = type + " " + name;
                         symbol.location.range = new Range(line_no, match.index, line_no, match.index+word.length);
+                        symbol.containerName = scope[scope.length-1];
+                        if ( "module|program|class|function|task|interface|config".match("\\b"+type+"\\b")){
+                            scope.push(name);
+                            scopeType.push(type);
+                        }
                         break;
+                    }
+                    if (line.indexOf("end" + scopeType[scopeType.length-1]) != -1){
+                        scope.pop();
+                        scopeType.pop();
                     }
                     line_no++;
                 }
