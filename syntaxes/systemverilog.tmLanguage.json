@@ -44,10 +44,6 @@
                     "match": "\\b(fork|join|join_any|join_none|disable)\\b"
                 },
                 {
-                    "name": "keyword.control.defines.systemverilog",
-                    "match": "(?<=`)(define|undef|ifdef|ifndef|elsif|else|endif|include)\\b"
-                },
-                {
                     "name": "keyword.control.clocking.systemverilog",
                     "match": "\\b(default|wait|wait_order|iff|(pos|neg)?edge)\\b"
                 },
@@ -307,10 +303,6 @@
                 { 
                     "name": "constant.numeric.parameter.systemverilog", 
                     "match": "\\b(?<!\\.)([A-Z_0-9]+)(?!\\.)\\b"
-                },
-                {
-                    "name": "constant.numeric.macro.systemverilog",
-                    "match": "`(?!define|undef|ifdef|ifndef|elsif|else|endif|include)\\w+"
                 }
             ]
         },
@@ -319,6 +311,21 @@
                 {
                     "name": "support.function.builtin.systemverilog",
                     "match": "(\\$\\w+)|(?=\\w\\.)\\w+(?=\\()"
+                },
+                {
+                    "name": "meta.macro.systemverilog",
+                    "begin": "`",
+                    "end": "\\W",
+                    "patterns": [
+                        {
+                            "name": "keyword.control.compiler.macro.systemverilog",
+                            "match": "(__FILE__|__LINE__|begin_keywords|celldefine|default_nettype|define|else|elsif|end_keywords|endcelldefine|endif|ifdef|ifndef|include|line|nounconnected_drive|pragma|resetall|timescale|unconnected_drive|undef|undefineall)"
+                        },
+                        {
+                            "name": "constant.numeric.macro.systemverilog",
+                            "match": "\\w+"
+                        }
+                    ]
                 }
             ]
         },
