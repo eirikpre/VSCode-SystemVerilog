@@ -36,10 +36,9 @@ export function getSymbolKind(name: String): SymbolKind {
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
 
     // XXX: Does not match virtual interface instantiantion, eg virtual intf u_virtInterface;
-    // XXX: Does not match arrays of variables, eg logic [6:0] var;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
-    public regex: RegExp = new RegExp('^\\s*(?!begin|end|else|join|fork)(\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(\\w+)\\s*(?:\\([\\s\\S]*?\\))?\\s*;','mg');
+    public regex: RegExp = new RegExp('^\\s*(?!begin|end|else|join|fork)(\\w+|(?:virtual|static|automatic)\\s+\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(?:\\[.*?\\]\\s*)?(\\w+(?:\\s*,\\s*\\w+)*?)\\s*(?:\\([\\s\\S]*?\\)|extends\\s*\\w+)?\\s*;','mg');
 
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
@@ -53,12 +52,15 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             do {
                 match = this.regex.exec(text);
                 if (match) {
-                    symbols.push(new SymbolInformation(
-                        match[2],
-                        getSymbolKind(match[1]),
-                        match[1],
-                        new Location(document.uri, new Range(0,0,0,0))
-                    ));
+                    let words = match[2].match(/\b(\w+)\b/g)
+                    words.forEach( object => {
+                        symbols.push(new SymbolInformation(
+                            object,
+                            getSymbolKind(match[1]),
+                            match[1],
+                            new Location(document.uri, new Range(0,0,0,0))
+                        ));
+                    });
                 }
             } while (match != null);
 
@@ -66,16 +68,15 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                 Second loop finds the position of every symbol
                 and sets name based on containerName and TODO setup containerName correctly
             */
-
-            // TODO: Find container name and inside comment block (track current scope)
+            // TODO: Inside comment block (track current scope)
+            // TODO: May match wrongly if the same name is used before declaration
             var scope: string[] = [""];
             var scopeType: string[] = [""];
             // var commentBlock: Boolean = false;
-            // XXX: Does not match multiple in sequence, eg. logic a, b;
             var line_no: number = 0;
             symbols.forEach( function(symbol) {
                 let word = symbol.name;
-                let regex: RegExp = new RegExp('\\b(word)\\b'.replace('word', word))
+                let regex: RegExp = new RegExp('(?:[^\\.])\\b(word)\\b'.replace('word', word))
                 while (line_no < document.lineCount) {
                     let line = document.lineAt(line_no).text;
                     let commentStart = line.indexOf('//');
@@ -86,7 +87,6 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     if (match) {
                         let type = symbol.containerName;
                         let name = symbol.name;
-                        symbol.name = " " + name;
                         symbol.location.range = new Range(line_no, match.index, line_no, match.index+word.length);
                         symbol.containerName = scope[scope.length-1];
                         if ( "module|program|class|function|task|interface|config".match("\\b"+type+"\\b")){
@@ -108,7 +108,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
 }
 
 export class SystemVerilogDocumentSymbolTreeProvider implements TreeDataProvider<TreeItem> {
-    
+    // TODO: Not updating when active file changes
     private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
     readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
 
@@ -122,20 +122,38 @@ export class SystemVerilogDocumentSymbolTreeProvider implements TreeDataProvider
     
     public getChildren(element?: TreeItem): Thenable<TreeItem[]> {
         return new Promise((resolve, reject) => {
+            let items = [];
             if (!element) {
-                let items = [];
                 this.provider.provideDocumentSymbols(window.activeTextEditor.document).then( symbols => {
                     symbols.forEach(symbol => {
-                        let item = new TreeItem(symbol.name)
-                        item.contextValue = symbol.containerName;
-                        item.resourceUri = window.activeTextEditor.document.uri;
-                        items.push(item);
+                        if (symbol.containerName == "") {
+                            let item = new TreeItem(symbol.name)
+                            item.resourceUri = window.activeTextEditor.document.uri;
+                            if(symbols.map( a => a.containerName).indexOf(symbol.name) != 0) {
+                                item.collapsibleState = TreeItemCollapsibleState.Collapsed
+                            }
+                            items.push(item);
+                        }
                     });
                 })
-                resolve(items)
             } else {
-                reject('Not root');
+                this.provider.provideDocumentSymbols(window.activeTextEditor.document).then( symbols => {
+                    symbols.forEach( symbol => {
+                        if (element.label == symbol.containerName){
+                            let item = new TreeItem(symbol.name)
+                            item.resourceUri = window.activeTextEditor.document.uri;
+                            item.id = symbol.location.uri.toString();
+                            item.id += ",line:"+ symbol.location.range.start.line.toString();
+                            item.id += ",char:"+ symbol.location.range.start.line.toString();
+                            if(symbols.map( a => a.containerName).indexOf(symbol.name) != -1) {
+                                item.collapsibleState = TreeItemCollapsibleState.Collapsed
+                            }
+                            items.push(item);
+                        }
+                    });
+                });
             }
+            resolve(items)
         });
     }
 }

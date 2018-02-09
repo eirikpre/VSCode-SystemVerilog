@@ -6,7 +6,7 @@ program test(intf i_intf);
   
   class my_trans extends transaction;
     
-    bit [1:0] count;
+    bit [1:0] count, test;
     
     function void pre_randomize();
       a.rand_mode(0);
