@@ -1,4 +1,5 @@
-import {DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Location, Position, SymbolKind, Range} from 'vscode'
+import {DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Location, Position, SymbolKind, Range, TreeDataProvider, TreeItem,
+        Event, EventEmitter, TreeItemCollapsibleState, window} from 'vscode'
 
 // See test/SymbolKind_icons.png for an overview of the icons
 export function getSymbolKind(name: String): SymbolKind {
@@ -38,9 +39,9 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // XXX: Does not match arrays of variables, eg logic [6:0] var;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
-    public regex: RegExp = new RegExp('^\\s*(\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(\\w+)\\s*(?:\\([\\s\\S]*?\\))?\\s*;','mg');
+    public regex: RegExp = new RegExp('^\\s*(?!begin|end|else|join|fork)(\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(\\w+)\\s*(?:\\([\\s\\S]*?\\))?\\s*;','mg');
 
-    public provideDocumentSymbols(document: TextDocument, token: CancellationToken): Thenable<SymbolInformation[]> {
+    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
             /* 
                 First loop finds every instantiation of 
@@ -85,7 +86,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     if (match) {
                         let type = symbol.containerName;
                         let name = symbol.name;
-                        symbol.name = type + " " + name;
+                        symbol.name = " " + name;
                         symbol.location.range = new Range(line_no, match.index, line_no, match.index+word.length);
                         symbol.containerName = scope[scope.length-1];
                         if ( "module|program|class|function|task|interface|config".match("\\b"+type+"\\b")){
@@ -102,6 +103,39 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                 }
             })
             resolve(symbols);
+        });
+    }
+}
+
+export class SystemVerilogDocumentSymbolTreeProvider implements TreeDataProvider<TreeItem> {
+    
+    private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
+    readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
+
+    private provider: SystemVerilogDocumentSymbolProvider = new SystemVerilogDocumentSymbolProvider();
+
+    public getTreeItem(element: TreeItem): Promise<TreeItem> {
+        return new Promise((resolve, reject) => {
+            resolve(element);
+        });
+    }
+    
+    public getChildren(element?: TreeItem): Thenable<TreeItem[]> {
+        return new Promise((resolve, reject) => {
+            if (!element) {
+                let items = [];
+                this.provider.provideDocumentSymbols(window.activeTextEditor.document).then( symbols => {
+                    symbols.forEach(symbol => {
+                        let item = new TreeItem(symbol.name)
+                        item.contextValue = symbol.containerName;
+                        item.resourceUri = window.activeTextEditor.document.uri;
+                        items.push(item);
+                    });
+                })
+                resolve(items)
+            } else {
+                reject('Not root');
+            }
         });
     }
 }

@@ -318,7 +318,7 @@
                     "end": "\\W",
                     "patterns": [
                         {
-                            "name": "support.function.compiler-directive.systemverilog",
+                            "name": "constant.character.set.regexp.systemverilog",
                             "match": "(__FILE__|__LINE__|begin_keywords|celldefine|default_nettype|define|else|elsif|end_keywords|endcelldefine|endif|ifdef|ifndef|include|line|nounconnected_drive|pragma|resetall|timescale|unconnected_drive|undef|undefineall)"
                         },
                         {

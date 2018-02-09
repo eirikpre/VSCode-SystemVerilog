@@ -2,7 +2,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
+import { SystemVerilogDocumentSymbolProvider, SystemVerilogDocumentSymbolTreeProvider } from './providers/DocumentSymbolProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import SystemVerilogDocumentHighlightProvider from './providers/DocumentHighlightProvider';
 import { SystemVerilogTreeDataProvider } from './providers/TreeDataProvider';
@@ -25,6 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
     ));
 
     vscode.window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
+    
+    vscode.window.registerTreeDataProvider('systemverilogDocuementSymbols', new SystemVerilogDocumentSymbolTreeProvider())
 
     // Built-in DocumentHighlightProvider is better
     // context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(
