@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import SystemVerilogDocumentHighlightProvider from './providers/DocumentHighlightProvider';
+import { SystemVerilogTreeDataProvider } from './providers/TreeDataProvider';
 
 
 
@@ -22,6 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(
         new SystemVerilogWorkspaceSymbolProvider()
     ));
+
+    vscode.window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
 
     // Built-in DocumentHighlightProvider is better
     // context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(

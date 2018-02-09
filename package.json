@@ -86,7 +86,15 @@
                 "scopeName": "text.systemverilog",
                 "path": "./syntaxes/systemverilog.tmLanguage.json"
             }
-        ]
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "systemverilogModules",
+                    "name": "Modules"
+                }
+            ]   
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

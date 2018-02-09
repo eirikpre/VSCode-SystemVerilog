@@ -1,16 +1,16 @@
 import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace } from 'vscode';
 import { getSymbolKind } from './DocumentSymbolProvider';
 
-// FIXME: Only a copy of DocumentSymbolProvider
-
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
     private regex = /^\s*(module|program|class|interface)\s+(\w+)/;
+
+    public NUM_FILES = 250;
 
     public provideWorkspaceSymbols(query: string, token: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
             var results = [];
             
-            workspace.findFiles('**/*.sv', undefined, 250, token).then(uris => {
+            workspace.findFiles('**/*.sv', undefined, this.NUM_FILES, token).then(uris => {
                 for(let uri of uris) {
                     workspace.openTextDocument(uri).then( document => {
                         for (let i = 0; i < document.lineCount; i++) {
