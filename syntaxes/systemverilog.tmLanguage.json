@@ -127,13 +127,8 @@
                 "inst-function": {
                     "patterns": [
                         {
-                            "name": "meta.function.systemverilog",
-                            "begin": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new)\\b(\\w+)\\s*\\(",
-                            "end": "\\)",
-                            "beginCaptures": {
-                                "1": { "name": "entity.name.function.systemverilog"}
-                            },
-                            "patterns": [{ "include": "#inst-portlist" }]
+                            "name": "entity.name.function.systemverilog",
+                            "match": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new)\\b(\\w+)(?=\\s*\\()"
                         }
                     ]
                 },

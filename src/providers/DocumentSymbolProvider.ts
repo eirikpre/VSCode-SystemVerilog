@@ -39,7 +39,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // XXX: Does not match arrays of variables, eg logic [6:0] var;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
-    public regex: RegExp = new RegExp('^\\s*(?!begin|end|else|join|fork)(\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(\\w+)\\s*(?:\\([\\s\\S]*?\\))?\\s*;','mg');
+    public regex: RegExp = new RegExp('^\\s*(?!return|begin|end|else|join|fork)(\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(\\w+)\\s*(?:\\([\\s\\S]*?\\))?\\s*;','mg');
 
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
