@@ -289,14 +289,14 @@
             "patterns":[
                 {
                     "name": "constant.numeric.casted.systemverilog",
-                    "match": "(\\b\\d+)?'[hbd]([0-9a-fA-F_xz]+)\\b"
+                    "match": "(\\b\\d+)?'[hbd]?([0-9a-fA-F_xz]+)\\b"
                 },
                 {
                     "name": "constant.numeric.decimal.systemverilog",
                     "match": "\\b(\\d+)\\b"
                 },
                 { 
-                    "name": "constant.numeric.parameter.systemverilog", 
+                    "name": "constant.numeric.parameter.uppercase.systemverilog", 
                     "match": "\\b(?<!\\.)([A-Z_0-9]+)(?!\\.)\\b"
                 }
             ]

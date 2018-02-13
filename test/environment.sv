@@ -16,6 +16,7 @@ class environment;
   //virtual interface
   virtual intf vif;
   automatic a b;
+
   //constructor
   function new(virtual intf vif);
     //get the interface from test
