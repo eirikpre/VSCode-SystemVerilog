@@ -38,7 +38,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // XXX: Does not match virtual interface instantiantion, eg virtual intf u_virtInterface;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
-    public regex: RegExp = new RegExp('^\\s*(?!return|begin|end|else|join|fork)(\\w+|(?:virtual|static|automatic)\\s+\\w+)(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(?:\\[.*?\\]\\s*)?(\\w+(?:\\s*,\\s*\\w+)*?)\\s*(?:\\([\\s\\S]*?\\)|extends\\s*\\w+)?\\s*;','mg');
+    public regex: RegExp = new RegExp('^\\s*(?!return|begin|end|else|join|fork|for|if)(?:(?:virtual|static|automatic)\\s+)?([:\\w]+)(?:\\s+(?:virtual|static|automatic))?(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(?:\\[.*?\\]\\s*)?(\\w+(?:\\s*,\\s*\\w+)*?)\\s*(?:\\([\\s\\S]*?\\)|extends\\s*\\w+)?\\s*;','mg');
 
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                         let name = symbol.name;
                         symbol.location.range = new Range(line_no, match.index, line_no, match.index+word.length);
                         symbol.containerName = scope[scope.length-1];
-                        if ( "module|program|class|function|task|interface|config".match("\\b"+type+"\\b")){
+                        if ( "module|program|class|function|task|interface|config|package".match("\\b"+type+"\\b")){
                             scope.push(name);
                             scopeType.push(type);
                         }

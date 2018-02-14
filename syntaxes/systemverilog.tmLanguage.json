@@ -111,7 +111,7 @@
                     "patterns": [
                         {
                             "name": "meta.inst.module-simple.systemverilog",
-                            "begin": "^\\s*(?!module|function|task|interface|clocking|property|primitive|program|else|if)(\\w+)\\s+(\\w+)\\s*\\(",
+                            "begin": "^\\s*(?!module|function|task|interface|clocking|property|primitive|program|else|if|for|return|begin|end)(\\w+)\\s+(\\w+)\\s*\\(",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.class.module.systemverilog" },
                                 "2": { "name": "variable.name.module.systemverilog"     }
@@ -289,11 +289,11 @@
             "patterns":[
                 {
                     "name": "constant.numeric.casted.systemverilog",
-                    "match": "(\\b\\d+)?'[hbd]?([0-9a-fA-F_xz]+)\\b"
+                    "match": "(\\b\\d+)?'[hbd]?([0-9a-fA-F_xzXZ]+)\\b"
                 },
                 {
                     "name": "constant.numeric.decimal.systemverilog",
-                    "match": "\\b(\\d+)\\b"
+                    "match": "\\b([\\d\\.]+)((f|p|n|u|m)?s)?\\b"
                 },
                 { 
                     "name": "constant.numeric.parameter.uppercase.systemverilog", 
