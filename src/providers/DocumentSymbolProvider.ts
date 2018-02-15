@@ -38,7 +38,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // XXX: Does not match virtual interface instantiantion, eg virtual intf u_virtInterface;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
-    public regex: RegExp = new RegExp('^\\s*(?!return|begin|end|else|join|fork|for|if)(?:(?:virtual|static|automatic)\\s+)?([:\\w]+)(?:\\s+(?:virtual|static|automatic))?(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(?:\\[.*?\\]\\s*)?(\\w+(?:\\s*,\\s*\\w+)*?)\\s*(?:\\([\\s\\S]*?\\)|extends\\s*\\w+)?\\s*;','mg');
+    public regex: RegExp = new RegExp('^\\s*(?!return|begin|end|else|join|fork|for|if)(?:(?:virtual|static|automatic)\\s+)?([:\\w]+)(?:\\s+(?:virtual|static|automatic))?(?:\\s+|\\s*#\\s*\\([\\s\\S]*?\\)\\s*)(?:\\[.*?\\]\\s*)?(?!for|if|return)(\\w+(?:\\s*,\\s*\\w+)*?)\\s*(?:\\([\\s\\S]*?\\)|extends\\s*\\w+)?\\s*;','mg');
 
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
