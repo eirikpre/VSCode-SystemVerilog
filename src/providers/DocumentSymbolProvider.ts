@@ -70,13 +70,23 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             */
             // TODO: Inside comment block (track current scope)
             // TODO: May match wrongly if the same name is used before declaration
+            // FIXME: Use symbol before declaration matches the use rather than declaration! eg. functions
             var scope: string[] = [""];
             var scopeType: string[] = [""];
             // var commentBlock: Boolean = false;
             var line_no: number = 0;
+            var notFound = [];
             symbols.forEach( function(symbol) {
                 let word = symbol.name;
-                let regex: RegExp = new RegExp('(?:[^\\.])\\b(word)\\b'.replace('word', word))
+                let type = symbol.containerName;
+                let name = symbol.name;
+                let found = false;
+                let regex: RegExp;
+                if ( "module|program|class|function|task|interface|config|package".match("\\b"+type+"\\b")) {
+                    regex = new RegExp('(?:^\\s*?type.*?[^\\.])\\b(word)\\b'.replace('word', word).replace('type', type));
+                } else {
+                    regex = new RegExp('(?:^.*?[^\\.])\\b(word)\\b'.replace('word', word));
+                }
                 while (line_no < document.lineCount) {
                     let line = document.lineAt(line_no).text;
                     let commentStart = line.indexOf('//');
@@ -85,14 +95,13 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     }
                     let match = regex.exec(line);
                     if (match) {
-                        let type = symbol.containerName;
-                        let name = symbol.name;
                         symbol.location.range = new Range(line_no, match.index, line_no, match.index+word.length);
                         symbol.containerName = scope[scope.length-1];
                         if ( "module|program|class|function|task|interface|config|package".match("\\b"+type+"\\b")){
                             scope.push(name);
                             scopeType.push(type);
                         }
+                        found = true;
                         break;
                     }
                     if (line.indexOf("end" + scopeType[scopeType.length-1]) != -1){
@@ -101,7 +110,10 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                     }
                     line_no++;
                 }
-            })
+                if (!found) {
+                    notFound.push(symbol);
+                }
+            });
             resolve(symbols);
         });
     }

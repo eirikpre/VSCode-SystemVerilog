@@ -25,8 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
     ));
 
     // WIP
-    vscode.window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
-    vscode.window.registerTreeDataProvider('systemverilogDocuementSymbols', new SystemVerilogDocumentSymbolTreeProvider())
+    // vscode.window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
+    // vscode.window.registerTreeDataProvider('systemverilogDocuementSymbols', new SystemVerilogDocumentSymbolTreeProvider())
 
     // Built-in DocumentHighlightProvider is better
     // context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(
