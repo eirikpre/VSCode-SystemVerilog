@@ -3,13 +3,14 @@ import { getSymbolKind } from './DocumentSymbolProvider';
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
 
-    private regex = /^\s*(module|program|class|interface)(?:\s+automatic)?\s+(\w+)/;
-    private symbols: SymbolInformation[] = [];
+    private regex = /^\s*(module|class|interface|package|program(?:\s+automatic)?)\s+(\w+)/;
+    private symbols: SymbolInformation[];
     private building: Boolean = false;
 
     public NUM_FILES = 250;
 
     constructor() {
+        this.symbols = new Array<SymbolInformation>();
         this.build_index().then( str => {
             console.log(str);
             this.building = false;
@@ -64,5 +65,9 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
 
             });
         });
+    }
+
+    public dispose() {
+        delete this.symbols
     }
 }

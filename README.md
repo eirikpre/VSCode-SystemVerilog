@@ -7,18 +7,20 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 ## Features
 - Syntax Highlighting
 - Go to symbol in document
-- Go to symbol in workspace folder
+- Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
 - Code snippets for common blocks
 
 ## Recommendations
-- For `.sv`/`.v` icons, I recommend you to try [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme).
+- For `.sv`/`.v` icons is now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons) thanks to mrvkino
 - This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user friendly when writing Verilog/SystemVerilog
 
 ## Known Issues
-- Go to symbol stops at 250 matched files (to stay responsive/quick).
+- Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
+- Go to symbol does regex search instead of fuzzy matching.
 
 ## Future
 - 100% Complete syntax highlighting
+- Instantiate module from already indexed modules
 - Tree view of module hierarchy
 - References document
 - IntelliSense support
@@ -27,6 +29,7 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 ## Release Notes
 ### 0.2
 - Alpha 2 release with expanded syntax highlighting and snippets
+- Indexing of every module/interface/program/class in workspace
 ### 0.1
 - Alpha 1 release with syntax highlighting, and go to symbols
 - See changelog for more details
