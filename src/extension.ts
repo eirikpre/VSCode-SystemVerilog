@@ -12,27 +12,30 @@ import { SystemVerilogTreeDataProvider } from './providers/TreeDataProvider';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
     let documentSelector = ['verilog', 'systemverilog']
+    let docProvider = new SystemVerilogDocumentSymbolProvider();
+    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(documentSelector, docProvider));
 
-    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(
-        documentSelector,
-        new SystemVerilogDocumentSymbolProvider()
-    ));
-
-    context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(
-        new SystemVerilogWorkspaceSymbolProvider()
-    ));
-
+    // TODO: Add setting to turn off indexing.
+    // (To reduce RAM/CPU usage)
+    if (true) {
+        let statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0)
+        statusBar.text = 'SystemVerilog: Active'
+        statusBar.show()
+        statusBar.command = 'systemverilog.build_index';
+        
+        let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar);
+        
+        context.subscriptions.push(statusBar);
+        context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
+        context.subscriptions.push(vscode.commands.registerCommand('systemverilog.build_index', symProvider.build_index))
+    }
     // WIP
     // vscode.window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
     // vscode.window.registerTreeDataProvider('systemverilogDocuementSymbols', new SystemVerilogDocumentSymbolTreeProvider())
 
     // Built-in DocumentHighlightProvider is better
-    // context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(
-    //    documentSelector,
-    //    new SystemVerilogDocumentHighlightProvider()
-    // ));
+    // context.subscriptions.push(vscode.languages.registerDocumentHighlightProvider(documentSelector, new SystemVerilogDocumentHighlightProvider()));
 
     console.log("Extension SystemVerilog loaded successfully")
 }

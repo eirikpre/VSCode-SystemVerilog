@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.2.11",
+    "version": "0.2.12",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -98,7 +98,13 @@
                     "name": "Document Symbols"
                 }
             ]
-        }
+        },
+        "commands": [
+            {
+                "command": "systemverilog.build_index",
+                "title": "SystemVerilog: Build index of modules in workspace"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

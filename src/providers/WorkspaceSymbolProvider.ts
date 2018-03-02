@@ -1,4 +1,4 @@
-import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace } from 'vscode';
+import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace, StatusBarItem } from 'vscode';
 import { getSymbolKind } from './DocumentSymbolProvider';
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
@@ -9,11 +9,10 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
 
     public NUM_FILES = 250;
 
-    constructor() {
+    constructor(statusBar: StatusBarItem) {        
         this.symbols = new Array<SymbolInformation>();
-        this.build_index().then( str => {
-            console.log(str);
-            this.building = false;
+        this.build_index(statusBar).then( str => {
+            statusBar.text = "SystemVerilog: " + str;
         });
     };
 
@@ -33,37 +32,42 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         });
     }
 
-    public async build_index(): Promise<any> {
-        console.log("Building index started")
-        this.symbols = [];
-        this.building = true;
-        let scanned = 0;
+    public async build_index(statusBar): Promise<any> {
         return new Promise( async (resolve, reject) => {
-            
-            // TODO: Make this into a Promise array
-            workspace.findFiles('**/*.sv').then( async uris => {
-                let promises = uris.map( uri => {
-                    return workspace.openTextDocument(uri).then( document => {
-                        for (let i = 0; i < document.lineCount; i++) {
-                            let line = document.lineAt(i);
-                            let match = this.regex.exec(line.text);
-                            if (match) {
-                                this.symbols.push( new SymbolInformation(
-                                    match[2], getSymbolKind(match[1]), document.fileName,
-                                    new Location(document.uri,
-                                        new Range(
-                                            i, line.text.indexOf(match[2]),
-                                            i, line.text.indexOf(match[2])+match[2].length))));
+            if (this.building) {
+                
+                reject()
+                
+            } else {
+                statusBar.text = "SystemVerilog: Indexing modules in workspace"
+                this.symbols = new Array<SymbolInformation>();
+                this.building = true;
+                workspace.findFiles('**/*.sv').then( async uris => {
+                    let promises = uris.map( uri => {
+                        return workspace.openTextDocument(uri).then( document => {
+                            for (let i = 0; i < document.lineCount; i++) {
+                                let line = document.lineAt(i);
+                                let match = this.regex.exec(line.text);
+                                if (match) {
+                                    this.symbols.push( new SymbolInformation(
+                                        match[2], getSymbolKind(match[1]), document.fileName,
+                                        new Location(document.uri,
+                                            new Range(
+                                                i, line.text.indexOf(match[2]),
+                                                i, line.text.indexOf(match[2])+match[2].length))));
+                                }
                             }
-                        }
-                    })
+                        })
+                    });
+                    Promise.all(promises).then( a => {
+                        statusBar.text  = "Index buildt: " + this.symbols.length + " modules"
+                        this.building = false;
+                        return statusBar.text
+                    }).then( str =>
+                        resolve(str)
+                    );
                 });
-                // Only process 1k files at a time
-                Promise.all(promises).then( a => 
-                    resolve("Index buildt: length = " + this.symbols.length)
-                )
-
-            });
+            }
         });
     }
 
