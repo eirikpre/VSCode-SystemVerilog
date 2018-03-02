@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.2.9",
+    "version": "0.2.10",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -16,7 +16,7 @@
         "highlighting",
         "hdl"
     ],
-    "icon": "docs/icon.png",
+    "icon": "docs/icon2.png",
     "galleryBanner": {
         "color": "#1e415e",
         "theme": "dark"

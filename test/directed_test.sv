@@ -2,7 +2,7 @@
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
 `include "environment.sv"
-program test(intf i_intf);
+program automatic test(intf i_intf);
   
   class my_trans extends transaction;
     
