@@ -20,14 +20,19 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         let results: SymbolInformation[] = [];
         let query_regex = new RegExp(query, 'i');
         return new Promise((resolve, reject) => {
-            this.symbols.forEach( symbol => {
-                if (symbol.name.match(query_regex)) {
-                    results.push(symbol)
-                }
-                if (results.length > this.NUM_FILES) {
-                    resolve(results)
-                }
-            });
+            if (query == "") {
+                resolve(this.symbols.slice(0, this.NUM_FILES))
+            }
+            else{
+                this.symbols.forEach( symbol => {
+                    if (symbol.name.match(query_regex)) {
+                        results.push(symbol)
+                    }
+                    if (results.length > this.NUM_FILES) {
+                        resolve(results)
+                    }
+                });
+            }
             resolve(results);
         });
     }
