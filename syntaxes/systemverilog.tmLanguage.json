@@ -258,8 +258,9 @@
                 {
                     "name": "comment.block.systemverilog",
                     "begin": "\\/\\*",
-                    "end": "\\*\\/"
-                }
+                    "end": "\\*\\/",
+                    "patterns": [{  "include": "#FIXME-TODO-XXX"    }]
+                }   
             ]
         },
         "FIXME-TODO-XXX": {
