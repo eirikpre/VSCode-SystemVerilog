@@ -75,6 +75,10 @@
                 {
                     "name": "constant.character.escape.systemverilog",
                     "match": "\\\\."
+                },
+                {
+                    "match": "(\\%\\d*\\w)",
+                    "name": "constant.character.escape.systemverilog"
                 }
             ]
         },
