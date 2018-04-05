@@ -307,11 +307,15 @@
                     "end": "\\W",
                     "patterns": [
                         {
-                            "name": "constant.character.set.regexp.systemverilog",
-                            "match": "(__FILE__|__LINE__|begin_keywords|celldefine|default_nettype|define|else|elsif|end_keywords|endcelldefine|endif|ifdef|ifndef|include|line|nounconnected_drive|pragma|resetall|timescale|unconnected_drive|undef|undefineall)"
+                            "name": "meta.macro.built-in.systemverilog",
+                            "match": "(__FILE__|__LINE__|begin_keywords|celldefine|default_nettype|define|else|elsif|end_keywords|endcelldefine|endif|ifdef|ifndef|include|line|nounconnected_drive|pragma|resetall|timescale|unconnected_drive|undef|undefineall)(?:\\s+(\\w+)\\b)?",
+                            "captures": {
+                                "1": { "name": "constant.character.set.regexp.systemverilog" },
+                                "2": { "name": "support.function.macro.systemverilog" }
+                            }
                         },
                         {
-                            "name": "constant.numeric.macro.systemverilog",
+                            "name": "support.function.macro.systemverilog",
                             "match": "\\w+"
                         }
                     ]
