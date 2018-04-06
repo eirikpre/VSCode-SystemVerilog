@@ -5,10 +5,12 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 - If you find a bug, or would like a feature; Add it as an [Issue](https://github.com/eirikpre/VSCode-SystemVerilog/issues) or a [Pull-Request](https://github.com/eirikpre/VSCode-SystemVerilog/pulls)
 
 ## Features
-- Elaborate Syntax Highlighting
+- Elaborate Syntax Highlighting \
+![syntax_example](/docs/syntax_example_adder.png)
 - Go to symbol in document
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
-- Decorator that shows when indexing, show # of modules after finished
+- Decorator that shows when indexing, show # of modules after finished \
+![indexing_example](/docs/module_index_status.png)
 - Code snippets for common blocks
 
 ## Recommendations
