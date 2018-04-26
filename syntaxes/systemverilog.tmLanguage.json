@@ -10,12 +10,12 @@
         {   "include": "#strings"       },
         {   "include": "#support"       },
         {   "include": "#variables"     },
+        {   "include": "#keywords"      },
+        {   "include": "#macros"        },
+        {   "include": "#constant"      },
         {   "include": "#declarations"  },
         {   "include": "#instantation"  },
-        {   "include": "#storage"       },
-        {   "include": "#macros"        },
-        {   "include": "#keywords"      },
-        {   "include": "#constant"      }
+        {   "include": "#storage"       }
     ],
     "repository": {
         "keywords": {
@@ -75,6 +75,10 @@
                 {
                     "name": "constant.character.escape.systemverilog",
                     "match": "\\\\."
+                },
+                {
+                    "match": "(\\%\\d*\\w)",
+                    "name": "constant.character.escape.systemverilog"
                 }
             ]
         },
@@ -111,12 +115,14 @@
                     "patterns": [
                         {
                             "name": "meta.inst.module-simple.systemverilog",
-                            "begin": "^\\s*(?!module|function|task|interface|clocking|property|primitive|program|else|if|for|return|begin|end)(\\w+)\\s+(\\w+)\\s*\\(",
+                            "begin": "(?:^\\s*|^\\s*(\\w+)::)(?!module|function|task|interface|clocking|property|primitive|program|else|if|for|return|begin|end)(\\w+)\\s+(\\w+)\\s*(?:\\[(.*)\\]\\s*)?(?=\\()",
                             "beginCaptures": {
-                                "1": { "name": "entity.name.class.module.systemverilog" },
-                                "2": { "name": "variable.name.module.systemverilog"     }
+                                "1": { "name": "entity.name.type.package.systemverilog" },
+                                "2": { "name": "entity.name.class.module.systemverilog" },
+                                "3": { "name": "variable.name.module.systemverilog"     },
+                                "4": { "patterns": [{   "include": "$self"   }]}
                             },
-                            "end": "\\)\\s*;",
+                            "end": "(?<=\\))\\s*;",
                             "patterns": [
                                 {   "include": "$self"           },
                                 {   "include": "#inst-portlist"  }
@@ -172,20 +178,6 @@
                             ]
                         }
                     ]
-                },
-                "inst-instantiation-prototype": {
-                    "patterns": [
-                        {
-                            "name": "meta.inst.variable.systemverilog",
-                            "match": "^\\s+(?:(automatic|static|virtual|extern)\\s+)?(?!task|function|class|module|release|disable)(\\b\\w+\\b)([\\[.*\\]\\s]*)?((?:\\s*)\\b\\w+\\b(?:\\s*,)?)*\\s*;",
-                            "captures": {
-                                "1": { "name": "storage.modifier.systemverilog"       },
-                                "2": { "name": "storage.name.systemverilog"           },
-                                "3": { "patterns": [{ "include": "#storage-arrays" }] },
-                                "4": { "name": "variable.name.type.systemverilog"     }
-                            }
-                        }
-                    ]
                 }
             }
         },
@@ -193,17 +185,18 @@
             "patterns": [
                 {
                     "name": "meta.decl.class.systemverilog",
-                    "match": "(class|interface)\\s+(\\w+)(?:\\s+(extends|implements)\\s+(\\w+))?",
+                    "match": "\\b(class|interface|module|program|package)(?:\\s+(static|automatic))?\\s+(\\w+)(?:\\s+(extends|implements)\\s+(\\w+))?",
                     "captures": {
-                        "1": { "name": "storage.type.class.systemverilog" },
-                        "2": { "name": "entity.name.type.systemverilog"   },
-                        "3": { "name": "keyword.control.systemverilog"    },
-                        "4": { "name": "entity.name.type.systemverilog"   }
+                        "1": { "name": "storage.type.class.systemverilog"   },
+                        "2": { "name": "storage.modifier.systemverilog"     },
+                        "3": { "name": "entity.name.type.systemverilog"     },
+                        "4": { "name": "keyword.control.systemverilog"      },
+                        "5": { "name": "entity.name.type.systemverilog"     }
                     }
                 },
                 {
                     "name": "meta.decl.function.systemverilog",
-                    "match": "(function|task|module|program|package)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
+                    "match": "(function|task)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
                     "captures": {
                         "1": { "name": "storage.type.function.systemverilog" },
                         "2": { "name": "storage.modifier.systemverilog"      },
@@ -269,8 +262,9 @@
                 {
                     "name": "comment.block.systemverilog",
                     "begin": "\\/\\*",
-                    "end": "\\*\\/"
-                }
+                    "end": "\\*\\/",
+                    "patterns": [{  "include": "#FIXME-TODO-XXX"    }]
+                }   
             ]
         },
         "FIXME-TODO-XXX": {
@@ -313,11 +307,15 @@
                     "end": "\\W",
                     "patterns": [
                         {
-                            "name": "constant.character.set.regexp.systemverilog",
-                            "match": "(__FILE__|__LINE__|begin_keywords|celldefine|default_nettype|define|else|elsif|end_keywords|endcelldefine|endif|ifdef|ifndef|include|line|nounconnected_drive|pragma|resetall|timescale|unconnected_drive|undef|undefineall)"
+                            "name": "meta.macro.built-in.systemverilog",
+                            "match": "(__FILE__|__LINE__|begin_keywords|celldefine|default_nettype|define|else|elsif|end_keywords|endcelldefine|endif|ifdef|ifndef|include|line|nounconnected_drive|pragma|resetall|timescale|unconnected_drive|undef|undefineall)(?:\\s+(\\w+)\\b)?",
+                            "captures": {
+                                "1": { "name": "constant.character.set.regexp.systemverilog" },
+                                "2": { "name": "support.function.macro.systemverilog" }
+                            }
                         },
                         {
-                            "name": "constant.numeric.macro.systemverilog",
+                            "name": "support.function.macro.systemverilog",
                             "match": "\\w+"
                         }
                     ]

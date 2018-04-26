@@ -5,22 +5,25 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 - If you find a bug, or would like a feature; Add it as an [Issue](https://github.com/eirikpre/VSCode-SystemVerilog/issues) or a [Pull-Request](https://github.com/eirikpre/VSCode-SystemVerilog/pulls)
 
 ## Features
-- Syntax Highlighting
+- Elaborate Syntax Highlighting \
+![syntax_example](/docs/syntax_example_adder.png)
 - Go to symbol in document
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
+- Decorator that shows when indexing, show # of modules after finished \
+![indexing_example](/docs/module_index_status.png)
 - Code snippets for common blocks
 
 ## Recommendations
-- For `.sv`/`.v` icons is now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons) thanks to mrvkino
-- This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user friendly when writing Verilog/SystemVerilog
+- For `.sv`/`.v` icons are now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons) thanks to mrvkino
+- This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
 
 ## Known Issues
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
 - Go to symbol does regex search instead of fuzzy matching.
 
 ## Future
-- 100% Complete syntax highlighting
-- Instantiate module from already indexed modules
+- Instantiate module from already indexed module/class/interface/program
+- Go to / peak implementation of indexed module/class/interface/program
 - Tree view of module hierarchy
 - References document
 - IntelliSense support

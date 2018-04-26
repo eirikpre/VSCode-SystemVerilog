@@ -20,14 +20,19 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         let results: SymbolInformation[] = [];
         let query_regex = new RegExp(query, 'i');
         return new Promise((resolve, reject) => {
-            this.symbols.forEach( symbol => {
-                if (symbol.name.match(query_regex)) {
-                    results.push(symbol)
-                }
-                if (results.length > this.NUM_FILES) {
-                    resolve(results)
-                }
-            });
+            if (query == "") {
+                resolve(this.symbols.slice(0, this.NUM_FILES))
+            }
+            else{
+                this.symbols.forEach( symbol => {
+                    if (symbol.name.match(query_regex)) {
+                        results.push(symbol)
+                    }
+                    if (results.length > this.NUM_FILES) {
+                        resolve(results)
+                    }
+                });
+            }
             resolve(results);
         });
     }
@@ -42,9 +47,14 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 statusBar.text = "SystemVerilog: Indexing modules in workspace"
                 this.symbols = new Array<SymbolInformation>();
                 this.building = true;
-                workspace.findFiles('**/*.sv').then( async uris => {
+                workspace.findFiles('**/*.?v').then( async uris => {
+                    return workspace.findFiles('**/*.v').then ( veriloguris => {
+                        return uris.concat(veriloguris)
+                    })
+                }).then( async uris => {
                     let promises = uris.map( uri => {
                         return workspace.openTextDocument(uri).then( document => {
+                            console.log(document.fileName)
                             for (let i = 0; i < document.lineCount; i++) {
                                 let line = document.lineAt(i);
                                 let match = this.regex.exec(line.text);
