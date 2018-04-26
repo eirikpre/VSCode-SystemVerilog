@@ -4,7 +4,7 @@ import { getSymbolKind } from './DocumentSymbolProvider';
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
 
     private regex = /^\s*(module|class|interface|package|program(?:\s+automatic)?)\s+(\w+)/;
-    private symbols: SymbolInformation[];
+    public symbols: SymbolInformation[];
     private building: Boolean = false;
 
     public NUM_FILES = 250;

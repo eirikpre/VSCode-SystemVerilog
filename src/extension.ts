@@ -6,6 +6,7 @@ import { SystemVerilogDocumentSymbolProvider, SystemVerilogDocumentSymbolTreePro
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import SystemVerilogDocumentHighlightProvider from './providers/DocumentHighlightProvider';
 import { SystemVerilogTreeDataProvider } from './providers/TreeDataProvider';
+import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 
 
 
@@ -25,8 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
         statusBar.command = 'systemverilog.build_index';
         
         let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar);
-        
+        let defProvider = new SystemVerilogDefinitionProvider(symProvider);
+
         context.subscriptions.push(statusBar);
+        context.subscriptions.push(vscode.languages.registerDefinitionProvider(documentSelector, defProvider));
         context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
         context.subscriptions.push(vscode.commands.registerCommand('systemverilog.build_index', symProvider.build_index))
     }
