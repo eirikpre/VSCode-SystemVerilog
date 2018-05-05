@@ -6,6 +6,10 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 
 	private symProvider : SystemVerilogWorkspaceSymbolProvider;
 
+	// Strings used in regex'es
+	// private regex_module = '$\\s*word\\s*(';
+	private regex_port = '\\.word\\s*\\(';
+
 	constructor(symProvider: SystemVerilogWorkspaceSymbolProvider) {
 		this.symProvider = symProvider;
     };
@@ -19,19 +23,21 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 		}
 
 		let word = document.getText(range);
+		if (line.match(this.regex_port.replace("word", word))) {
+			vscode.window.showInformationMessage("regex_port matched");
+		}
 
-		let documentSymbol = new SystemVerilogDocumentSymbolProvider().provideDocumentSymbols(document);
-		if (documentSymbol !== undefined) {
-			documentSymbol.then( res => {
+		new SystemVerilogDocumentSymbolProvider().provideDocumentSymbols(document).then( res => {
+			if (res !== undefined) {
 				for (let n = 0; n>res.length; n++) {
 					if (res[n].name === word) {
 						return res[n].location;
 					}
 				}
-			});
-		}
-		
-		let workspaceSymbol = this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
+			}
+		});
+
+		this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
 			if (res[0].name === word) {
 				return res[0].location;
 			}
