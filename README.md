@@ -6,11 +6,11 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 
 ## Features
 - Elaborate Syntax Highlighting \
-![syntax_example](https://github.com/eirikpre/docs/syntax_example_adder.png)
+![syntax_example](docs/syntax_example_adder.PNG)
 - Go to symbol in document
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
 - Decorator that shows when indexing, show # of modules after finished \
-![indexing_example](https://github.com/eirikpre/docs/module_index_status.png)
+![indexing_example](docs/module_index_status.PNG)
 - Code snippets for common blocks
 
 ## Recommendations
