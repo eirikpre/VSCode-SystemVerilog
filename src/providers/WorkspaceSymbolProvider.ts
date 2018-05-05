@@ -1,4 +1,4 @@
-import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace, StatusBarItem } from 'vscode';
+import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace, Uri } from 'vscode';
 import { getSymbolKind } from './DocumentSymbolProvider';
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
@@ -8,13 +8,15 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     private building: Boolean = false;
 
     public NUM_FILES = 250;
+    private THROTTLE_FILES = 100;
 
-    constructor(statusBar: StatusBarItem) {        
+    constructor() {
         this.symbols = new Array<SymbolInformation>();
-        this.build_index(statusBar).then( str => {
-            statusBar.text = "SystemVerilog: " + str;
-        });
+        this.build_index()
     };
+    public dispose() {
+        delete this.symbols
+    }
 
     public provideWorkspaceSymbols(query: string, token: CancellationToken): Thenable<SymbolInformation[]> {
         let results: SymbolInformation[] = [];
@@ -37,51 +39,39 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         });
     }
 
-    public async build_index(statusBar): Promise<any> {
-        return new Promise( async (resolve, reject) => {
-            if (this.building) {
-                
-                reject()
-                
-            } else {
-                statusBar.text = "SystemVerilog: Indexing modules in workspace"
-                this.symbols = new Array<SymbolInformation>();
-                this.building = true;
-                workspace.findFiles('**/*.?v').then( async uris => {
-                    return workspace.findFiles('**/*.v').then ( veriloguris => {
-                        return uris.concat(veriloguris)
-                    })
-                }).then( async uris => {
-                    let promises = uris.map( uri => {
-                        return workspace.openTextDocument(uri).then( document => {
-                            console.log(document.fileName)
-                            for (let i = 0; i < document.lineCount; i++) {
-                                let line = document.lineAt(i);
-                                let match = this.regex.exec(line.text);
-                                if (match) {
-                                    this.symbols.push( new SymbolInformation(
-                                        match[2], getSymbolKind(match[1]), document.fileName,
-                                        new Location(document.uri,
-                                            new Range(
-                                                i, line.text.indexOf(match[2]),
-                                                i, line.text.indexOf(match[2])+match[2].length))));
-                                }
-                            }
-                        })
-                    });
-                    Promise.all(promises).then( a => {
-                        statusBar.text  = "Index buildt: " + this.symbols.length + " modules"
-                        this.building = false;
-                        return statusBar.text
-                    }).then( str =>
-                        resolve(str)
-                    );
-                });
-            }
-        });
+    // TODO: Add progress bar:
+    // https://github.com/Microsoft/vscode-extension-samples/blob/master/progress-sample/src/extension.ts
+    public async build_index(): Promise<any> {
+        this.symbols = new Array<SymbolInformation>();
+        let uris = await workspace.findFiles('**/*.sv').then( async uris => {
+            return workspace.findFiles('**/*.v').then( veriloguris => {
+                return uris.concat(veriloguris)
+                })
+            });
+        for (var filenr = 0; filenr<uris.length; filenr+=this.THROTTLE_FILES) {
+            let subset = uris.slice(filenr, filenr+this.THROTTLE_FILES)
+            await Promise.all(subset.map( async (file) => {
+                return this.provideSymbolsFromFile(file);
+            }));
+        }
     }
 
-    public dispose() {
-        delete this.symbols
+    private async provideSymbolsFromFile(uri: Uri): Promise<any> {
+        let doc = await Promise.resolve(workspace.openTextDocument(uri));
+        return new Promise((resolve, reject) => {
+            for (let linenr = 0; linenr<doc.lineCount; linenr++) {
+                let line = doc.lineAt(linenr);
+                let match = this.regex.exec(line.text);
+                if (match) {
+                    this.symbols.push( new SymbolInformation(
+                        match[2], getSymbolKind(match[1]), doc.fileName,
+                        new Location(doc.uri,
+                            new Range(
+                                linenr, line.text.indexOf(match[2]),
+                                linenr, line.text.indexOf(match[2])+match[2].length))));
+                }
+            }
+            resolve()
+        });
     }
 }
