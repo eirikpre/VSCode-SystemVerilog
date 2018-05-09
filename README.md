@@ -9,6 +9,7 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 ![syntax_example](docs/syntax_example_adder.PNG)
 - Go to symbol in document
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
+- Go to definition for module/interface/program/class/package names
 - Code snippets for many common blocks
 
 ## Recommendations
@@ -28,6 +29,9 @@ This package adds language support for Verilog/SystemVerilog. It supports system
 - Back-end Language server for Systemverilog
 
 ## Release Notes
+### 0.3
+- DefinitionProvider fetching from indexed modules implemented
+- Indexing is now more safe, and will work for large workspaces
 ### 0.2
 - Alpha 2 release with expanded syntax highlighting and snippets
 - Indexing of every module/interface/program/class in workspace

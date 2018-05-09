@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
         statusBar.show()
         statusBar.command = 'systemverilog.build_index';
         
-        let symProvider = new SystemVerilogWorkspaceSymbolProvider();
+        let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar);
         let defProvider = new SystemVerilogDefinitionProvider(symProvider);
 
         context.subscriptions.push(statusBar);

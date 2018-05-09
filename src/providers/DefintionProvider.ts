@@ -22,28 +22,33 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 			return Promise.resolve(null);
 		}
 
-		let word = document.getText(range);
-		if (line.match(this.regex_port.replace("word", word))) {
-			vscode.window.showInformationMessage("regex_port matched");
-		}
+        let word = document.getText(range);
+        
+        // FIXME:  WIP!
+		// if (line.match(this.regex_port.replace("word", word))) {
+		// 	vscode.window.showInformationMessage("regex_port matched");
+		// }
 
-		new SystemVerilogDocumentSymbolProvider().provideDocumentSymbols(document).then( res => {
-			if (res !== undefined) {
-				for (let n = 0; n>res.length; n++) {
-					if (res[n].name === word) {
-						return res[n].location;
-					}
-				}
-			}
-		});
+		// new SystemVerilogDocumentSymbolProvider().provideDocumentSymbols(document).then( res => {
+		// 	if (res !== undefined) {
+		// 		for (let n = 0; n>res.length; n++) {
+		// 			if (res[n].name === word) {
+		// 				return res[n].location;
+		// 			}
+		// 		}
+		// 	}
+		// });
 
-		this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
-			if (res[0].name === word) {
+		return this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
+            if (res.length == 0) {
+                return null;
+            }
+            if (res[0].name === word) {
 				return res[0].location;
 			}
 		})
 
-		return Promise.resolve(null);
+		// return Promise.resolve(null);
 
 		// return definitionLocation(document, position, this.goConfig, false, token).then(definitionInfo => {
 		// 	if (definitionInfo == null || definitionInfo.file == null) return null;

@@ -8,6 +8,10 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.3.0] - 2018-05-09
+- WorkspaceSymbolProvider now only opens 100 files at once
+- Outline for definitionProvider created, lookup in the indexed symbols
+
 ## [0.2.4] - 2018-02-06
 - DocumentSymbolProvider now provides instatiated modules
 - Adjusted TM of module instantiation 
