@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -29,7 +29,7 @@
         "vscode": "^1.20.0"
     },
     "categories": [
-        "Languages"
+        "Programming Languages"
     ],
     "main": "./out/extension",
     "activationEvents": [

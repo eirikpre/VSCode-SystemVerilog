@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
+import { resolve } from 'url';
 
 export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvider {
 
@@ -39,14 +40,14 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 		// 	}
 		// });
 
-		return this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
+		return Promise.resolve(this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
             if (res.length == 0) {
                 return null;
             }
             if (res[0].name === word) {
 				return res[0].location;
 			}
-		})
+		}));
 
 		// return Promise.resolve(null);
 
