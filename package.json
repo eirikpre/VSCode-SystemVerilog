@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.3.3",
+    "version": "0.3.5",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -99,18 +99,6 @@
                 "path": "./syntaxes/systemverilog.tmLanguage.json"
             }
         ],
-        "views": {
-            "debug": [
-                {
-                    "id": "systemverilogModules",
-                    "name": "Module Hierarchy"
-                },
-                {
-                    "id": "systemverilogDocuementSymbols",
-                    "name": "Document Symbols"
-                }
-            ]
-        },
         "commands": [
             {
                 "command": "systemverilog.build_index",

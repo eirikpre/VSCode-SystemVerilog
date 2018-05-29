@@ -8,6 +8,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.3.4] - 2018-05-29
+- DefinitionProvider is now able to trace ports and parameters of instantiated modules
+
 ## [0.3.3] - 2018-05-29
 - Added setting to turn off indexing
 - DefinitionProver now finds multiple results
