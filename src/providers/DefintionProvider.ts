@@ -15,7 +15,7 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 		this.symProvider = symProvider;
     };
 
-	public provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable<vscode.Location> {
+	public provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable<vscode.Definition> {
 		let range = document.getWordRangeAtPosition(position);
 		let line = document.lineAt(position.line).text;
 
@@ -40,13 +40,11 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 		// 	}
 		// });
 
-		return Promise.resolve(this.symProvider.provideWorkspaceSymbols(word, token).then( res => {
+        return Promise.resolve(this.symProvider.provideWorkspaceSymbols(word, token, true).then( res => {
             if (res.length == 0) {
                 return null;
             }
-            if (res[0].name === word) {
-				return res[0].location;
-			}
+            return res.map( x => x.location );
 		}));
 
 		// return Promise.resolve(null);

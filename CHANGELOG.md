@@ -8,6 +8,11 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.3.3] - 2018-05-29
+- Added setting to turn off indexing
+- DefinitionProver now finds multiple results
+- Added option to cancel ongoing indexing
+
 ## [0.3.0] - 2018-05-09
 - WorkspaceSymbolProvider now only opens 100 files at once
 - Outline for definitionProvider created, lookup in the indexed symbols

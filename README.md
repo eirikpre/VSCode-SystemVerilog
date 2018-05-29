@@ -1,16 +1,16 @@
 # SystemVerilog - Language Support
 
-This package adds language support for Verilog/SystemVerilog. It supports systemverilog syntax, with planned support for signal intelliSense.
+This package adds language support for Verilog/SystemVerilog. It supports SystemVerilog syntax, with planned support for signal intelliSense.
 
 - If you find a bug, or would like a feature; Add it as an [Issue](https://github.com/eirikpre/VSCode-SystemVerilog/issues) or a [Pull-Request](https://github.com/eirikpre/VSCode-SystemVerilog/pulls)
 
 ## Features
-- Elaborate Syntax Highlighting \
+### Elaborate Syntax Highlighting
 ![syntax_example](docs/syntax_example_adder.PNG)
-- Go to symbol in document
-- Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
-- Go to definition for module/interface/program/class/package names
-- Code snippets for many common blocks
+### Go to symbol in document
+### Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
+### Go to definition for module/interface/program/class/package names
+### Code snippets for many common blocks
 
 ## Recommendations
 - For `.sv`/`.v` icons are now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons) thanks to mrvkino

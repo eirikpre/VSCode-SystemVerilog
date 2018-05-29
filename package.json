@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -26,7 +26,7 @@
         "url": "https://github.com/eirikpre/VSCode-SystemVerilog"
     },
     "engines": {
-        "vscode": "^1.20.0"
+        "vscode": "^1.23.0"
     },
     "categories": [
         "Programming Languages"
@@ -37,6 +37,18 @@
         "onLanguage:verilog"
     ],
     "contributes": {
+        "configuration": [
+            {
+                "title": "SystemVerilog configuration",
+                "properties": {
+                    "systemverilog.disableIndexing": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Disable the automatic indexing when opening a folder or workspace"
+                    }
+                }
+            }
+        ],
         "languages": [
             {
                 "id": "systemverilog",
@@ -114,9 +126,9 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "@types/node": "^7.0.63",
+        "@types/node": "^10.1.3",
         "languages": "0.1.3",
-        "typescript": "^2.8.3",
-        "vscode": "^1.1.17"
+        "typescript": "^2.1.4",
+        "vscode": "^1.1.18"
     }
 }
