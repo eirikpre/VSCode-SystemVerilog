@@ -26,6 +26,7 @@
         ["sequence", "endsequence"],
         ["function", "endfunction"],
         ["clocking", "endclocking"],
+        ["generate", "endgenerate"],
         ["primitive", "endprimitive"],
         ["interface", "endinterface"],
     ],

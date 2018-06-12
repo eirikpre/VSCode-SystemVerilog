@@ -185,5 +185,14 @@
             "\t@(posedge ${2:clk}) ${0:test}",
             "endproperty"
         ]
+    },
+    "generate": {
+        "prefix": "generate",
+        "description": "Snippet for a generate",
+        "body": [
+            "generate;",
+            "\t$0",
+            "endgenerate"
+        ]
     }
 }
