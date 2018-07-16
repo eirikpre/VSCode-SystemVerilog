@@ -14,7 +14,7 @@ import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     const settings = vscode.workspace.getConfiguration();
-    let selector:vscode.DocumentSelector = { scheme: 'file', language: 'systemverilog' }
+    let selector:vscode.DocumentSelector = [{ scheme: 'file', language: 'systemverilog' }, { scheme: 'file', language: 'verilog' }]
     
     // TODO: Add setting to turn off indexing.
     // (To reduce RAM/CPU usage)
