@@ -15,7 +15,7 @@
     },
     "always_ff": {
         "prefix": "always_ff",
-        "description": "Snippet for an always_comb block",
+        "description": "Snippet for an always_ff block",
         "body": [
             "always_ff @(posedge ${1:ck}, posedge ${2:arst}) begin",
             "\t$0",
