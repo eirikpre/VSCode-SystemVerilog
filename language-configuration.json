@@ -12,6 +12,8 @@
         ["[", "]"],
         ["(", ")"],
         ["fork", "join"],
+        ["fork", "join_any"],
+        ["fork", "join_none"],
         ["begin", "end"],
         ["task", "endtask"],
         ["case", "endcase"],

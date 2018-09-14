@@ -22,7 +22,7 @@ export function getSymbolKind(name: String): SymbolKind {
         case 'module':
         default: return SymbolKind.Variable;
     }
-    /* Not used! / Free SymbolKind icons
+    /* Unused/Free SymbolKind icons
         return SymbolKind.Number;
         return SymbolKind.Enum;
         return SymbolKind.EnumMember;
