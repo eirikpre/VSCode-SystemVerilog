@@ -3,7 +3,7 @@ import { getSymbolKind } from './DocumentSymbolProvider';
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
 
-    private regex = /^\s*(module|class|interface|package|program(?:\s+automatic)?)\s+(\w+)/;
+    private regex = /^\s*(?:virtual\s+(?=class))?(module|class|interface|package|program(?:\s+automatic)?)\s+(\w+)/;
     public symbols: SymbolInformation[];
     public building: Boolean = false;
     public statusbar: StatusBarItem;

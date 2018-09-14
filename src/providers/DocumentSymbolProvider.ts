@@ -83,7 +83,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                 let found = false;
                 let regex: RegExp;
                 if ( "module|program|class|function|task|interface|config|package".match("\\b"+type+"\\b")) {
-                    regex = new RegExp('(?:^\\s*?type.*?[^\\.])\\b(word)\\b'.replace('word', word).replace('type', type));
+                    regex = new RegExp('(?:^\\s*?(?:virtual\\s+(?=class))?type.*?[^\\.])\\b(word)\\b'.replace('word', word).replace('type', type));
                 } else {
                     regex = new RegExp('(?:^.*?[^\\.])\\b(word)\\b'.replace('word', word));
                 }
