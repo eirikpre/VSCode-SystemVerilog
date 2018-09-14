@@ -1,4 +1,4 @@
-import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace, Uri, window, StatusBarItem, ProgressLocation} from 'vscode';
+import { SymbolInformation, Location, Range, WorkspaceSymbolProvider, CancellationToken, workspace, Uri, window, StatusBarItem, ProgressLocation, GlobPattern} from 'vscode';
 import { getSymbolKind } from './DocumentSymbolProvider';
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
@@ -7,16 +7,20 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     public symbols: SymbolInformation[];
     public building: Boolean = false;
     public statusbar: StatusBarItem;
-
+    
     public NUM_FILES = 250;
     private THROTTLE_FILES = 100;
+    public exclude: GlobPattern = undefined;
+    
 
-
-    constructor(statusbar: StatusBarItem, disabled?: Boolean) {
+    constructor(statusbar: StatusBarItem, disabled?: Boolean, exclude?: GlobPattern) {
         this.statusbar = statusbar;
         if (disabled) {
             this.statusbar.text = "SystemVerilog: Indexing disabled"
         } else {
+            if (exclude != "insert globPattern here") {
+                this.exclude = exclude;
+            }
             this.statusbar.text = "SystemVerilog: Indexing"
             this.build_index().then( res => this.statusbar.text = res );
         }
@@ -60,8 +64,8 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             cancellable: true
         }, async (progress, token) => {
             this.symbols = new Array<SymbolInformation>();
-            let uris = await Promise.resolve(workspace.findFiles('**/*.{sv,svh}').then( async uris => {
-                return workspace.findFiles('**/*.{v,vh}', undefined, undefined, token).then( veriloguris => {
+            let uris = await Promise.resolve(workspace.findFiles('**/*.{sv,svh}', this.exclude, undefined, token).then( async uris => {
+                return workspace.findFiles('**/*.{v,vh}', this.exclude, undefined, token).then( veriloguris => {
                     return uris.concat(veriloguris)
                 })
             }));

@@ -39,14 +39,20 @@
     "contributes": {
         "configuration": [
             {
-                "title": "SystemVerilog configuration",
+                "title": "SystemVerilog",
                 "properties": {
                     "systemverilog.disableIndexing": {
                         "type": "boolean",
                         "default": false,
                         "description": "Disable the automatic indexing when opening a folder or workspace"
+                    },
+                    "systemverilog.excludeIndexing": {
+                        "type": "string",
+                        "default": "insert globPattern here",
+                        "description": "Exclude files from indexing by a globPattern"
                     }
                 }
+                
             }
         ],
         "languages": [

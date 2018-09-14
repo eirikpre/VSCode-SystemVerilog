@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
     statusBar.command = 'systemverilog.build_index';
     
     let docProvider = new SystemVerilogDocumentSymbolProvider();
-    let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, settings.get('systemverilog.disableIndexing'));
+    let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, settings.get('systemverilog.disableIndexing'), settings.get('systemverilog.excludeIndexing'));
     let defProvider = new SystemVerilogDefinitionProvider(symProvider);
     
     context.subscriptions.push(statusBar);
@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     function rebuild(){
         if (!symProvider.building) {
-            symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar);
+            symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, false, settings.get('systemverilog.excludeIndexing'));
         }
     }
 }

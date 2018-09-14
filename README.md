@@ -17,23 +17,30 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 - Code snippets for many common blocks
 
+## Settings
+- Disable indexing
+- Exclude files from indexing
+
 ## Recommendations
-- For `.sv`/`.v` icons are now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons) thanks to mrvkino
-- This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
+- If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
+- `.sv`/`.v` icons are now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons)
+- Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
 
 ## Known Issues
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
-- Go to symbol does regex search instead of fuzzy matching.
+- Go to symbol does regex-search instead of fuzzy matching.
 
 ## Future
 - Instantiate module from already indexed module/class/interface/program
-- Go to / peak implementation of indexed module/class/interface/program
 - Tree view of module hierarchy
 - References document
 - IntelliSense support
 - Back-end Language server for Systemverilog
 
 ## Release Notes
+See changelog for mode details
+### 0.4
+- Added setting to exclude folders from indexing
 ### 0.3
 - DefinitionProvider fetching from indexed modules implemented
 - Indexing is now more safe, and will work for large workspaces
@@ -42,5 +49,4 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Indexing of every module/interface/program/class in workspace
 ### 0.1
 - Alpha 1 release with syntax highlighting, and go to symbols
-- See changelog for more details
 

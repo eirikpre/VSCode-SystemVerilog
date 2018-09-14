@@ -8,6 +8,11 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.4.0] - 2018-09-14
+- Added setting to exclude folders from indexing
+- `.svh/.vh` files added to indexing, thanks to `Kelly Mills`
+- virtual classes indexed, thanks to `Kelly Mills`
+
 ## [0.3.4] - 2018-05-29
 - DefinitionProvider is now able to trace ports and parameters of instantiated modules
 
