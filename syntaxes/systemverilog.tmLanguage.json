@@ -95,7 +95,7 @@
                         {
                             "name": "meta.inst.module-param.systemverilog",
                             "begin": "^\\s*\\b(\\w+)\\b\\s*(#)(?!\\d)",
-                            "end": "(?<=\\))\\s*;",
+                            "end": "\\s*;",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.class.module.systemverilog"       },
                                 "2": { "name": "keyword.operator.parameterlist.systemverilog" }
@@ -161,6 +161,14 @@
                             "end": "\\)",
                             "patterns": [
                                 {   "include": "#comment"    },
+                                {
+                                    "name": "meta.inst.port.paranthesis.systemverilog",
+                                    "begin": "\\(",
+                                    "end": "\\)",
+                                    "patterns": [
+                                        { "include": "$self"}
+                                    ]
+                                },
                                 {   "include": "#inst-port"  },
                                 {   "include": "$self"       }
                             ]
@@ -174,6 +182,14 @@
                             "begin": "\\.(\\w+)\\s*\\(",
                             "end": "\\)",
                             "patterns": [
+                                {
+                                    "name": "meta.inst.port.paranthesis.systemverilog",
+                                    "begin": "\\(",
+                                    "end": "\\)",
+                                    "patterns": [
+                                        { "include": "$self"}
+                                    ]
+                                },
                                 {   "include": "$self"  }
                             ]
                         }
