@@ -33,7 +33,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<SymbolInformation[]> {
         let results: SymbolInformation[] = [];
         let query_regex = new RegExp(query, 'i');
-        return new Promise((resolve, reject) => {
+        return new Promise( resolve  => {
             if (query == "") {
                 resolve(this.symbols.slice(0, this.NUM_FILES))
             } else {
@@ -45,10 +45,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     } else if (symbol.name.match(query_regex)) {
                         results.push(symbol)
                     }
-                    if (results.length > this.NUM_FILES) {
-                        resolve(results)
-                    }
-                });
+                }, results);
             }
             resolve(results);
         });
