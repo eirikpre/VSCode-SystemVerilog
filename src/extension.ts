@@ -7,7 +7,7 @@ import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbo
 import SystemVerilogDocumentHighlightProvider from './providers/DocumentHighlightProvider';
 import { SystemVerilogTreeDataProvider } from './providers/TreeDataProvider';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
-
+import {SystemVerilogHoverProvider} from './providers/HoverProvider';
 
 
 // this method is called when your extension is activated
@@ -27,10 +27,12 @@ export function activate(context: vscode.ExtensionContext) {
     let docProvider = new SystemVerilogDocumentSymbolProvider();
     let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, settings.get('systemverilog.disableIndexing'), settings.get('systemverilog.excludeIndexing'));
     let defProvider = new SystemVerilogDefinitionProvider(symProvider);
-    
+    let hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
+
     context.subscriptions.push(statusBar);
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
+    context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hoverProvider));
     context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
     context.subscriptions.push(vscode.commands.registerCommand('systemverilog.build_index', rebuild));
     // WIP
