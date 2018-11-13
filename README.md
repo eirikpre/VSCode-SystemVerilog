@@ -39,7 +39,8 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Release Notes
 See changelog for mode details
-## 0.4.
+
+### 0.5
 - HoverProvider added, thanks to `toastedcornflakes`
 - Improvements to DocumentSymbolProvider to better support Hover
 ### 0.4
