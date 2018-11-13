@@ -61,11 +61,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             cancellable: true
         }, async (progress, token) => {
             this.symbols = new Array<SymbolInformation>();
-            let uris = await Promise.resolve(workspace.findFiles('**/*.{sv,svh}', this.exclude, undefined, token).then( async uris => {
-                return workspace.findFiles('**/*.{v,vh}', this.exclude, undefined, token).then( veriloguris => {
-                    return uris.concat(veriloguris)
-                })
-            }));
+            let uris = await Promise.resolve(workspace.findFiles('**/*.{sv,v,svh,vh}', this.exclude, undefined, token));
 
             for (var filenr = 0; filenr<uris.length; filenr+=this.THROTTLE_FILES) {
                 let subset = uris.slice(filenr, filenr+this.THROTTLE_FILES)
