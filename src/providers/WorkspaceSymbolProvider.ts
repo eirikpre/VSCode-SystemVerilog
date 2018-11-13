@@ -81,7 +81,6 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 return 'Systemverilog: '+this.symbols.length+ ' indexed objects'
             }
         });
-
     }
 
     private async provideSymbolsFromFile(uri: Uri): Promise<any> {

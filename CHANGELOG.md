@@ -8,6 +8,11 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.5.0]
+- HoverProvider added, big thanks to `toastedcornflakes`
+- Improvements to DocumentSymbolProvider to better support Hover
+- Improvement to findFiles for better indexing
+
 ## [0.4.0] - 2018-09-14
 - Added setting to exclude folders from indexing
 - `.svh/.vh` files added to indexing, thanks to `Kelly Mills`
