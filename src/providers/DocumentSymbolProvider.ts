@@ -37,19 +37,14 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
     public regex: RegExp = new RegExp ([
-        ,/(?:\s(?:virtual|static|automatic)\s*)?/                       // Block level modifiers
-        ,/(?:\s)/                                                       // Whitespace
-        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic)/ // Illegal symbol types
-        
-        ,/([:\w]+)/                                                     // Symbol type
-
-        ,/(?:\s+(?:virtual|static|automatic)?(?:\s*\[.*?\])?\s*\w+)?/   // Return type
-
-        ,/\s+(\w+)(?:\s*,\s*\w+)*?/                                     // Symbol name
-
-        ,/(?:\(.*?\)|extends\s*\w+|\s*#\s*\(.*?\)|)*?/                  // Portlist / class suffix
-
-        ,/;/                                                            // End of definition
+        ,/^(?:\s+?|\s+(?:virtual|static|automatic)\s+)/                     // Whitespace
+        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/ // Illegal symbol types
+        ,/([:\w]+)/                                                         // Symbol type
+        ,/(?:\s+(?:virtual|static|automatic|unsigned|signed|const)\s+|\s+)/ // Return type modifier or whitespace
+        ,/(?:\w+\s+|\w+\s*\[.*?\]|\s*#\s*\([\s\S]*?\)\s*)?/                 // Return type or parameter-list
+        ,/(\w+)(?:\s*,\s*\w+)*?/                                            // Symbol name, ignore multiple defines FIXME
+        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/                            // Port-list / class suffix
+        ,/\s*;/                                                             // End of definition
         ].map(x => x.source).join(''), 'mg');
 
         // FIXME: Update when VS Code upgrades to Chome 62 for PCRE Regex'es!
@@ -78,7 +73,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                         getSymbolKind(match[1]),
                         match[1],
                         new Location(document.uri,
-                            new Range(document.positionAt(match.index+1),
+                            new Range(document.positionAt(match.index),
                                       document.positionAt(match.index+match[0].length)
                     ))));
                 }
