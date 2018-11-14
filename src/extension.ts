@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
     
     let docProvider = new SystemVerilogDocumentSymbolProvider();
     let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, settings.get('systemverilog.disableIndexing'), settings.get('systemverilog.excludeIndexing'));
-    let defProvider = new SystemVerilogDefinitionProvider(symProvider);
+    let defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
     let hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
 
     context.subscriptions.push(statusBar);

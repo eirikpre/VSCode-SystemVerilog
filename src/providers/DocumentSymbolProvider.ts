@@ -73,7 +73,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                         getSymbolKind(match[1]),
                         match[1],
                         new Location(document.uri,
-                            new Range(document.positionAt(match.index),
+                            new Range(document.positionAt(match.index+1),
                                       document.positionAt(match.index+match[0].length)
                     ))));
                 }

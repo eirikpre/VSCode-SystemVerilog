@@ -13,15 +13,18 @@ export class SystemVerilogHoverProvider implements vscode.HoverProvider {
     };
 
     provideHover(document : vscode.TextDocument, position : vscode.Position, token: vscode.CancellationToken) : vscode.ProviderResult<vscode.Hover> {
-        return new Promise(resolve => {
+        return new Promise( (resolve, reject) => {
             var lookupRange = document.getWordRangeAtPosition(position);
             var lookupTerm = document.getText(lookupRange);
-
+            
+            if (!lookupRange) {
+                resolve(undefined);
+            }
             // First, lookup in the current document
             return this.docSymProvider.provideDocumentSymbols(document).then(docSyms => {
                 docSyms.forEach(docSym => {
                     if(docSym.name === lookupTerm) {
-                        return resolve(buildHover(document, docSym, lookupRange));
+                        resolve(buildHover(document, docSym, lookupRange));
                     }
                 });
 
