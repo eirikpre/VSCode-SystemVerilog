@@ -37,14 +37,20 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     // TODO: Match labels with SymbolKind.Enum
     public regex: RegExp = new RegExp ([
-        ,/^(?:\s+?|\s+(?:virtual|static|automatic)\s+)/                     // Whitespace
-        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/ // Illegal symbol types
-        ,/([:\w]+)/                                                         // Symbol type
-        ,/(?:\s+(?:virtual|static|automatic|unsigned|signed|const)\s+|\s+)/ // Return type modifier or whitespace
-        ,/(?:\w+\s+|\w+\s*\[.*?\]|\s*#\s*\([\s\S]*?\)\s*)?/                 // Return type or parameter-list
-        ,/(\w+)(?:\s*,\s*\w+)*?/                                            // Symbol name, ignore multiple defines FIXME
-        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/                            // Port-list / class suffix
-        ,/\s*;/                                                             // End of definition
+//    Whitespace  |   modifier 
+        ,/^(?:\s+?|\s+(?:virtual|static|automatic|rand|randc)\s+)/
+//      Illegal Symbol types
+        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
+//      Symbol type
+        ,/([:\w]+)/
+//   whitespace |  modifier? returnType    []?      | parameterlist
+        ,/(?:\s+|(?:\s+\w+)?\s+\w+(?:\s*\[.*?\])\s+|\s*#\s*\([\s\S]*?\)\s*)/
+//    Symbol name, ignore multiple defines FIXME
+        ,/(\w+)(?:\s*,\s*\w+)*?/
+//           Port-list      |   class suffix
+        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/
+//  End of definition
+        ,/\s*;/
         ].map(x => x.source).join(''), 'mg');
 
         // FIXME: Update when VS Code upgrades to Chome 62 for PCRE Regex'es!
