@@ -1,4 +1,31 @@
 {
+    "separator": {
+        "prefix": "separator",
+        "description": "Snippet for a separator",
+        "body": [
+            "// -------------------------------------------------------\n$0"
+        ]
+    },
+    "heading": {
+        "prefix": "separator",
+        "description": "Snippet for a heading",
+        "body": [
+            "// -------------------------------------------------------",
+            "// -- $1",
+            "// -------------------------------------------------------\n$0"
+        ]
+    },
+    "heading+description": {
+        "prefix": "heading+description",
+        "description": "Snippet for a heading with a block for description",
+        "body": [
+            "// -------------------------------------------------------",
+            "// -- $1",
+            "// -------------------------------------------------------",
+            "// $2",
+            "// -------------------------------------------------------\n$0"
+        ]
+    },
     "assign": {
         "prefix": "assign",
         "description": "Snippet for an assignment",
