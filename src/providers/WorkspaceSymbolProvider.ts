@@ -8,12 +8,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     public building: Boolean = false;
     public statusbar: StatusBarItem;
     
-    public NUM_FILES = 250;
-    private THROTTLE_FILES = 100;
+    public NUM_FILES: number = 250;
+    public parallelProcessing = 100;
     public exclude: GlobPattern = undefined;
     
 
-    constructor(statusbar: StatusBarItem, disabled?: Boolean, exclude?: GlobPattern) {
+    constructor(statusbar: StatusBarItem, disabled?: Boolean, exclude?: GlobPattern, parallelProcessing?: number) {
         this.statusbar = statusbar;
         if (disabled) {
             this.statusbar.text = "SystemVerilog: Indexing disabled"
@@ -21,7 +21,10 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             if (exclude != "insert globPattern here") {
                 this.exclude = exclude;
             }
-            this.statusbar.text = "SystemVerilog: Indexing"
+            if (parallelProcessing) {
+                this.parallelProcessing = parallelProcessing;
+            }
+            this.statusbar.text = "SystemVerilog: Indexing";
             this.build_index().then( res => this.statusbar.text = res );
         }
     };
@@ -34,8 +37,8 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         let results: SymbolInformation[] = [];
         let query_regex = new RegExp(query, 'i');
         return new Promise( resolve  => {
-            if (query == "") {
-                resolve(this.symbols.slice(0, this.NUM_FILES))
+            if (query == "") { // Show maximum 250 files for speedup
+                resolve(this.symbols.slice(0, 250))
             } else {
                 this.symbols.forEach( symbol => {
                     if (exactMatch) {
@@ -63,8 +66,8 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             this.symbols = new Array<SymbolInformation>();
             let uris = await Promise.resolve(workspace.findFiles('**/*.{sv,v,svh,vh}', this.exclude, undefined, token));
 
-            for (var filenr = 0; filenr<uris.length; filenr+=this.THROTTLE_FILES) {
-                let subset = uris.slice(filenr, filenr+this.THROTTLE_FILES)
+            for (var filenr = 0; filenr<uris.length; filenr+=this.parallelProcessing) {
+                let subset = uris.slice(filenr, filenr+this.parallelProcessing)
                 if (token.isCancellationRequested) {
                     cancelled = true;
                     break;

@@ -2,6 +2,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 // import * as vscode from 'vscode';
+import 'vscode';
 import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext} from 'vscode';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
@@ -24,7 +25,10 @@ export function activate(context: ExtensionContext) {
     statusBar.command = 'systemverilog.build_index';
     
     let docProvider = new SystemVerilogDocumentSymbolProvider();
-    let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, settings.get('systemverilog.disableIndexing'), settings.get('systemverilog.excludeIndexing'));
+    let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar,
+        settings.get('systemverilog.disableIndexing'),
+        settings.get('systemverilog.excludeIndexing'),
+        settings.get('systemverilog.parallelProcessing'));
     let defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
     let hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
 
@@ -45,7 +49,9 @@ export function activate(context: ExtensionContext) {
 
     function rebuild(){
         if (!symProvider.building) {
-            symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, false, settings.get('systemverilog.excludeIndexing'));
+            symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, false,
+                settings.get('systemverilog.excludeIndexing'),
+                settings.get('systemverilog.parallelProcessing'));
         }
     }
 }
