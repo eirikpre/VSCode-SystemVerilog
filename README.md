@@ -20,6 +20,7 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 ## Settings
 - Disable indexing
 - Exclude files from indexing
+- Number of files to process in parallel during indexing
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`

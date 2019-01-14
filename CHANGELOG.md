@@ -8,6 +8,11 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.5.3]
+- Bugfix to syntax highlighting
+- Bugfix to regex matching, thanks to `patstew`
+- Added parallelProcessing, the number of files processed in parallel
+
 ## [0.5.0]
 - HoverProvider added, big thanks to `toastedcornflakes`
 - Improvements to DocumentSymbolProvider to better support Hover
