@@ -212,7 +212,7 @@
                 },
                 {
                     "name": "meta.decl.function.systemverilog",
-                    "match": "(function|task)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
+                    "match": "\\b(function|task)(?:\\s+(static|automatic))?(\\s+\\w+)?\\s+(\\w+)\\s*[;\\(#]",
                     "captures": {
                         "1": { "name": "storage.type.function.systemverilog" },
                         "2": { "name": "storage.modifier.systemverilog"      },
