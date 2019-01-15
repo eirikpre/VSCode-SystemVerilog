@@ -47,7 +47,7 @@
                         "description": "Disable the automatic indexing when opening a folder or workspace"
                     },
                     "systemverilog.parallelProcessing": {
-                        "type": "int",
+                        "type": "number",
                         "default": 100,
                         "description": [
                             "This is the number of files it should attempt to process in parallel.",
