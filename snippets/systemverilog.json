@@ -7,7 +7,7 @@
         ]
     },
     "heading": {
-        "prefix": "separator",
+        "prefix": "heading",
         "description": "Snippet for a heading",
         "body": [
             "// -------------------------------------------------------",
