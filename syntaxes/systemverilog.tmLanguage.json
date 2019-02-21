@@ -134,7 +134,7 @@
                     "patterns": [
                         {
                             "name": "entity.name.function.systemverilog",
-                            "match": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new|randcse)\\b(\\w+)(?=\\s*\\()"
+                            "match": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new|randcase)\\b(\\w+)(?=\\s*\\()"
                         }
                     ]
                 },
@@ -402,7 +402,7 @@
             "patterns": [
                 {
                     "name": "keyword.other.extra.LRM-AnnexB.B-1-1.systemverilog",
-                    "match": "\\b(accept_on|alias|always|always_comb|always_ff|always_latch|and|assert|assign|assume|automatic|before|begin|bind|bins|binsof|bit|break|buf|bufif0|bufif1|byte|case|casex|casez|cell|chandle|checker|class|clocking|cmos|config|const|constraint|context|continue|cover|covergroup|coverpoint|cross|deassign|randcase)\\b"
+                    "match": "\\b(accept_on|alias|always|always_comb|always_ff|always_latch|and|assert|assign|assume|automatic|before|begin|bind|bins|binsof|bit|break|buf|bufif0|bufif1|byte|case|casex|casez|cell|chandle|checker|class|clocking|cmos|config|const|constraint|context|continue|cover|covergroup|coverpoint|cross|deassign)\\b"
                 },
                 {
                     "name": "keyword.other.extra.LRM-AnnexB.B-1-2.systemverilog",
@@ -414,7 +414,7 @@
                 },
                 {
                     "name": "keyword.other.extra.LRM-AnnexB.B-1-4.systemverilog",
-                    "match": "\\b(modport|module|nand|negedge|nettype|new|nexttime|nmos|nor|noshowcancelled|not|notif0|notif1|null|or|output|package|packed|parameter|pmos|posedge|primitive|priority|program|property|protected|pull0|pull1|pulldown|pullup|pulsestyle_ondetect|pulsestyle_onevent|pure|rand|randc|randsequence|rcmos|real|realtime|ref|reg)\\b"
+                    "match": "\\b(modport|module|nand|negedge|nettype|new|nexttime|nmos|nor|noshowcancelled|not|notif0|notif1|null|or|output|package|packed|parameter|pmos|posedge|primitive|priority|program|property|protected|pull0|pull1|pulldown|pullup|pulsestyle_ondetect|pulsestyle_onevent|pure|rand|randc|randcase|randsequence|rcmos|real|realtime|ref|reg)\\b"
                 },
                 {
                     "name": "keyword.other.extra.LRM-AnnexB.B-1-5.systemverilog",
