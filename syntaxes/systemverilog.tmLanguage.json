@@ -33,7 +33,7 @@
                 },
                 {
                     "name": "keyword.control.selection.systemverilog",
-                    "match": "\\b(if|else|(end)?case(x|z)?|unique|unique0|priority)\\b"
+                    "match": "\\b(if|else|(end)?case(x|z)?|unique|unique0|priority|randcase)\\b"
                 },
                 {
                     "name": "keyword.control.loop.systemverilog",
@@ -134,7 +134,7 @@
                     "patterns": [
                         {
                             "name": "entity.name.function.systemverilog",
-                            "match": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new)\\b(\\w+)(?=\\s*\\()"
+                            "match": "(?<!\\W\\.)(?!assert|do|while|for|foreach|repeat|if|case|wait|new|randcase)\\b(\\w+)(?=\\s*\\()"
                         }
                     ]
                 },
