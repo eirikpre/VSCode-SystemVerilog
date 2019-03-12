@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2018",
+        "target": "es6",
         "outDir": "out",
         "lib": [
-            "es2018"
+            "es2018.regexp"
         ],
         "sourceMap": true,
         "rootDir": "src"

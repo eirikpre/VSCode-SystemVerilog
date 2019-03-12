@@ -38,50 +38,57 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     // TODO: Match labels with SymbolKind.Enum
     public regex: RegExp = new RegExp ([
 //    Whitespace  |   modifier 
-        ,/^(?:\s+?|\s+(?:virtual|static|automatic|rand|randc)\s+)/
+        // ,/^(?:(?:virtual|static|automatic|rand|randc)\s+)?/
 //      Illegal Symbol types
-        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
+        ,//
 //      Symbol type
+        ,/(?<=^\s+)/
+        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
         ,/([:\w]+)/
 //   whitespace |  modifier? returnType    []?      | parameterlist
         ,/(?:\s+|(?:\s+\w+)?\s+\w+(?:\s*\[.*?\])\s+|\s*#\s*\([\s\S]*?\)\s*)/
 //    Symbol name, ignore multiple defines FIXME
         ,/(\w+)(?:\s*,\s*\w+)*?/
 //           Port-list      |   class suffix
-        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/
+        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)/
 //  End of definition
         ,/\s*;/
         ].map(x => x.source).join(''), 'mg');
 
         // FIXME: Update when VS Code upgrades to Chome 62 for PCRE Regex'es!
 
-        // public regex_block: RegExp = new RegExp ([
-        //      /(?<=\s)(function\s+\w+|task|class|module|program|package)\s+/ // Symbol type
-        //     ,/(\w+)/
-        //     ,/[\w\W.]*?/
-        //     ,/(end\1)/
-        //     ].map(x => x.source).join(''), 'mg');
+    // public regex: RegExp = new RegExp ([
+    //      // Symbol type
+    //     ,/(?<=\s)(function\s+\w+|task|class|module|program|package)\s+/
+    //     ,/(\w+)/
+    //     ,/[\w\W.]*?/
+    //     ,/(end\1)/
+    //     ].map(x => x.source).join(''), 'mg');
 
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<SymbolInformation[]> {
+    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp ): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {
             var symbols = [];
             var match;
             let text = document.getText();
 
+            if (regex == undefined) {
+                regex = this.regex;
+            }
             /* 
                 Matches the regex and uses the index from the regex to find the position
             */
             do {
-                match = this.regex.exec(text);
+                match = regex.exec(text);
                 if (match) {
-                    symbols.push(new SymbolInformation(
+                    let s = new SymbolInformation(
                         match[2],
                         getSymbolKind(match[1]),
                         match[1],
                         new Location(document.uri,
-                            new Range(document.positionAt(match.index+1),
+                            new Range(document.positionAt(match.index),
                                       document.positionAt(match.index+match[0].length)
-                    ))));
+                    )))
+                    symbols.push(s);
                 }
             } while (match != null);
 

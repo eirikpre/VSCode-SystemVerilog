@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
     statusBar.command = 'systemverilog.build_index';
     
     let docProvider = new SystemVerilogDocumentSymbolProvider();
-    let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar,
+    let symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, docProvider,
         settings.get('systemverilog.disableIndexing'),
         settings.get('systemverilog.excludeIndexing'),
         settings.get('systemverilog.parallelProcessing'));
@@ -45,13 +45,11 @@ export function activate(context: ExtensionContext) {
     // Built-in DocumentHighlightProvider is better
     // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
-    console.log("Extension SystemVerilog loaded successfully")
-
     function rebuild(){
         if (!symProvider.building) {
-            symProvider = new SystemVerilogWorkspaceSymbolProvider(statusBar, false,
-                settings.get('systemverilog.excludeIndexing'),
-                settings.get('systemverilog.parallelProcessing'));
+            symProvider.exclude = settings.get('systemverilog.excludeIndexing'),
+            symProvider.parallelProcessing = settings.get('systemverilog.parallelProcessing');
+            symProvider.build_index()
         }
     }
 }
