@@ -35,22 +35,22 @@ export function getSymbolKind(name: String): SymbolKind {
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     // XXX: Does not match virtual interface instantiantion, eg virtual intf u_virtInterface;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
+    private illegalTypes = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
     // TODO: Match labels with SymbolKind.Enum
     public regex: RegExp = new RegExp ([
-//    Whitespace  |   modifier 
         // ,/^(?:(?:virtual|static|automatic|rand|randc)\s+)?/
-//      Illegal Symbol types
-        ,//
-//      Symbol type
         ,/(?<=^\s+)/
-        ,/(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
-        ,/([:\w]+)/
-//   whitespace |  modifier? returnType    []?      | parameterlist
-        ,/(?:\s+|(?:\s+\w+)?\s+\w+(?:\s*\[.*?\])\s+|\s*#\s*\([\s\S]*?\)\s*)/
-//    Symbol name, ignore multiple defines FIXME
+        // Illegal Symbol types
+        ,this.illegalTypes
+        // Symbol type
+        ,/([:\w]+)\s+/
+        // (modifier? returnType [.*]?      | parameterlist)?
+        ,/(?:(?:\w*\s+)?\w+(?:\s*\[.*?\])?\s+|\s*#\s*\([\s\S]*?\)\s*)?/
+        // Symbol name, ignore multiple defines FIXME
+        ,this.illegalTypes
         ,/(\w+)(?:\s*,\s*\w+)*?/
-//           Port-list      |   class suffix
-        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)/
+        // Port-list | class suffix
+        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/
 //  End of definition
         ,/\s*;/
         ].map(x => x.source).join(''), 'mg');

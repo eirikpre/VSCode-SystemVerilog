@@ -112,39 +112,3 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         });
     }
 }
-
-    // private async provideSymbolsFromFile(uri: Uri): Thenable<SymbolInformation[]> {
-    //     return new Promise( (resolve, reject) => {
-    //         resolve(
-    //             return 
-    //         },{
-    //             reject()
-    //         });
-        // }).catch( err => {
-        //     
-        // });
-    // }
-
-// p1.then(function(value) {
-//     console.log(value); // "Success!"
-//     return Promise.reject('oh, no!');
-//   }).catch(function(e) {
-//     console.log(e); // "oh, no!"
-//   }).then(function(){
-//     console.log('after a catch the chain is restored');
-//   }, function () {
-//     console.log('Not fired due to the catch');
-//   });
-                // for (let linenr = 0; linenr<doc.lineCount; linenr++) {
-                //     let line = doc.lineAt(linenr);
-                //     let match = this.regex.exec(line.text);
-                //     if (match) {
-                //         this.symbols.push( new SymbolInformation(
-                //             match[2], getSymbolKind(match[1]), doc.fileName,
-                //             new Location(doc.uri,
-                //                 new Range(
-                //                     linenr, line.text.indexOf(match[2]),
-                //                     linenr, line.text.indexOf(match[2])+match[2].length))));
-                //     }
-                // }
-
