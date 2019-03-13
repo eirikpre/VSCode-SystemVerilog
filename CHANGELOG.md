@@ -8,6 +8,12 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.6.0]
+- PCRE Regexes
+- WorkspaceSymbolProvider now using DocumentSymbolProvider
+- Indexing is faster because it's now matching the entire file.
+- Stability upgrade with better promise handling
+
 ## [0.5.3]
 - Bugfix to syntax highlighting
 - Bugfix to regex matching, thanks to `patstew`

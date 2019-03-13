@@ -24,12 +24,10 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
-- `.sv`/`.v` icons are now included in [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons)
 - Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
 
 ## Known Issues
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
-- Go to symbol does regex-search instead of fuzzy matching.
 
 ## Future
 - Instantiate module from already indexed module/class/interface/program
@@ -40,7 +38,9 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Release Notes
 See changelog for mode details
-
+### 0.6
+- Stability and performance upgrade
+- PCRE Regexes
 ### 0.5
 - HoverProvider added, thanks to `toastedcornflakes`
 - Improvements to DocumentSymbolProvider to better support Hover

@@ -51,19 +51,10 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         ,/(\w+)(?:\s*,\s*\w+)*?/
         // Port-list | class suffix
         ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/
-//  End of definition
+        // End of definition
         ,/\s*;/
         ].map(x => x.source).join(''), 'mg');
 
-        // FIXME: Update when VS Code upgrades to Chome 62 for PCRE Regex'es!
-
-    // public regex: RegExp = new RegExp ([
-    //      // Symbol type
-    //     ,/(?<=\s)(function\s+\w+|task|class|module|program|package)\s+/
-    //     ,/(\w+)/
-    //     ,/[\w\W.]*?/
-    //     ,/(end\1)/
-    //     ].map(x => x.source).join(''), 'mg');
 
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp ): Thenable<SymbolInformation[]> {
         return new Promise((resolve, reject) => {

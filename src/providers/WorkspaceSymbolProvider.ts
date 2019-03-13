@@ -10,7 +10,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     public docProvider: SystemVerilogDocumentSymbolProvider;
     
     public NUM_FILES: number = 250;
-    public parallelProcessing = 100;
+    public parallelProcessing: number = 50;
     public exclude: GlobPattern = undefined;
     
     private regex = new RegExp ([
