@@ -14,7 +14,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     public exclude: GlobPattern = undefined;
     
     private regex = new RegExp ([
-        ,/(?<=^\s*)/
+        ,/(?<=^\s*(?:virtual\s+)?)/
         ,/(module|class|interface|package|program)\s+/
         ,/(?:automatic\s+)?/
         ,/(\w+)/
