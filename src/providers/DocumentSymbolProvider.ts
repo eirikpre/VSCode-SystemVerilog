@@ -38,8 +38,8 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     private illegalTypes = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
     // TODO: Match labels with SymbolKind.Enum
     public regex: RegExp = new RegExp ([
-        // ,/^(?:(?:virtual|static|automatic|rand|randc)\s+)?/
-        ,/(?<=^\s+)/
+        // Potential identifier
+        ,/(?<=^\s*(?:(?:virtual|static|automatic|rand|randc|pure virtual)\s+)?)/
         // Illegal Symbol types
         ,this.illegalTypes
         // Symbol type
@@ -50,7 +50,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         ,this.illegalTypes
         ,/(\w+)(?:\s*,\s*\w+)*?/
         // Port-list | class suffix
-        ,/(?:\s*\([\s\S]*?\)|\s+extends\s*\w+)?/
+        ,/(?:\s*\([\s\S]*?\)|(?:\s+(?:extends|implements)\s+\w+)+)?/
         // End of definition
         ,/\s*;/
         ].map(x => x.source).join(''), 'mg');
