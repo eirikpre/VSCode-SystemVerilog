@@ -24,6 +24,7 @@
         ["specify", "endspecify"],
         ["package", "endpackage"],
         ["program", "endprogram"],
+        ["coverage", "endcoverage"],
         ["property", "endproperty"],
         ["sequence", "endsequence"],
         ["function", "endfunction"],
