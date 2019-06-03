@@ -31,7 +31,7 @@
     "categories": [
         "Programming Languages"
     ],
-    "main": "./out/extension",
+    "main": "./out/extension.js",
     "activationEvents": [
         "onLanguage:systemverilog",
         "onLanguage:verilog"
@@ -124,6 +124,7 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
+        "@types/mocha": "^5.2.6",
         "@types/node": "^10.14.7",
         "languages": "0.1.3",
         "typescript": "^3.4.5",
