@@ -73,7 +73,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
 
         return await window.withProgress({
             location: ProgressLocation.Notification,
-            title: "SystemVerilog Indexing",
+            title: "SystemVerilog Indexing...",
             cancellable: true
         }, async (progress, token) => {
             this.symbols = new Array<SymbolInformation>();
@@ -107,7 +107,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             if (cancelled) {
                 return "SystemVerilog: Indexing cancelled";
             } else {
-                return 'Systemverilog: '+this.symbols.length+ ' indexed objects'
+                return 'SystemVerilog: '+this.symbols.length+ ' indexed objects'
             }
         });
     }
