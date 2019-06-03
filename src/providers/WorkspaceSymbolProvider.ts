@@ -49,7 +49,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             if (query.length === 0) { // Show maximum 250 files for speedup
                 resolve(this.symbols.slice(0, 250))
             } else {
-                const pattern =  new RegExp (".*" + query.split("").map((c) => c).join(".*") + ".*", 'i');
+                const pattern =  new RegExp (".*" + query.replace(" ","").split("").map((c) => c).join(".*") + ".*", 'i');
                 let results: SymbolInformation[] = [];
 
                 for (let i = 0; i < this.symbols.length; i++) {
