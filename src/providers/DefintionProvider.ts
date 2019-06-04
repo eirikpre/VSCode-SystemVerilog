@@ -58,7 +58,7 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
     }
 }
 
-function moduleFromPort(document, range): string {
+export function moduleFromPort(document, range): string {
     let text = document.getText(new vscode.Range(new vscode.Position(0,0), range.end))
     let depthParathesis = 0;
     let i = 0;
@@ -68,7 +68,7 @@ function moduleFromPort(document, range): string {
             depthParathesis++;
         else if (text[i] == '(')
             depthParathesis--;
-
+        
         if (depthParathesis == -1) {
             let match_param = text.slice(0, i).match(/(\w+)\s*#\s*$/);
             let match_simple = text.slice(0, i).match(/(\w+)\s+(\w+)\s*$/);
