@@ -113,6 +113,10 @@
             {
                 "command": "systemverilog.build_index",
                 "title": "SystemVerilog: Build index of modules in workspace"
+            },
+            {
+                "command": "systemverilog.auto_instantiate",
+                "title": "SystemVerilog: Auto instantiate modules in workspace"
             }
         ]
     },
