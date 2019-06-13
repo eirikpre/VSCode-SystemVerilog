@@ -45,6 +45,33 @@ function includesPortSymbol(container: string): boolean {
     return includes;
 }
 
+/**  
+    Checks if the module is parameterized.
+
+    @param symbol the module's symbol
+    @param container the module's container
+    @return true, if the module is parameterized
+*/
+function moduleIsParameterized(symbol: string, container: string): boolean {
+    //remove new lines
+    container = container.replace(/\r\n|\n|\r/g, ' ');
+    //surround '#(' with space
+    container = container.replace(/#\(/g, ' #\( ');
+    //replace multiple white spaces with a single whitespace
+    container = container.replace(/  +/g, ' ');
+
+    let keys = container.split(" ");
+    if(keys.length < 3) {
+        return false;
+    }
+
+    if(keys[0] == "module" && keys[1] == symbol && keys[2] == "#\(") {
+        return true;
+    }
+
+    return false;
+}
+
 export class SystemVerilogModuleInstantiator {
     private workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider;
 
@@ -131,9 +158,12 @@ export function formatInstance(symbol: string, container: string): string {
     let ports_declaration;
     let parameters_declaration = undefined;
 
-    parameters_declaration = getParametersDeclaration(container);
-
-    if (original_container.includes("#(")) {
+    if (moduleIsParameterized(symbol, original_container)) {
+        let parameters_container = container.split("(")[1].trim();
+        //remove last ')'
+        parameters_container = parameters_container.substring(0, parameters_container.lastIndexOf(")"));
+        
+        parameters_declaration = getParametersDeclaration(parameters_container);
         ports_container = container.split("(")[2];
     } else {
         ports_container = container.split("(")[1];
@@ -178,6 +208,8 @@ function getPortsDeclaration(ports_container: string, header: boolean): string {
     }
 
     let ports = [];
+
+    ports_container = ports_container.trim();
     let keys = (ports_container + " ,").split(" ");
 
     for (let i = 0; i < keys.length; i++) {
@@ -186,13 +218,17 @@ function getPortsDeclaration(ports_container: string, header: boolean): string {
         }
         //single comment
         else if (keys[i].startsWith("//")) {
-            ports.push("  //");
-            while (i < keys.length && !keys[i + 1].includes("\n") && !keys[i + 1].includes("\r")) {
+            ports.push("  " + keys[i]);
+            
+            if(!keys[i].includes("\n") && !keys[i].includes("\r")) {
+                while (i < keys.length && !keys[i + 1].includes("\n") && !keys[i + 1].includes("\r")) {
+                    ports.push(" " + keys[i + 1]);
+                    i++;
+                }
+
                 ports.push(" " + keys[i + 1]);
                 i++;
             }
-            ports.push(" " + keys[i + 1]);
-            i++;
         }
         //multiline comment
         else if (keys[i].startsWith("/*")) {
@@ -212,7 +248,7 @@ function getPortsDeclaration(ports_container: string, header: boolean): string {
             ports.push(" " + keys[i + 1]);
             i++;
         } else if (header) {
-
+            
             //if declared in a header, then the port is prior to a comma
             if (keys[i + 1] == ",") {
                 let port = keys[i].replace(/\s\s+/g, ' ').trim();
@@ -266,13 +302,15 @@ function getParametersDeclaration(parameters_container: string): string {
         return undefined;
     }
 
-    //remove new lines, surround '=' with space
+    //remove new lines, surround ';' ',' with space
     parameters_container = parameters_container.replace((/\r\n|\n|\r/g), " ");
     parameters_container = parameters_container.replace(/;/g, ' ; ');
+    parameters_container = parameters_container.replace(/,/g, ' , ');
 
     //replace multiple space with a single space
     parameters_container = parameters_container.replace(/ +/g, ' ');
 
+    parameters_container = parameters_container.trim() + " ,";
     let keys = parameters_container.split(' ');
 
     let parameters = [];
