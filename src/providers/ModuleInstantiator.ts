@@ -264,9 +264,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
                 state = processingState.PORTS;
             }
             else if (keys[i] == "," && lastParameter) {
-                if(lastParameter.length > maxLength) {
-                    maxLength = lastParameter.length;
-                }
+                maxLength = Math.max(lastParameter.length, maxLength);
                 lastParameter = undefined;
                 passedEqualSign = false;
             }
@@ -281,18 +279,14 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
         }
         else if(state == processingState.PORTS) {
             if(lastParameter) {
-                if(lastParameter.length > maxLength) {
-                    maxLength = lastParameter.length;
-                }
+                maxLength = Math.max(lastParameter.length, maxLength);
                 lastParameter = undefined;
             }
 
             if(keys[i] == ")") {
                 state = processingState.COMPLETE;
             } else if(keys[i] == "," && lastPort) {
-                if(lastPort.length > maxLength) {
-                    maxLength = lastPort.length;
-                }
+                maxLength = Math.max(lastPort.length, maxLength);
                 lastPort = undefined;
             } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
                 lastPort = keys[i].trim();
@@ -302,22 +296,16 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
         //last item
         if(i >= keys.length - 1) {
             if(state == processingState.PARAMETERS && lastParameter) {
-                if(lastParameter.length > maxLength) {
-                    maxLength = lastParameter.length;
-                }
+                maxLength = Math.max(lastParameter.length, maxLength);
             }
             else if(state == processingState.PORTS && lastPort) {
-                if(lastPort.length > maxLength) {
-                    maxLength = lastPort.length;
-                }
+                maxLength = Math.max(lastPort.length, maxLength);
             }
         }
 
         if(state == processingState.COMPLETE) {
             if(lastPort) {
-                if(lastPort.length > maxLength) {
-                    maxLength = lastPort.length;
-                }
+                maxLength = Math.max(lastPort.length, maxLength);
             }
             break;
         }
