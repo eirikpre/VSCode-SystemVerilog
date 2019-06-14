@@ -304,8 +304,6 @@ suite('ModuleInstantiator Tests', () => {
     var container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
     //replace multiple space with a single space
     container = container.replace(/ +/g, ' ');
-    console.log("===============")
-    console.log(container)
 
     uri = vscode.Uri.file(path.join(`${__dirname + testFolderLocation}test-files/ModuleInstantiator.test.2.v`));
     document = await vscode.workspace.openTextDocument(uri);
@@ -316,9 +314,6 @@ suite('ModuleInstantiator Tests', () => {
     );
 
     var instance = document.getText(fullRange);
-    
-    console.log("===============")
-    console.log(instance)
 
     var actual_instance = undefined;
 
@@ -327,9 +322,6 @@ suite('ModuleInstantiator Tests', () => {
     } catch (error) {
       assert.fail("formatInstance produced an error:" + error);
     }
-
-    console.log("===============")
-    console.log(actual_instance)
 
     assert.equal(instance, actual_instance);
   });
