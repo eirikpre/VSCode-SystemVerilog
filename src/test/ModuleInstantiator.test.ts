@@ -290,4 +290,48 @@ suite('ModuleInstantiator Tests', () => {
 
   });
 
+
+  test('test #7: formatInstance golden output.', async () => {
+    let uri = vscode.Uri.file(path.join(`${__dirname + testFolderLocation}test-files/ModuleInstantiator.test.1.v`));
+    let document = await vscode.workspace.openTextDocument(uri);
+
+    // range of the module in the document
+    let fullRange = new vscode.Range(
+      document.positionAt(5588),
+      document.positionAt(6000),
+    );
+
+    var container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
+    //replace multiple space with a single space
+    container = container.replace(/ +/g, ' ');
+    console.log("===============")
+    console.log(container)
+
+    uri = vscode.Uri.file(path.join(`${__dirname + testFolderLocation}test-files/ModuleInstantiator.test.2.v`));
+    document = await vscode.workspace.openTextDocument(uri);
+
+    fullRange = new vscode.Range(
+      document.positionAt(2759),
+      document.positionAt(2982),
+    );
+
+    var instance = document.getText(fullRange);
+    
+    console.log("===============")
+    console.log(instance)
+
+    var actual_instance = undefined;
+
+    try {
+      actual_instance = formatInstance('golden', container);
+    } catch (error) {
+      assert.fail("formatInstance produced an error:" + error);
+    }
+
+    console.log("===============")
+    console.log(actual_instance)
+
+    assert.equal(instance, actual_instance);
+  });
+
 });

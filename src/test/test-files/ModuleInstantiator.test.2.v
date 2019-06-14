@@ -114,3 +114,24 @@ apper u_apper (
   .valid    (valid),
   .c    (c)
 );
+
+
+// -------------------------------------------------------
+// -- Golden output test
+// -------------------------------------------------------
+
+golden u_golden (
+   .clk      (clk),
+   .reset    (reset),
+   .a        (a),
+   // keep this single comment
+   .b        (b),
+   /* multiline comment should
+   be kept*/
+   .valid    (valid),
+   .c        (c)
+);
+
+// -------------------------------------------------------
+// -- End file
+// -------------------------------------------------------
