@@ -20,6 +20,8 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Code snippets for many common blocks
 - Instantiate module from already indexed module
 
+    ![moduleInit_example](docs/moduleInit_demo.gif)
+
 
 ## Settings
 - Disable indexing
