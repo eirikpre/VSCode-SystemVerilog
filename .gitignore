@@ -1,5 +1,6 @@
 out
 node_modules
-.vsix
+*.vsix
 .vscode-test/
 vsc-extension-quickstart.md
+packages
