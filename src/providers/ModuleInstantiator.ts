@@ -205,9 +205,6 @@ function cleanUpContainer(container: string): string {
         return undefined;
     }
 
-    //remove bit ranges
-    container = container.replace(/(\[.+\])/g, '');
-
     //replace tabs with white space
     container = container.replace(/\t+/g, ' ');
 
