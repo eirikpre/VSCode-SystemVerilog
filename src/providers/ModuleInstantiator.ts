@@ -121,9 +121,11 @@ function moduleIsParameterized(symbol: string, container: string): boolean {
 */
 export class SystemVerilogModuleInstantiator {
     private workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider;
+    public modulesInstances : Map<string, string>;
 
     constructor(workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider) {
         this.workspaceSymbolProvider = workspaceSymbolProvider;
+        this.modulesInstances = new Map<string, string>();
     }
 
     /**  
@@ -136,35 +138,37 @@ export class SystemVerilogModuleInstantiator {
     public auto_instantiate(symbol: string): Thenable <string> {
         return new Promise((resolve, reject) => {
 
-            let symbols = this.workspaceSymbolProvider.provideWorkspaceModules(symbol);
-
-            if (symbols === undefined) {
-                reject(symbol + " module was not found in the workspace.");
+            let instance = undefined;
+            
+            //check if instance was already created
+            if(this.modulesInstances.has(symbol)){
+                instance = this.modulesInstances.get(symbol);
             }
+            else {
+                if (!this.workspaceSymbolProvider.moduleContainers.has(symbol)) {
+                    reject(symbol + " module was not found in the workspace.");
+                }
+    
+                let container = this.workspaceSymbolProvider.moduleContainers.get(symbol);
 
-            let uri = symbols.location.uri;
-            let range = symbols.location.range;
-            workspace.openTextDocument(uri).then(doc => {
-                let container = doc.getText(range);
-                if (container === undefined || container === "" || container === null) {
+                if (isEmptyKey(container)) {
                     reject(symbol + "'s definition is undefined in the workspace.");
                 }
 
-                let formatted = undefined;
-
                 try {
-                    formatted = formatInstance(symbol, container);
+                    instance = formatInstance(symbol, container);
                 } catch (error) {
                     console.log(error);
                     reject("An error occurred when formatting the instance for " + symbol + ": " + error);
                 }
 
-                if (formatted === undefined) {
+                if (instance === undefined) {
                     reject("An error occurred when formatting the instance for " + symbol + ".");
                 }
+            }
 
-                resolve(formatted);
-            })
+            this.modulesInstances.set(symbol, instance);
+            resolve(instance);
         });
     }
 
