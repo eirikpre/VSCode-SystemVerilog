@@ -2,6 +2,17 @@ import { workspace } from 'vscode';
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 
 /** 
+ * Processing states:
+ * --------------------------------------------
+ * INITIAL: before the ports/parameters header.
+ * PARAMETERS: inside the parameters header.
+ * PORTS: inside the ports header.
+ * COMPLETE: processing is finished.
+ * --------------------------------------------
+ */
+var processingState = Object.freeze({"INITIAL":1, "PARAMETERS":2, "PORTS":3, "COMPLETE":4});
+
+/** 
  * key symbols 
  */
 const ports_key_symbols = ["input", "output", "inout"];
@@ -27,24 +38,69 @@ function isPortSymbol(symbol: string): boolean {
 }
 
 /**  
-    Checks if the container includes a port.
+    Checks if symbol is a parameter.
 
-    @param container the container
-    @return true, if container includes a port
+    @param symbol the symbol
+    @return true, if symbol is a parameter
 */
-function includesPortSymbol(container: string): boolean {
-    let includes = false;
-
-    ports_key_symbols.forEach(function (key) {
-        if (container.includes(key)) {
-            includes = true;
-            return false;
-        }
-    });
-
-    return includes;
+function isParameterSymbol(symbol: string): boolean {
+    return symbol == parameter_key_symbol;
 }
 
+/**
+ * Checks if the given key is empty
+ * 
+ * @param key the key
+ * @return true, if the key is empty
+*/
+function isEmptyKey(key: string): boolean {
+    if(key === undefined || key === null || key == "") {
+        return true;
+    }
+
+    key = key.replace((/ +|\r\n|\n|\r/g), "");
+
+    return key.length == 0;
+}
+
+/**  
+    Checks if the module is parameterized.
+
+    @param symbol the module's symbol
+    @param container the module's container
+    @return true, if the module is parameterized
+*/
+function moduleIsParameterized(symbol: string, container: string): boolean {
+    if(symbol === undefined || symbol === null || symbol == "") {
+        return false;
+    }
+    if(container === undefined || container === null || container == "") {
+        return false;
+    }
+
+    //remove new lines
+    container = container.replace(/\r\n|\n|\r/g, ' ');
+    //surround '#(' with space
+    container = container.replace(/#\(/g, ' #\( ');
+    //replace multiple white spaces with a single whitespace
+    container = container.replace(/  +/g, ' ');
+
+    let keys = container.split(" ");
+    if(keys.length < 3) {
+        return false;
+    }
+
+    if(keys[0] == "module" && keys[1] == symbol && keys[2] == "#\(") {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Module instantiator class which queries a given module, fetches the relative container, and parses an instance.
+*/
 export class SystemVerilogModuleInstantiator {
     private workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider;
 
@@ -61,7 +117,12 @@ export class SystemVerilogModuleInstantiator {
     */
     public auto_instantiate(symbol: string): Thenable <string> {
         return new Promise((resolve, reject) => {
+            if(symbol === undefined || symbol === null || symbol == "") {
+                reject(symbol + " is not a valid symbol.");
+            }
+
             let symbols = this.workspaceSymbolProvider.provideWorkspaceModules(symbol);
+
             if (symbols === undefined) {
                 reject(symbol + " module was not found in the workspace.");
             }
@@ -103,209 +164,402 @@ export class SystemVerilogModuleInstantiator {
     @throws Array Out of Bounds error with incorrect syntax
 */
 export function formatInstance(symbol: string, container: string): string {
-    if (symbol === undefined || container === undefined) {
+    if(symbol === undefined || symbol === null || symbol == "") {
         return undefined;
-    } else if (symbol === "" || container === "") {
+    }
+    if(container === undefined || container === null || container == "") {
         return undefined;
-    } else if (symbol === null || container === null) {
+    }
+
+    let original_container = container;
+    container = cleanUpContainer(container);
+
+    let isParameterized = moduleIsParameterized(symbol, original_container);
+ 
+    let maxLength = findMaxLength(container, isParameterized);
+    container = parseContainer(symbol, container, isParameterized, maxLength);
+
+    return container;
+}
+
+/**
+ * Cleans up the container from extra characters, and surround delimiters with white space.
+ * 
+ * @param container the module's container
+ * @return cleaned up container.
+*/
+function cleanUpContainer(container: string): string {
+    if(container === undefined || container === null || container == "") {
         return undefined;
     }
 
     //remove bit ranges
-    let original_container = container;
     container = container.replace(/(\[.+\])/g, '');
 
     //replace tabs with white space
     container = container.replace(/\t+/g, ' ');
 
-    //surround ',' '=' '(' with whitespace
+    //surround ',' '=' '(' ')' '//' '/*' with whitespace
     container = container.replace(/,/g, ' , ');
     container = container.replace(/=/g, ' = ');
     container = container.replace(/\(/g, ' \( ');
+    container = container.replace(/\)/g, ' \) ');
+    container = container.replace(/\/\//g, ' \/\/ ');
+    container = container.replace(/\/\*/g, ' \/\* ');
 
     //replace multiple white spaces with a single whitespace
     container = container.replace(/  +/g, ' ');
     container = container.trim();
 
-    let ports_container;
-    let ports_declaration;
-    let parameters_declaration = undefined;
+    return container;
+}
 
-    parameters_declaration = getParametersDeclaration(container);
-
-    if (original_container.includes("#(")) {
-        ports_container = container.split("(")[2];
-    } else {
-        ports_container = container.split("(")[1];
+/**
+ * Get the maximum length of the ports and parameters in the module container.
+ * 
+ * @param container the module's container
+ * @param moduleIsParameterized whether the module has parameters or not
+ * @return the maximum length
+*/
+function findMaxLength(container: string, moduleIsParameterized: boolean): number {
+    if(container === undefined || container === null || container == "") {
+        return undefined;
     }
 
-    ports_container = ports_container.substring(0, ports_container.indexOf(");"));
-    ports_container = ports_container.replace(/  +/g, ' ');
+    let keys = container.split(" ");
+    let output = [];
+    let maxLength = 0;
 
-    //type declaration
-    if (includesPortSymbol(ports_container)) {
-        ports_declaration = getPortsDeclaration(ports_container, false);
-    } else {
-        ports_declaration = getPortsDeclaration(ports_container, true);
+    let lastPort = undefined;
+    let lastParameter = undefined;
+    let passedEqualSign = false;
+
+    let state = processingState.INITIAL;
+
+    for(let i = 0; i < keys.length; i++) {
+        if(keys[i] == undefined) {
+            continue;
+        }
+
+        //single comment
+        if (keys[i] == "//") {
+            i = getSingleComment(keys, output, i);
+        }
+        //block comment
+        else if (keys[i] == "/*") {
+            i = getBlockComment(keys, output, i);
+        }
+        else if(state == processingState.INITIAL) {
+            if(keys[i] == "(") {
+                if(moduleIsParameterized) {
+                    state = processingState.PARAMETERS;
+                }
+                else {
+                    state = processingState.PORTS;
+                }
+            }
+        }
+        else if(state == processingState.PARAMETERS) {
+            if(keys[i] == ")") {
+                state = processingState.PORTS;
+            }
+            else if (keys[i] == "," && lastParameter) {
+                if(lastParameter.length > maxLength) {
+                    maxLength = lastParameter.length;
+                }
+                lastParameter = undefined;
+                passedEqualSign = false;
+            }
+            else if(keys[i] == "=") {
+                passedEqualSign = true;
+            }
+            else if (!isParameterSymbol(keys[i]) && !isEmptyKey(keys[i])) {
+                if(!passedEqualSign) {
+                    lastParameter = keys[i].trim();
+                }
+            } 
+        }
+        else if(state == processingState.PORTS) {
+            if(lastParameter) {
+                if(lastParameter.length > maxLength) {
+                    maxLength = lastParameter.length;
+                }
+                lastParameter = undefined;
+            }
+
+            if(keys[i] == ")") {
+                state = processingState.COMPLETE;
+            } else if(keys[i] == "," && lastPort) {
+                if(lastPort.length > maxLength) {
+                    maxLength = lastPort.length;
+                }
+                lastPort = undefined;
+            } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
+                lastPort = keys[i].trim();
+            }
+        }
+
+        //last item
+        if(i >= keys.length - 1) {
+            if(state == processingState.PARAMETERS && lastParameter) {
+                if(lastParameter.length > maxLength) {
+                    maxLength = lastParameter.length;
+                }
+            }
+            else if(state == processingState.PORTS && lastPort) {
+                if(lastPort.length > maxLength) {
+                    maxLength = lastPort.length;
+                }
+            }
+        }
+
+        if(state == processingState.COMPLETE) {
+            if(lastPort) {
+                if(lastPort.length > maxLength) {
+                    maxLength = lastPort.length;
+                }
+            }
+            break;
+        }
+    }
+    return maxLength;
+}
+
+/**
+ * Parse the container, and create the module's instance.
+ * 
+ * @param symbol the module's symbol
+ * @param container the module's container
+ * @param moduleIsParameterized whether the module has parameters or not
+ * @param maxLength the maximum length of ports/parameters
+ * @return the module's instance
+*/
+function parseContainer(symbol: string, container: string, moduleIsParameterized: boolean, maxLength: number): string {
+    if(symbol === undefined || symbol === null || symbol == "") {
+        return undefined;
+    }
+    if(container === undefined || container === null || container == "") {
+        return undefined;
+    }
+    if(maxLength < 0) {
+        return undefined;
+    }
+
+    let output = [];
+    let keys = container.split(" ");
+
+    let lastPort = undefined;
+    let lastParameter = undefined;
+    let lastParameterDefault = undefined;
+
+    let passedEqualSign = false;
+
+    let state = processingState.INITIAL;
+ 
+    for(let i = 0; i < keys.length; i++) {
+        if(keys[i] == undefined) {
+            continue;
+        }
+
+        //single comment
+        if (keys[i] == "//") {
+            i = getSingleComment(keys, output, i);
+        }
+        //block comment
+        else if (keys[i] == "/*") {
+            i = getBlockComment(keys, output, i);
+        }
+        else if(state == processingState.INITIAL) {
+            if(keys[i] == "(") {
+                if(moduleIsParameterized) {
+                    state = processingState.PARAMETERS;
+                }
+                else {
+                    state = processingState.PORTS;
+                }
+            }
+        }
+        else if(state == processingState.PARAMETERS) {
+            if(keys[i] == ")") {
+                state = processingState.PORTS;
+            }
+            else if (keys[i] == "," && lastParameter) {
+                //set with default value if it exists
+                if (passedEqualSign) {
+                    output.push("  ." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
+                    output.push(lastParameterDefault + ")");
+                    
+                    passedEqualSign = false;
+                } else {
+                    output.push("  ." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
+                    output.push(lastParameter + ")");
+                }
+                
+                output.push(",\n");
+                
+                lastParameter = undefined;
+            }
+            else if(keys[i] == "=") {
+                passedEqualSign = true;
+            }
+            else if (!isParameterSymbol(keys[i]) && !isEmptyKey(keys[i])) {
+                if(passedEqualSign) {
+                    lastParameterDefault = keys[i].trim();
+                }
+                else{
+                    lastParameter = keys[i].trim();
+                }
+            } 
+        }
+        else if(state == processingState.PORTS) {
+            if(lastParameter) {
+                //set with default value if it exists
+                if (passedEqualSign) {
+                    output.push("  ." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
+                    output.push(lastParameterDefault + ")\n");
+                    
+                    passedEqualSign = false;
+                } else {
+                    output.push("  ." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
+                    output.push(lastParameter + ")\n");
+                }
+                output.push(") u_" + symbol + " (\n");
+                
+                lastParameter = undefined;
+            }
+
+            if(keys[i] == ")") {
+                state = processingState.COMPLETE;
+            } else if(keys[i] == "," && lastPort) {
+                output.push("  ." + lastPort + " ".repeat(maxLength - lastPort.length) + " ".repeat(4) + "(" + lastPort + ")");
+                output.push(",\r\n");
+                
+                lastPort = undefined;
+            } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
+                lastPort = keys[i].trim();
+            }
+        }
+
+        //last item
+        if(i >= keys.length - 1) {
+            if(state == processingState.PARAMETERS && lastParameter) {
+                //set with default value if it exists
+                if (passedEqualSign) {
+                    output.push("  ." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
+                    output.push(lastParameterDefault + ")\n");
+                    
+                    passedEqualSign = false;
+                } else {
+                    output.push("  ." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
+                    output.push(lastParameter + ")\n");
+                }
+            }
+            else if(state == processingState.PORTS && lastPort) {
+                output.push("  ." + lastPort + " ".repeat(maxLength - lastPort.length) + " ".repeat(4) + "(" + lastPort + ")");
+                output.push("\r\n");
+            }
+        }
+
+        if(state == processingState.COMPLETE) {
+            if(lastPort) {
+                output.push("  ." + lastPort + " ".repeat(maxLength - lastPort.length) + " ".repeat(4) + "(" + lastPort + ")");
+                output.push("\r\n");
+            }
+            break;
+        }
     }
 
     let instance = [];
 
-    if (parameters_declaration !== undefined) {
-        instance.push(symbol + " #(\n" + parameters_declaration + ") ");
-        instance.push("u_" + symbol)
-        instance.push(" (\n" + ports_declaration + ");");
+    if (moduleIsParameterized) {
+        instance.push(symbol + " #(\n");
+        instance.push(output.join("") + ");");
     } else {
         instance.push(symbol + " u_" + symbol)
-        instance.push(" (\n" + ports_declaration + ");");
+        instance.push(" (\n" + output.join("") + ");");
     }
 
     return instance.join("");
 }
 
-/**  
-    Uses the given ports container to define 
-    the ports portion of the module's instance.
-
-    @param ports_container the ports container.
-    @container header the ports are declared in the header or not
-    @return the ports declaration
-    @throws Array Out of Bounds error with incorrect syntax
+/**
+ * Parses a single comment from the container starting from a given index in keys.
+ * 
+ * @param keys the container's keys.
+ * @param output the array to add the single comment to
+ * @param i the start index
+ * @return the index where the single comment ends
 */
-function getPortsDeclaration(ports_container: string, header: boolean): string {
-    if (ports_container === undefined) {
+function getSingleComment(keys: string[], output: string[], i: number): number {
+    if(keys === undefined || keys === null) {
         return undefined;
     }
-
-    let ports = [];
-    let keys = (ports_container + " ,").split(" ");
-
-    for (let i = 0; i < keys.length; i++) {
-        if (keys[i] === undefined) {
-            continue;
-        }
-        //single comment
-        else if (keys[i].startsWith("//")) {
-            ports.push("  //");
-            while (i < keys.length && !keys[i + 1].includes("\n") && !keys[i + 1].includes("\r")) {
-                ports.push(" " + keys[i + 1]);
-                i++;
-            }
-            ports.push(" " + keys[i + 1]);
-            i++;
-        }
-        //multiline comment
-        else if (keys[i].startsWith("/*")) {
-            ports.push("  /*");
-            while (i < keys.length && !(keys[i + 1].trim()).includes("*/")) {
-                //if there is an upcoming new line of comments, add padding
-                if (/\r|\n/.exec(keys[i + 1])) {
-                    ports.push(" " + keys[i + 1]);
-                    ports.push("  " + keys[i + 2]);
-                    i++;
-                } else {
-                    ports.push(" " + keys[i + 1]);
-                }
-
-                i++;
-            }
-            ports.push(" " + keys[i + 1]);
-            i++;
-        } else if (header) {
-
-            //if declared in a header, then the port is prior to a comma
-            if (keys[i + 1] == ",") {
-                let port = keys[i].replace(/\s\s+/g, ' ').trim();
-                ports.push("  ." + port + " ".repeat(4) + "(" + port + ")");
-
-                i++;
-                if (i < keys.length) {
-                    ports.push(",\r\n");
-                }
-            }
-        } else if (isPortSymbol(keys[i])) {
-            let key = keys[i + 1].replace((/ +|\r\n|\n|\r/g), " ");
-            let port = key;
+    if(output === undefined || output === null) {
+        return undefined;
+    }
+    if(i < 0 || i > keys.length) {
+        return undefined;
+    }
+    
+    output.push("  " + keys[i]);
             
-            //save each previous non empty string as a port
-            //skip all until a comma, the port is prior to a comma
-            while (i < keys.length && key != ",") {
-                if (keys[i].replace(/ +|\r\n|\n|\r/g, '').length > 0) {
-                    port = keys[i];
-                }
-                key = keys[i + 1].replace((/ +|\r\n|\n|\r/g), " ");
-                i++;
-            }
-
-            port = port.replace(/\s\s+/g, ' ').trim();
-            ports.push("  ." + port + " ".repeat(4) + "(" + port + ")");
-            ports.push(",\r\n");
-
+    if(!keys[i].includes("\n") && !keys[i].includes("\r")) {
+        i++;
+        while (i < keys.length && !keys[i].includes("\n") && !keys[i].includes("\r")) {
+            output.push(" " + keys[i]);
             i++;
+        }
+
+        if(i < keys.length) {
+            output.push(" " + keys[i]);
+        }
+        else{
+            output.push("\n");
         }
     }
 
-    let ports_declaration = ports.join("");
-
-    //remove the last ','
-    ports_declaration = ports_declaration.substring(0, ports_declaration.lastIndexOf(",")) + "\n";
-
-    return ports_declaration;
+    return i;
 }
 
-/**  
-    Uses the given parameters container to define 
-    the parameters portion of the module's instance.
-
-    @param parameters_container the parameters container.
-    @return the parameters declaration
-    @throws Array Out of Bounds error with incorrect syntax
+/**
+ * Parses a block comment from the container starting from a given index in keys.
+ * 
+ * @param keys the container's keys.
+ * @param output the array to add the block comment to
+ * @param i the start index
+ * @return the index where the block comment ends
 */
-function getParametersDeclaration(parameters_container: string): string {
-    if (parameters_container === undefined) {
+function getBlockComment(keys: string[], output: string[], i: number): number {
+    if(keys === undefined || keys === null) {
         return undefined;
     }
-
-    //remove new lines, surround '=' with space
-    parameters_container = parameters_container.replace((/\r\n|\n|\r/g), " ");
-    parameters_container = parameters_container.replace(/;/g, ' ; ');
-
-    //replace multiple space with a single space
-    parameters_container = parameters_container.replace(/ +/g, ' ');
-
-    let keys = parameters_container.split(' ');
-
-    let parameters = [];
-
-    for (let i = 0; i < keys.length; i++) {
-        if (keys[i] === undefined) {
-            continue;
-        } else if (keys[i] == parameter_key_symbol) {
-
-            while(i < keys.length && keys[i] != "=" && keys[i] != "," && keys[i] != "," && keys[i] != ")") {
-                i++;
-            }
+    if(output === undefined || output === null) {
+        return undefined;
+    }
+    if(i < 0 || i > keys.length) {
+        return undefined;
+    }
     
-            //set with default value if it exists
-            if (keys[i] == "=") {
-                parameters.push("  ." + keys[i - 1] + " ".repeat(4) + "(");
-                parameters.push(keys[i + 1] + "),\n");
-                i++;
-            } else {
-                parameters.push("  ." + keys[i - 1] + " ".repeat(4) + "(");
-                parameters.push(keys[i - 1] + "),\n");
+    output.push("  " + keys[i]);
+    i++;
+    while (i < keys.length && !(keys[i].trim()).includes("*/")) {
+        //if there is an upcoming new line of comments, add padding
+        if (/\r|\n/.exec(keys[i])) {
+            output.push(" " + keys[i]);
+            i++;
+            if(i < keys.length) {
+                output.push("  " + keys[i]);
             }
+        } else {
+            output.push(" " + keys[i]);
         }
+
+        i++;
     }
 
-    if (parameters.length == 0) {
-        return undefined;
+    if(i < keys.length) {
+        output.push("  " + keys[i]);
     }
 
-    let parameters_declaration = parameters.join("");
-
-    //remove the last ','
-    parameters_declaration = parameters_declaration.substring(0, parameters_declaration.lastIndexOf(",")) + "\n";
-
-    return parameters_declaration;
+    return i;
 }

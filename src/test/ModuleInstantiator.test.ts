@@ -186,7 +186,7 @@ suite('ModuleInstantiator Tests', () => {
 
     fullRange = new vscode.Range(
       document.positionAt(1660),
-      document.positionAt(1850),
+      document.positionAt(1833),
     );
 
     var instance = document.getText(fullRange).replace((/\r\n|\n|\r/g), " ").trim();
