@@ -28,6 +28,11 @@ const parameter_key_symbol = "parameter";
  */
 const padding = "   ";
 
+/** 
+ * non-breaking white space
+ */
+const non_breaking_space = "\xa0";
+
 /**  
     Checks if symbol is a port.
 
@@ -78,7 +83,9 @@ function isEmptyKey(key: string): boolean {
     if (key === undefined || key === null || key == "") {
         return true;
     }
-
+    
+    let regex = new RegExp(non_breaking_space, "g");
+    key = key.replace(regex, "");
     key = key.replace((/ +|\r\n|\n|\r/g), "");
 
     return key.length == 0;
@@ -208,9 +215,9 @@ function cleanUpContainer(container: string): string {
     if (isEmptyKey(container) ) {
         return undefined;
     }
-
-    //replace tabs with white space
-    container = container.replace(/\t+/g, ' ');
+    
+    //replace white space with non-breaking white space
+    container = container.replace(/ /g, ' ' + non_breaking_space + ' ');
 
     //surround ',' '=' '(' ')' '//' '/*' with whitespace
     container = container.replace(/,/g, ' , ');
@@ -506,17 +513,19 @@ function getSingleComment(keys: string[], output: string[], i: number): number {
         return undefined;
     }
     
-    output.push(padding + keys[i]);
+    let regex = new RegExp(non_breaking_space, "g");
+
+    output.push(padding + keys[i].replace(regex, " "));
             
     if (!keys[i].includes("\n") && !keys[i].includes("\r")) {
         i++;
         while (i < keys.length && !keys[i].includes("\n") && !keys[i].includes("\r")) {
-            output.push(" " + keys[i]);
+            output.push(keys[i].replace(regex, " "));
             i++;
         }
 
         if (i < keys.length) {
-            output.push(" " + keys[i]);
+            output.push(keys[i].replace(regex, " "));
         }
         else{
             output.push("\n");
@@ -542,25 +551,28 @@ function getBlockComment(keys: string[], output: string[], i: number): number {
         return undefined;
     }
     
-    output.push(padding + keys[i]);
+    let regex = new RegExp(non_breaking_space, "g");
+
+    output.push(padding + keys[i].replace(regex, " "));
+
     i++;
     while (i < keys.length && !(keys[i].trim()).includes("*/")) {
         //if there is an upcoming new line of comments, add padding
         if (/\r|\n/.exec(keys[i])) {
-            output.push(" " + keys[i]);
+            output.push(keys[i].replace(regex, " "));
             i++;
             if (i < keys.length) {
-                output.push(padding + keys[i]);
+                output.push(keys[i].replace(regex, " "));
             }
         } else {
-            output.push(" " + keys[i]);
+            output.push(keys[i].replace(regex, " "));
         }
 
         i++;
     }
 
     if (i < keys.length) {
-        output.push(" " + keys[i]);
+        output.push(keys[i].replace(regex, " "));
     }
 
     return i;

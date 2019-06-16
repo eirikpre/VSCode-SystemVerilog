@@ -127,7 +127,7 @@ golden u_golden (
    // keep this single comment
    .b        (b),
    /* multiline comment should
-   be kept*/
+ be kept*/
    .valid    (valid),
    .c        (c)
 );
