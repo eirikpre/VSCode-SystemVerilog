@@ -13,6 +13,7 @@ import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
 
     public symbols: SymbolInformation[];
+    public moduleContainers: Map<string, string>;
     public building: Boolean = false;
     public statusbar: StatusBarItem;
     public docProvider: SystemVerilogDocumentSymbolProvider;
@@ -34,6 +35,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         disabled?: Boolean, exclude?: GlobPattern, parallelProcessing?: number) {
         this.statusbar = statusbar;
         this.docProvider = docProvider;
+        this.moduleContainers = new Map<string, string>();
         if (disabled) {
             this.statusbar.text = "SystemVerilog: Indexing disabled"
         } else {
@@ -85,24 +87,21 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     }
 
     /**  
-        Queries a module with a given name from this.symbols, performs an exact match if exactMatch is set to true,
-        and a partial match if it's not passed or set to false.
+        Stores the module's container to this.moduleContainers.
 
-        @param query the symbol's name
-        @return the module's SymbolInformation
+        @param symbolInfo the SymbolInformation object
     */
-    public provideWorkspaceModules(query: string): SymbolInformation {
-        if (query.length === 0) {
-            return undefined;
-        } else {
-
-            for (let i = 0; i < this.symbols.length; i++) {
-                let symbol = this.symbols[i];
-                if (symbol.name == query && symbol.containerName == "module") {
-                    return symbol;
-                }
-            }
-            return undefined;
+    public storeModuleContainer(symbolInfo: SymbolInformation): void {
+        let uri = symbolInfo.location.uri;
+        let range = symbolInfo.location.range;
+        try {
+            workspace.openTextDocument(uri).then(doc => {
+                let container = doc.getText(range);
+                this.moduleContainers.set(symbolInfo.name, container);
+            });
+        } catch (error) {
+            console.log(error);
+            this.moduleContainers.set(symbolInfo.name, undefined);
         }
     }
 
@@ -142,7 +141,13 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 })).then((symbols_arr: Array <SymbolInformation> ) => {
                     for (let i = 0; i < symbols_arr.length; i++) {
                         if (symbols_arr[i] !== undefined) {
+                            let symbolInfo = symbols_arr[i][0];
                             this.symbols = this.symbols.concat(symbols_arr[i]);
+
+                            //if it's a module, store the container
+                            if(symbolInfo && symbolInfo.containerName == "module"){
+                                this.storeModuleContainer(symbolInfo);
+                            }
                         }
                     }
                 });

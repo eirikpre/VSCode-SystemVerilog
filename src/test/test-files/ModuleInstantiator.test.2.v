@@ -82,3 +82,56 @@ anner #(
 );
 
 
+// ---------------------------------------------------------------
+// -- Example with ports in header and comments
+// ---------------------------------------------------------------
+
+atter u_atter (
+  .clk    (clk),
+  .reset    (reset),
+  //keep
+  .a    (a),
+  //also this comment 1
+  .b    (b),
+  // also this comment 2
+  .valid    (valid),
+  .c    (c)
+);
+
+// ---------------------------------------------------------------
+// -- Example without ports in header and comments
+// ---------------------------------------------------------------
+
+apper u_apper (
+  .clk    (clk),
+  //keep
+  .reset    (reset),
+  .a    (a),
+  //keep this single comment 2
+  .b    (b),
+  /* multiline comment should
+  be kept*/
+  .valid    (valid),
+  .c    (c)
+);
+
+
+// -------------------------------------------------------
+// -- Golden output test
+// -------------------------------------------------------
+
+golden u_golden (
+   .clk      (clk),
+   .reset    (reset),
+   .a        (a),
+   // keep this single comment
+   .b        (b),
+   /* multiline comment should
+ be kept*/
+   .valid    (valid),
+   .c        (c)
+);
+
+// -------------------------------------------------------
+// -- End file
+// -------------------------------------------------------

@@ -1,4 +1,6 @@
-# SystemVerilog - Language Support
+[![Build Status](https://dev.azure.com/CPS-External/VSCode-SystemVerilog/_apis/build/status/VSCode-SystemVerilog%20Github?branchName=master)](https://dev.azure.com/CPS-External/VSCode-SystemVerilog/_build/latest?definitionId=5&branchName=master)
+
+# SystemVerilog - Language Support 
 
 This package adds language support for Verilog/SystemVerilog. It supports SystemVerilog syntax, with planned support for signal intelliSense.
 
@@ -16,6 +18,10 @@ This package adds language support for Verilog/SystemVerilog. It supports System
     ![goToDef_example](docs/goToDef_demo.gif)
 
 - Code snippets for many common blocks
+- Instantiate module from already indexed module
+
+    ![moduleInit_example](docs/moduleInit_demo.gif)
+
 
 ## Settings
 - Disable indexing
@@ -30,7 +36,6 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
 
 ## Future
-- Instantiate module from already indexed module/class/interface/program
 - Tree view of module hierarchy
 - References document
 - IntelliSense support
@@ -38,6 +43,8 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Release Notes
 See changelog for mode details
+### 0.7
+- Instantiate module from already indexed module
 ### 0.6
 - Stability and performance upgrade
 - PCRE Regexes
