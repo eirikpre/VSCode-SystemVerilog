@@ -19,9 +19,11 @@ suite("Extension Tests", function () {
             vscode.commands.executeCommand('systemverilog.build_index');
         }, 500);
 
+
     });
 
     test('test #2: moduleFromPort', async () => {
+
         const uri = vscode.Uri.file(
             path.join(__dirname + testFolderLocation + 'instantiation_example.sv')
         )
