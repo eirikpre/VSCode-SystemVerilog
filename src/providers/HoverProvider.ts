@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { basename } from 'path'
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
+import { List } from 'collections/list';
 
 export class SystemVerilogHoverProvider implements vscode.HoverProvider {
     private workspaceSymProvider: SystemVerilogWorkspaceSymbolProvider;
@@ -31,9 +32,9 @@ export class SystemVerilogHoverProvider implements vscode.HoverProvider {
                 });
 
                 // Then, lookup in the workspace if current document failed
-                return this.workspaceSymProvider.provideWorkspaceSymbols(lookupTerm, token, true).then((sym) => {
+                return this.workspaceSymProvider.provideWorkspaceSymbols(lookupTerm, token, true).then((sym: List<vscode.SymbolInformation>) => {
                     if(sym.length !== 0) {
-                        resolve(buildHover(document, sym[0], lookupRange));
+                        resolve(buildHover(document, sym.peek(), lookupRange));
                     } else {
                         resolve(undefined);
                     }

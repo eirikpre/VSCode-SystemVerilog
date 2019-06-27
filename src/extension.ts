@@ -9,7 +9,8 @@ import {
   StatusBarAlignment,
   DocumentSelector,
   ExtensionContext,
-  InputBoxOptions
+  InputBoxOptions,
+  TextDocument
 } from 'vscode';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
@@ -67,6 +68,22 @@ export function activate(context: ExtensionContext) {
   // Built-in DocumentHighlightProvider is better
   // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
+  context.subscriptions.push(workspace.onDidSaveTextDocument((document: TextDocument) => {
+    symProvider.onSave(document);
+  }));
+
+  let watcher = workspace.createFileSystemWatcher(symProvider.globPattern, false, false, false);
+
+  watcher.onDidCreate((uri) => {
+    symProvider.onCreate(uri);
+  });
+
+  watcher.onDidDelete((uri) => {
+    symProvider.onDelete(uri);
+  });
+
+  context.subscriptions.push(watcher);
+
   /**
     Builds the symbols index. Scans the workspace for symbols.
   */
@@ -77,7 +94,6 @@ export function activate(context: ExtensionContext) {
       symProvider.build_index();
     }
   }
-
   /**
     Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.
     Looks up the module's definition, and parses it to build the module's instance.
@@ -118,4 +134,4 @@ export function activate(context: ExtensionContext) {
 /** 
  * this method is called when your extension is deactivated
  */
-export function deactivate() {}
+export function deactivate() { }

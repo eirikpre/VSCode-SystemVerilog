@@ -83,7 +83,7 @@ function isEmptyKey(key: string): boolean {
     if (key === undefined || key === null || key == "") {
         return true;
     }
-    
+
     let regex = new RegExp(non_breaking_space, "g");
     key = key.replace(regex, "");
     key = key.replace((/ +|\r\n|\n|\r/g), "");
@@ -99,7 +99,7 @@ function isEmptyKey(key: string): boolean {
     @return true, if the module is parameterized
 */
 function moduleIsParameterized(symbol: string, container: string): boolean {
-    if (isEmptyKey(symbol) || isEmptyKey(container) ) {
+    if (isEmptyKey(symbol) || isEmptyKey(container)) {
         return false;
     }
 
@@ -128,11 +128,9 @@ function moduleIsParameterized(symbol: string, container: string): boolean {
 */
 export class SystemVerilogModuleInstantiator {
     private workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider;
-    public modulesInstances : Map<string, string>;
 
     constructor(workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider) {
         this.workspaceSymbolProvider = workspaceSymbolProvider;
-        this.modulesInstances = new Map<string, string>();
     }
 
     /**  
@@ -142,25 +140,24 @@ export class SystemVerilogModuleInstantiator {
         @param symbol the module's name
         @return the module's instance.
     */
-    public auto_instantiate(symbol: string): Thenable <string> {
+    public auto_instantiate(symbol: string): Thenable<string> {
         return new Promise((resolve, reject) => {
+            let symbolInfo = this.workspaceSymbolProvider.provideWorkspaceModule(symbol);
 
-            let instance = undefined;
-            
-            //check if instance was already created
-            if(this.modulesInstances.has(symbol)){
-                instance = this.modulesInstances.get(symbol);
+            if (!symbolInfo) {
+                reject(symbol + " module was not found in the workspace.");
             }
-            else {
-                if (!this.workspaceSymbolProvider.moduleContainers.has(symbol)) {
-                    reject(symbol + " module was not found in the workspace.");
-                }
-    
-                let container = this.workspaceSymbolProvider.moduleContainers.get(symbol);
+
+            let uri = symbolInfo.location.uri;
+            let range = symbolInfo.location.range;
+            workspace.openTextDocument(uri).then(doc => {
+                let container = doc.getText(range);
 
                 if (isEmptyKey(container)) {
                     reject(symbol + "'s definition is undefined in the workspace.");
                 }
+
+                let instance = undefined;
 
                 try {
                     instance = formatInstance(symbol, container);
@@ -172,10 +169,9 @@ export class SystemVerilogModuleInstantiator {
                 if (instance === undefined) {
                     reject("An error occurred when formatting the instance for " + symbol + ".");
                 }
-            }
 
-            this.modulesInstances.set(symbol, instance);
-            resolve(instance);
+                resolve(instance);
+            });
         });
     }
 
@@ -190,7 +186,7 @@ export class SystemVerilogModuleInstantiator {
     @throws Array Out of Bounds error with incorrect syntax
 */
 export function formatInstance(symbol: string, container: string): string {
-    if (isEmptyKey(symbol) || isEmptyKey(container) ) {
+    if (isEmptyKey(symbol) || isEmptyKey(container)) {
         return undefined;
     }
 
@@ -198,7 +194,7 @@ export function formatInstance(symbol: string, container: string): string {
     container = cleanUpContainer(container);
 
     let isParameterized = moduleIsParameterized(symbol, original_container);
- 
+
     let maxLength = findMaxLength(container, isParameterized);
     container = parseContainer(symbol, container, isParameterized, maxLength);
 
@@ -212,10 +208,10 @@ export function formatInstance(symbol: string, container: string): string {
  * @return cleaned up container.
 */
 function cleanUpContainer(container: string): string {
-    if (isEmptyKey(container) ) {
+    if (isEmptyKey(container)) {
         return undefined;
     }
-    
+
     //replace white space with non-breaking white space
     container = container.replace(/ /g, ' ' + non_breaking_space + ' ');
 
@@ -252,7 +248,7 @@ function cleanUpContainer(container: string): string {
  * @return the maximum length
 */
 function findMaxLength(container: string, moduleIsParameterized: boolean): number {
-    if (isEmptyKey(container) ) {
+    if (isEmptyKey(container)) {
         return undefined;
     }
 
@@ -266,7 +262,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
 
     let state = processingState.INITIAL;
 
-    for(let i = 0; i < keys.length; i++) {
+    for (let i = 0; i < keys.length; i++) {
         if (keys[i] == undefined) {
             continue;
         }
@@ -305,7 +301,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
                 if (!passedEqualSign) {
                     lastParameter = keys[i].trim();
                 }
-            } 
+            }
         }
         else if (state == processingState.PORTS) {
             if (lastParameter) {
@@ -353,7 +349,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
  * @return the module's instance
 */
 function parseContainer(symbol: string, container: string, moduleIsParameterized: boolean, maxLength: number): string {
-    if (isEmptyKey(symbol) || isEmptyKey(container) ) {
+    if (isEmptyKey(symbol) || isEmptyKey(container)) {
         return undefined;
     }
     if (maxLength < 0) {
@@ -370,8 +366,8 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
     let passedEqualSign = false;
 
     let state = processingState.INITIAL;
- 
-    for(let i = 0; i < keys.length; i++) {
+
+    for (let i = 0; i < keys.length; i++) {
         if (keys[i] == undefined) {
             continue;
         }
@@ -403,15 +399,15 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 if (passedEqualSign) {
                     output.push(padding + "." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
                     output.push(lastParameterDefault + ")");
-                    
+
                     passedEqualSign = false;
                 } else {
                     output.push(padding + "." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
                     output.push(lastParameter + ")");
                 }
-                
+
                 output.push(",\n");
-                
+
                 lastParameter = undefined;
             }
             else if (keys[i] == "=") {
@@ -421,10 +417,10 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 if (passedEqualSign) {
                     lastParameterDefault = keys[i].trim();
                 }
-                else{
+                else {
                     lastParameter = keys[i].trim();
                 }
-            } 
+            }
         }
         else if (state == processingState.PORTS) {
             if (lastParameter) {
@@ -432,14 +428,14 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 if (passedEqualSign) {
                     output.push(padding + "." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
                     output.push(lastParameterDefault + ")\n");
-                    
+
                     passedEqualSign = false;
                 } else {
                     output.push(padding + "." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
                     output.push(lastParameter + ")\n");
                 }
                 output.push(") u_" + symbol + " (\r\n");
-                
+
                 lastParameter = undefined;
             }
 
@@ -448,7 +444,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
             } else if (keys[i] == "," && lastPort) {
                 output.push(padding + "." + lastPort + " ".repeat(maxLength - lastPort.length) + " ".repeat(4) + "(" + lastPort + ")");
                 output.push(",\r\n");
-                
+
                 lastPort = undefined;
             } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
                 lastPort = keys[i].trim();
@@ -462,7 +458,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 if (passedEqualSign) {
                     output.push(padding + "." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
                     output.push(lastParameterDefault + ")\n");
-                    
+
                     passedEqualSign = false;
                 } else {
                     output.push(padding + "." + lastParameter + " ".repeat(maxLength - lastParameter.length) + " ".repeat(4) + "(");
@@ -512,11 +508,11 @@ function getSingleComment(keys: string[], output: string[], i: number): number {
     if (i < 0 || i > keys.length) {
         return undefined;
     }
-    
+
     let regex = new RegExp(non_breaking_space, "g");
 
     output.push(padding + keys[i].replace(regex, " "));
-            
+
     if (!keys[i].includes("\n") && !keys[i].includes("\r")) {
         i++;
         while (i < keys.length && !keys[i].includes("\n") && !keys[i].includes("\r")) {
@@ -527,7 +523,7 @@ function getSingleComment(keys: string[], output: string[], i: number): number {
         if (i < keys.length) {
             output.push(keys[i].replace(regex, " "));
         }
-        else{
+        else {
             output.push("\n");
         }
     }
@@ -550,7 +546,7 @@ function getBlockComment(keys: string[], output: string[], i: number): number {
     if (i < 0 || i > keys.length) {
         return undefined;
     }
-    
+
     let regex = new RegExp(non_breaking_space, "g");
 
     output.push(padding + keys[i].replace(regex, " "));
