@@ -1,0 +1,1 @@
+a file for WorkspaceSymbolProvider.test.ts
