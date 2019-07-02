@@ -56,7 +56,8 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 this.parallelProcessing = parallelProcessing;
             }
             this.statusbar.text = "SystemVerilog: Indexing";
-            this.build_index().then(res => this.statusbar.text = res);
+            console.time('build_index');
+            this.build_index().then(res => this.statusbar.text = res).then( _ => console.timeEnd('build_index'));
         }
     };
 
@@ -73,11 +74,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         @param exactMatch whether to perform an exact or a partial match
         @return an array of matching SymbolInformation 
     */
-    public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<List<SymbolInformation>> {
-        return new Promise((resolve, reject) => {
+    public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SymbolInformation>> {
+        return new Promise( (resolve, reject) => {
             if (query.length === 0) {
                 // Show maximum `NUM_FILES` symbols for speedup
-                let maxSymbols = new List<SymbolInformation>();
+                let maxSymbols = new Array<SymbolInformation>();
+
                 this.symbols.values().forEach(list => {
                     if (maxSymbols.length + list.length >= this.NUM_FILES) {
                         let limit = this.NUM_FILES - maxSymbols.length;
@@ -91,7 +93,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 resolve(maxSymbols);
             } else {
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
-                let results = new List<SymbolInformation>();
+                let results = new Array<SymbolInformation>();
 
                 this.symbols.values().forEach(list => {
                     list.forEach(symbol => {
