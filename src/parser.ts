@@ -1,14 +1,7 @@
-import {
-    DocumentSymbolProvider,
-    SymbolInformation,
-    CancellationToken,
-    TextDocument,
-    Location,
-    SymbolKind,
-    Range
-} from 'vscode'
 import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
+import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri } from "vscode";
+
 
 // See test/SymbolKind_icons.png for an overview of the icons
 export function getSymbolKind(name: String): SymbolKind {
@@ -38,69 +31,39 @@ export function getSymbolKind(name: String): SymbolKind {
         return SymbolKind.Operator;
         return SymbolKind.TypeParameter;
         return SymbolKind.Property;
-        return SymbolKind.Array; 
+        return SymbolKind.Array;
     */
 }
 
-export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
-    // XXX: Does not match input/output/inout ports, eg input logic din, ..
-    private illegalTypes = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
+export class SystemVerilogParser {
 
-    private comment = /(?:\/\/.*$)?/
-
-    public regex: RegExp = new RegExp([
-        // Potential identifier
-        , /(?<=^\s*(?:(?:virtual|static|automatic|rand|randc|pure virtual)\s+)?)/
-        // Illegal Symbol types
-        , this.illegalTypes
-        // Symbol type
-        , /([:\w]+)\s+/
-        // (modifier? returnType [.*]?      | parameterlist)?
-        , /(?:(?:\w*\s+)?\w+(?:\s*\[.*?\])?\s+|\s*#\s*\([\s\S]*?\)\s*)?/
-        // Symbol name, ignore multiple defines FIXME
-        , this.comment, this.illegalTypes
-        , /(\w+)(?:\s*,\s*\w+)*?/
-        , this.comment
-        // Port-list | class suffix
-        , /(?:\s*\([\s\S]*?\)|(?:\s+(?:extends|implements)\s+\w+)+)?/
-        // End of definition
-        , /\s*;/
-    ].map(x => x.source).join(''), 'mg');
-
-
-    /**  
+    /**
         Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
-        If `workspaceSymbols` is not `undefined`, than the object is added to a mapped list to the document's `fsPath`, 
+        If `workspaceSymbols` is not `undefined`, than the object is added to a mapped list to the document's `fsPath`,
         otherwise add the objects to an empty list and return it.
-        
+
         @param document The document in which the command was invoked.
-        @param token A cancellation token.
-        @param regex the pattern to match symbols with
-        @param workspaceSymbols maps the list to add the objects to
+        @param regex pattern that maps symbols, group(1) is the type, group(2) is the name
         @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<Array<SymbolInformation>> {
+   public get_symbols(document: TextDocument, regex: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<Array<SymbolInformation>> {
         return new Promise((resolve) => {
-            let uri = document.uri;
-            var symbols;
+            var symbols: Array<SymbolInformation> = [];
+
+            var match;
+            let text = document.getText();
 
             if (workspaceSymbols) {
-                workspaceSymbols.set(uri.fsPath, new List<SymbolInformation>());
+                workspaceSymbols.set(document.uri.fsPath, new List<SymbolInformation>());
                 //pass the reference of the symbols list to add the objects to
-                symbols = workspaceSymbols.get(uri.fsPath);
+                symbols = workspaceSymbols.get(document.uri.fsPath);
             }
             else {
                 symbols = new Array<SymbolInformation>();
             }
 
-            var match;
-            let text = document.getText();
-
-            if (regex == undefined) {
-                regex = this.regex;
-            }
-            /* 
+            /*
                 Matches the regex and uses the index from the regex to find the position
             */
             do {
@@ -121,4 +84,16 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             resolve(symbols);
         });
     }
+
+    /**
+     * TODO
+     * @param document
+     * @param module
+     */
+    public get_portlist(document: TextDocument, module: String): Thenable<Array<SymbolInformation>> {
+        return new Promise((resolve) => {
+            resolve();
+        });
+    }
+
 }
