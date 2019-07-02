@@ -16,6 +16,9 @@
 
 */
 module adder(
+`ifdef FPGA
+  input alternative_clock,
+`endif
   input 	     clk,
   input 	     reset,
   input  [3:0] a,
