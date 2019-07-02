@@ -6,7 +6,7 @@ import {
     ProgressLocation,
     GlobPattern
 } from 'vscode';
-import { SystemVerilogParser } from './parser';
+import { SystemVerilogParser } from '../parser';
 
 /**
  * This class is will do the backend indexation of files in the workspace.

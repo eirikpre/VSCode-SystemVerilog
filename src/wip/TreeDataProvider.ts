@@ -1,5 +1,5 @@
 import { TreeDataProvider, TreeItem, EventEmitter, Event, TreeItemCollapsibleState, window } from 'vscode';
-import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
+import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 
 export class SystemVerilogTreeDataProvider implements TreeDataProvider<TreeItem> {
     
