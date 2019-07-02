@@ -48,8 +48,7 @@ export class SystemVerilogIndexer {
             if (parallelProcessing) {
                 this.parallelProcessing = parallelProcessing;
             }
-            console.time('build_index');
-            this.build_index().then( _u => console.timeEnd('build_index') );
+            this.build_index();
         }
     };
 
@@ -72,6 +71,7 @@ export class SystemVerilogIndexer {
         }, async (_progress, token) => {
             this.symbols = new Array <SymbolInformation> ();
             let uris = await Promise.resolve(workspace.findFiles('**/*.{sv,v,svh,vh}', this.exclude, undefined, token));
+            console.time('build_index');
 
             for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                 let subset = uris.slice(filenr, filenr + this.parallelProcessing)
@@ -96,6 +96,7 @@ export class SystemVerilogIndexer {
                     }
                 });
             }
+            console.timeEnd('build_index');
         }).then(() => {
             this.building = false;
             if (cancelled) {

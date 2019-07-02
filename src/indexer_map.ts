@@ -45,8 +45,8 @@ export class SystemVerilogIndexerMap {
             if (parallelProcessing) {
                 this.parallelProcessing = parallelProcessing;
             }
-            console.time('build_index');
-            this.build_index().then( _u => console.timeEnd('build_index') );
+            
+            this.build_index();
             
         }
     };
@@ -76,6 +76,7 @@ export class SystemVerilogIndexerMap {
         }, async (_progress, token) => {
             this.symbols = new FastMap<string, List<SymbolInformation>>();
             let uris = await Promise.resolve(workspace.findFiles(this.globPattern, this.exclude, undefined, token));
+            console.time('build_index');
 
             for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                 let subset = uris.slice(filenr, filenr + this.parallelProcessing)
@@ -99,6 +100,7 @@ export class SystemVerilogIndexerMap {
             }
         }).then(() => {
             this.building = false;
+            console.timeEnd('build_index');
             if (cancelled) {
                 this.statusbar.text = "SystemVerilog: Indexing cancelled";
             } else {
