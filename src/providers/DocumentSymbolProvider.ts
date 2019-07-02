@@ -5,13 +5,7 @@ import {
     TextDocument,
     Location,
     SymbolKind,
-    Range,
-    TreeDataProvider,
-    TreeItem,
-    Event,
-    EventEmitter,
-    TreeItemCollapsibleState,
-    window
+    Range
 } from 'vscode'
 import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
@@ -84,7 +78,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<List<SymbolInformation>> {
+    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<Array<SymbolInformation>> {
         return new Promise((resolve) => {
             let uri = document.uri;
             var symbols;
@@ -95,7 +89,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                 symbols = workspaceSymbols.get(uri.fsPath);
             }
             else {
-                symbols = new List<SymbolInformation>();
+                symbols = new Array<SymbolInformation>();
             }
 
             var match;
@@ -123,57 +117,6 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             } while (match != null);
 
             resolve(symbols);
-        });
-    }
-}
-
-export class SystemVerilogDocumentSymbolTreeProvider implements TreeDataProvider<TreeItem> {
-    // TODO: Not updating when active file changes
-    private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
-    readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
-
-    private provider: SystemVerilogDocumentSymbolProvider = new SystemVerilogDocumentSymbolProvider();
-
-    public getTreeItem(element: TreeItem): Promise<TreeItem> {
-        return new Promise((resolve, reject) => {
-            resolve(element);
-        });
-    }
-
-    public getChildren(element?: TreeItem): Thenable<TreeItem[]> {
-        return new Promise((resolve, reject) => {
-            let items = [];
-            if (!element) {
-                this.provider.provideDocumentSymbols(window.activeTextEditor.document).then(symbols => {
-                    symbols.forEach(symbol => {
-                        if (symbol.containerName == "") {
-                            let item = new TreeItem(symbol.name)
-                            item.resourceUri = window.activeTextEditor.document.uri;
-                            if (symbols.map(a => a.containerName).indexOf(symbol.name) != 0) {
-                                item.collapsibleState = TreeItemCollapsibleState.Collapsed
-                            }
-                            items.push(item);
-                        }
-                    });
-                })
-            } else {
-                this.provider.provideDocumentSymbols(window.activeTextEditor.document).then(symbols => {
-                    symbols.forEach(symbol => {
-                        if (element.label == symbol.containerName) {
-                            let item = new TreeItem(symbol.name)
-                            item.resourceUri = window.activeTextEditor.document.uri;
-                            item.id = symbol.location.uri.toString();
-                            item.id += ",line:" + symbol.location.range.start.line.toString();
-                            item.id += ",char:" + symbol.location.range.start.line.toString();
-                            if (symbols.map(a => a.containerName).indexOf(symbol.name) != -1) {
-                                item.collapsibleState = TreeItemCollapsibleState.Collapsed
-                            }
-                            items.push(item);
-                        }
-                    });
-                });
-            }
-            resolve(items)
         });
     }
 }
