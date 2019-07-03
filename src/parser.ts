@@ -47,9 +47,9 @@ export class SystemVerilogParser {
         @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-   public get_symbols(document: TextDocument, regex: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<Array<SymbolInformation>> {
+   public get_symbols(document: TextDocument, regex: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<List<SymbolInformation>> {
         return new Promise((resolve) => {
-            var symbols: Array<SymbolInformation> = [];
+            var symbols: List<SymbolInformation> = [];
 
             var match;
             let text = document.getText();
@@ -60,7 +60,7 @@ export class SystemVerilogParser {
                 symbols = workspaceSymbols.get(document.uri.fsPath);
             }
             else {
-                symbols = new Array<SymbolInformation>();
+                symbols = new List<SymbolInformation>();
             }
 
             /*
@@ -90,7 +90,7 @@ export class SystemVerilogParser {
      * @param document
      * @param module
      */
-    public get_portlist(document: TextDocument, module: String): Thenable<Array<SymbolInformation>> {
+    public get_portlist(document: TextDocument, module: String): Thenable<List<SymbolInformation>> {
         return new Promise((resolve) => {
             resolve();
         });
