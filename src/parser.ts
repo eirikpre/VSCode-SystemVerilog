@@ -39,29 +39,19 @@ export class SystemVerilogParser {
 
     /**
         Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
-        If `workspaceSymbols` is not `undefined`, than the object is added to a mapped list to the document's `fsPath`,
-        otherwise add the objects to an empty list and return it.
+        Add the objects to an empty list and return it.
 
         @param document The document in which the command was invoked.
         @param regex pattern that maps symbols, group(1) is the type, group(2) is the name
         @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-   public get_symbols(document: TextDocument, regex: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<List<SymbolInformation>> {
+    public get_symbols(document: TextDocument, regex: RegExp): Thenable<List<SymbolInformation>> {
         return new Promise((resolve) => {
-            var symbols: List<SymbolInformation> = [];
+            var symbols: List<SymbolInformation> = new List<SymbolInformation>();
 
             var match;
             let text = document.getText();
-
-            if (workspaceSymbols) {
-                workspaceSymbols.set(document.uri.fsPath, new List<SymbolInformation>());
-                //pass the reference of the symbols list to add the objects to
-                symbols = workspaceSymbols.get(document.uri.fsPath);
-            }
-            else {
-                symbols = new List<SymbolInformation>();
-            }
 
             /*
                 Matches the regex and uses the index from the regex to find the position

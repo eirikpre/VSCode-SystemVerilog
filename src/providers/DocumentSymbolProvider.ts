@@ -70,25 +70,24 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
 
     /**  
         Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
-        If `workspaceSymbols` is not `undefined`, than the object is added to a mapped list to the document's `fsPath`, 
+        If `documentSymbols` is not `undefined`, than the object is added to it, 
         otherwise add the objects to an empty list and return it.
         
         @param document The document in which the command was invoked.
         @param token A cancellation token.
         @param regex the pattern to match symbols with
-        @param workspaceSymbols maps the list to add the objects to
+        @param documentSymbols the list to add the objects to
         @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp, workspaceSymbols?: FastMap<string, List<SymbolInformation>>): Thenable<Array<SymbolInformation>> {
+    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp, documentSymbols?: List<SymbolInformation>): Thenable<Array<SymbolInformation>> {
         return new Promise((resolve) => {
             let uri = document.uri;
             var symbols;
 
-            if (workspaceSymbols) {
-                workspaceSymbols.set(uri.fsPath, new List<SymbolInformation>());
+            if (documentSymbols) {
                 //pass the reference of the symbols list to add the objects to
-                symbols = workspaceSymbols.get(uri.fsPath);
+                symbols = documentSymbols;
             }
             else {
                 symbols = new Array<SymbolInformation>();

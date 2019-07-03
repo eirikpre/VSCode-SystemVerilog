@@ -4,6 +4,8 @@ import {
     CancellationToken
 } from 'vscode';
 import { SystemVerilogIndexerMap } from '../indexer_map';
+import { List } from 'collections/list';
+
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
     /* 
@@ -28,22 +30,22 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         @return an array of matching SymbolInformation 
     */
     public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SymbolInformation>> {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (query.length === 0) {
                 // Show maximum `NUM_FILES` symbols for speedup
-                let maxSymbols = new Array<SymbolInformation>();
+                let maxSymbols = new List<SymbolInformation>();
 
                 this.indexer.symbols.values().forEach(list => {
                     if (maxSymbols.length + list.length >= this.NUM_FILES) {
                         let limit = this.NUM_FILES - maxSymbols.length;
-                        maxSymbols.concat(list.splice(0, limit));
+                        maxSymbols = maxSymbols.concat(list.splice(0, limit));
                     }
                     else {
-                        maxSymbols.concat(list);
+                        maxSymbols = maxSymbols.concat(list);
                     }
                 });
 
-                resolve(maxSymbols);
+                resolve(maxSymbols.toArray());
             } else {
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
                 let results = new Array<SymbolInformation>();

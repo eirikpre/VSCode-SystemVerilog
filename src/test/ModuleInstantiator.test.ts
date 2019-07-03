@@ -310,7 +310,7 @@ suite('ModuleInstantiator Tests', () => {
 
     fullRange = new vscode.Range(
       document.positionAt(2759),
-      document.positionAt(2980),
+      document.positionAt(2988),
     );
 
     var instance = document.getText(fullRange);

@@ -121,15 +121,15 @@ apper u_apper (
 // -------------------------------------------------------
 
 golden u_golden (
-   .clk      (clk),
-   .reset    (reset),
-   .a        (a),
-   // keep this single comment
-   .b        (b),
-   /* multiline comment should
+    .clk      (clk),
+    .reset    (reset),
+    .a        (a),
+    // keep this single comment
+    .b        (b),
+    /* multiline comment should
  be kept*/
-   .valid    (valid),
-   .c        (c)
+    .valid    (valid),
+    .c        (c)
 );
 
 // -------------------------------------------------------

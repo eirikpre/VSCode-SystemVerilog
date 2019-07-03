@@ -12,6 +12,7 @@ This package adds language support for Verilog/SystemVerilog. It supports System
     ![syntax_example](docs/syntax_example_adder.PNG)
 - Go to symbol in document
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
+- Keyboard shortcut to show the top symbols: `Ctrl + T`
 - Go to definition
 
     Works for module/interface/program/class/package names, and for ports to!
