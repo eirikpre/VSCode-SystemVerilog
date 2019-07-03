@@ -14,9 +14,13 @@ import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbol
 import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
 import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
+import { SystemVerilogIndexerMap } from '../indexer_map';
+import { SystemVerilogParser } from '../parser';
 
 let docProvider: SystemVerilogDocumentSymbolProvider;
 let symProvider: SystemVerilogWorkspaceSymbolProvider;
+let indexer: SystemVerilogIndexerMap;
+let parser: SystemVerilogParser;
 
 let symbols: FastMap<string, List<SymbolInformation>>;
 
@@ -35,12 +39,12 @@ suite('UpdateIndex Tests', () => {
     const sVDocument = await workspace.openTextDocument(uri);
     const nonSVDocument = await workspace.openTextDocument(nonSVUri);
 
-    assert.equal(true, symProvider.isSystemVerilogDocument(sVDocument));
-    assert.equal(false, symProvider.isSystemVerilogDocument(nonSVDocument));
+    assert.equal(true, indexer.isSystemVerilogDocument(sVDocument));
+    assert.equal(false, indexer.isSystemVerilogDocument(nonSVDocument));
 
     //undefined/null document
-    assert.equal(false, symProvider.isSystemVerilogDocument(undefined));
-    assert.equal(false, symProvider.isSystemVerilogDocument(null));
+    assert.equal(false, indexer.isSystemVerilogDocument(undefined));
+    assert.equal(false, indexer.isSystemVerilogDocument(null));
   });
 
   test('test #2: addDocumentSymbols, removeDocumentSymbols', async () => {
@@ -50,7 +54,7 @@ suite('UpdateIndex Tests', () => {
     const nonSVDocument = await workspace.openTextDocument(nonSVUri);
 
     assert.equal(symbols.length, 4);
-    let count = await symProvider.addDocumentSymbols(sVDocument, symbols);
+    let count = await indexer.addDocumentSymbols(sVDocument, symbols);
 
     assert.equal(count, 8);
     assert.equal(symbols.length, 5);
@@ -64,29 +68,29 @@ suite('UpdateIndex Tests', () => {
     });
 
     //non SV document
-    count = await symProvider.addDocumentSymbols(nonSVDocument, symbols);
+    count = await indexer.addDocumentSymbols(nonSVDocument, symbols);
     assert.equal(count, 0);
     assert.equal(symbols.length, 5);
     assert.equal(symbols.get(nonSVUri.fsPath), undefined);
     assert.equal(getSymbolsCount(), 21);
 
     //undefined/null document
-    count = await symProvider.addDocumentSymbols(undefined, symbols);
+    count = await indexer.addDocumentSymbols(undefined, symbols);
     assert.equal(count, 0);
     assert.equal(symbols.length, 5);
     assert.equal(getSymbolsCount(), 21);
 
-    count = await symProvider.addDocumentSymbols(sVDocument, undefined);
+    count = await indexer.addDocumentSymbols(sVDocument, undefined);
     assert.equal(count, 0);
     assert.equal(symbols.length, 5);
     assert.equal(getSymbolsCount(), 21);
 
-    count = await symProvider.addDocumentSymbols(undefined, undefined);
+    count = await indexer.addDocumentSymbols(undefined, undefined);
     assert.equal(count, 0);
     assert.equal(symbols.length, 5);
     assert.equal(getSymbolsCount(), 21);
 
-    count = await symProvider.addDocumentSymbols(null, symbols);
+    count = await indexer.addDocumentSymbols(null, symbols);
     assert.equal(count, 0);
     assert.equal(symbols.length, 5);
     assert.equal(getSymbolsCount(), 21);
@@ -99,13 +103,13 @@ suite('UpdateIndex Tests', () => {
     const nonSVDocument = await workspace.openTextDocument(nonSVUri);
 
     assert.equal(symbols.length, 4);
-    let count = await symProvider.addDocumentSymbols(sVDocument, symbols);
+    let count = await indexer.addDocumentSymbols(sVDocument, symbols);
 
     assert.equal(count, 8);
     assert.equal(symbols.length, 5);
     assert.equal(getSymbolsCount(), 21);
 
-    count = symProvider.removeDocumentSymbols(sVDocument.uri.fsPath, symbols);
+    count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, symbols);
 
     documentSymbols.forEach((symbolName) => {
       if (symbolExists(symbolName)) {
@@ -118,28 +122,28 @@ suite('UpdateIndex Tests', () => {
     assert.equal(getSymbolsCount(), 13);
 
     //non SV document
-    count = symProvider.removeDocumentSymbols(nonSVDocument.uri.fsPath, symbols);
+    count = indexer.removeDocumentSymbols(nonSVDocument.uri.fsPath, symbols);
     assert.equal(count, 0);
     assert.equal(symbols.length, 4);
     assert.equal(getSymbolsCount(), 13);
 
     //undefined/null document
-    count = symProvider.removeDocumentSymbols(undefined, symbols);
+    count = indexer.removeDocumentSymbols(undefined, symbols);
     assert.equal(count, 0);
     assert.equal(symbols.length, 4);
     assert.equal(getSymbolsCount(), 13);
 
-    count = symProvider.removeDocumentSymbols(sVDocument.uri.fsPath, undefined);
+    count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, undefined);
     assert.equal(count, 0);
     assert.equal(symbols.length, 4);
     assert.equal(getSymbolsCount(), 13);
 
-    count = symProvider.removeDocumentSymbols(undefined, undefined);
+    count = indexer.removeDocumentSymbols(undefined, undefined);
     assert.equal(count, 0);
     assert.equal(symbols.length, 4);
     assert.equal(getSymbolsCount(), 13);
 
-    count = symProvider.removeDocumentSymbols(null, symbols);
+    count = indexer.removeDocumentSymbols(null, symbols);
     assert.equal(count, 0);
     assert.equal(symbols.length, 4);
     assert.equal(getSymbolsCount(), 13);
@@ -157,13 +161,10 @@ async function setUp() {
   const settings = workspace.getConfiguration();
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
 
+  parser = new SystemVerilogParser();
+  indexer = new SystemVerilogIndexerMap(statusBar, parser);
   docProvider = new SystemVerilogDocumentSymbolProvider();
-  symProvider = new SystemVerilogWorkspaceSymbolProvider(
-    statusBar, docProvider,
-    settings.get('systemverilog.disableIndexing'),
-    settings.get('systemverilog.excludeIndexing'),
-    settings.get('systemverilog.parallelProcessing'),
-  );
+  symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
   symbols = new FastMap<string, List<SymbolInformation>>();
 

@@ -17,6 +17,8 @@ import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolP
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
+import { SystemVerilogParser } from './parser';
+import { SystemVerilogIndexerMap } from './indexer_map';
 
 /**
  * this method is called when your extension is activate.
@@ -25,7 +27,7 @@ import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator'
  * @param context the current context of the extension.
  */
 export function activate(context: ExtensionContext) {
-  const settings = workspace.getConfiguration();
+
   const selector: DocumentSelector = [{
     scheme: 'file',
     language: 'systemverilog'
@@ -34,21 +36,19 @@ export function activate(context: ExtensionContext) {
     language: 'verilog'
   }];
 
-  // TODO: Add setting to turn off indexing.
-  // (To reduce RAM/CPU usage)
-
+  // Status Bar
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
   statusBar.text = 'SystemVerilog: Active';
   statusBar.show();
   statusBar.command = 'systemverilog.build_index';
+  
+  // Back-end classes
+  const parser = new SystemVerilogParser();
+  const indexer = new SystemVerilogIndexerMap(statusBar, parser);
 
+  // Providers
   const docProvider = new SystemVerilogDocumentSymbolProvider();
-  const symProvider = new SystemVerilogWorkspaceSymbolProvider(
-    statusBar, docProvider,
-    settings.get('systemverilog.disableIndexing'),
-    settings.get('systemverilog.excludeIndexing'),
-    settings.get('systemverilog.parallelProcessing'),
-  );
+  const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
   const defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
   const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
   const moduleInstantiator = new SystemVerilogModuleInstantiator(symProvider);
@@ -58,7 +58,8 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
-  context.subscriptions.push(commands.registerCommand('systemverilog.build_index', rebuild));
+  const build_handler = () => { indexer.rebuild() };
+  context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
 
   // WIP
@@ -69,31 +70,21 @@ export function activate(context: ExtensionContext) {
   // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
   context.subscriptions.push(workspace.onDidSaveTextDocument((document: TextDocument) => {
-    symProvider.onSave(document);
+    indexer.onSave(document);
   }));
 
-  let watcher = workspace.createFileSystemWatcher(symProvider.globPattern, false, false, false);
+  let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
 
   watcher.onDidCreate((uri) => {
-    symProvider.onCreate(uri);
+    indexer.onCreate(uri);
   });
 
   watcher.onDidDelete((uri) => {
-    symProvider.onDelete(uri);
+    indexer.onDelete(uri);
   });
 
   context.subscriptions.push(watcher);
 
-  /**
-    Builds the symbols index. Scans the workspace for symbols.
-  */
-  function rebuild() {
-    if (!symProvider.building) {
-      symProvider.exclude = settings.get('systemverilog.excludeIndexing'),
-        symProvider.parallelProcessing = settings.get('systemverilog.parallelProcessing');
-      symProvider.build_index();
-    }
-  }
   /**
     Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.
     Looks up the module's definition, and parses it to build the module's instance.

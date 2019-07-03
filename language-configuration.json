@@ -51,8 +51,8 @@
     "folding": {
         "offSide": false,
         "markers": {
-            "start": "^\\s*`(ifdef|ifndef|elsif|else)",
-            "end": "^\\s*`(elsif|else|endif)"
+            "start": "^\\s*`(ifdef|ifndef|elsif|else)|(\/\/#region)",
+            "end": "^\\s*`(elsif|else|endif)|(\/\/#endregion)"
         },
     }
 }

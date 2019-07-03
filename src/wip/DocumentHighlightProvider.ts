@@ -1,6 +1,6 @@
 'use strict';
 
-import {SystemVerilogDocumentSymbolProvider} from './DocumentSymbolProvider';
+import {SystemVerilogDocumentSymbolProvider} from '../providers/DocumentSymbolProvider';
 import {DocumentHighlightProvider, DocumentHighlight, DocumentHighlightKind, CancellationToken, TextDocument, Position, Range} from 'vscode';
 
 export default class SystemVerilogDocumentHighlightProvider implements DocumentHighlightProvider {
