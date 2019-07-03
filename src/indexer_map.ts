@@ -47,7 +47,6 @@ export class SystemVerilogIndexerMap {
             }
 
             this.build_index();
-
         }
     };
 

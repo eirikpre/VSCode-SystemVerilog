@@ -6,6 +6,7 @@ import {
 import { SystemVerilogIndexerMap } from '../indexer_map';
 import { List } from 'collections/list';
 
+
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
     /* 
     * this.symbols: filePath => List<SymbolInformation>
