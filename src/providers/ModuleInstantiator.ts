@@ -26,7 +26,7 @@ const parameter_key_symbol = "parameter";
 /** 
  * space padding
  */
-const padding = "   ";
+const padding = " ".repeat(workspace.getConfiguration(null, null).get('editor.tabSize'));
 
 /** 
  * non-breaking white space

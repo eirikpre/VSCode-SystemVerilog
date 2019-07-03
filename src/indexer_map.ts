@@ -9,19 +9,19 @@ export class SystemVerilogIndexerMap {
     * each entry's key represents a file path,
     * and the entry's value is a list of the symbols that exist in the file
     */
-   public symbols: FastMap<string, List<SymbolInformation>>;
-   public building: Boolean = false;
-   public statusbar: StatusBarItem;
-   public parser: SystemVerilogParser;
-   public symbolsCount: number;
+    public symbols: FastMap<string, List<SymbolInformation>>;
+    public building: Boolean = false;
+    public statusbar: StatusBarItem;
+    public parser: SystemVerilogParser;
+    public symbolsCount: number;
 
-   public NUM_FILES: number = 250;
-   public parallelProcessing: number = 50;
-   public systemVerilogFileExtensions = ["sv", "v", "svh", "vh"];
-   public globPattern: string = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
-   public exclude: GlobPattern = undefined;
+    public NUM_FILES: number = 250;
+    public parallelProcessing: number = 50;
+    public systemVerilogFileExtensions = ["sv", "v", "svh", "vh"];
+    public globPattern: string = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
+    public exclude: GlobPattern = undefined;
 
-   private regex = new RegExp([
+    private regex = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
         , /(module|class|interface|package|program)\s+/
         , /(?:automatic\s+)?/
@@ -45,9 +45,9 @@ export class SystemVerilogIndexerMap {
             if (parallelProcessing) {
                 this.parallelProcessing = parallelProcessing;
             }
-            
+
             this.build_index();
-            
+
         }
     };
 
@@ -63,7 +63,7 @@ export class SystemVerilogIndexerMap {
 
         @return status message when indexing is successful or failed with an error.
     */
-   public async build_index(): Promise<any> {
+    public async build_index(): Promise<any> {
         var cancelled = false;
         this.building = true;
         this.symbolsCount = 0;
@@ -87,10 +87,13 @@ export class SystemVerilogIndexerMap {
                 await Promise.all(subset.map(uri => {
                     return new Promise(async (resolve) => {
                         resolve(workspace.openTextDocument(uri).then(doc => {
-                            return this.parser.get_symbols(doc, this.regex, this.symbols)
+                            return this.parser.get_symbols(doc, this.regex);
                         }))
                     }).then((output: List<SymbolInformation>) => {
-                        this.symbolsCount += output.length;
+                        if (output.length > 0) {
+                            this.symbols.set(uri.fsPath, output);
+                            this.symbolsCount += output.length;
+                        }
                     }).catch((error) => {
                         console.log("SystemVerilog: Indexing: Unable to process file: ", uri.toString());
                         console.log(error);
@@ -137,7 +140,7 @@ export class SystemVerilogIndexerMap {
         @param document the document that's been saved
         @return status message when indexing is successful or failed with an error.
     */
-   public async onSave(document: TextDocument): Promise<any> {
+    public async onSave(document: TextDocument): Promise<any> {
         this.building = true;
 
         return await new Promise(async (resolve) => {
@@ -255,6 +258,9 @@ export class SystemVerilogIndexerMap {
                 return this.parser.get_symbols(document, this.regex);
             }))
         }).then((output: List<SymbolInformation>) => {
+            if (output.length > 0) {
+                symbolsMap.set(document.uri.fsPath, output);
+            }
             return output.length;
         });
     }
