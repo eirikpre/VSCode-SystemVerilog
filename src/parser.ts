@@ -45,13 +45,36 @@ export class SystemVerilogParser {
 
     private r_decl_block: RegExp = new RegExp([
         /(?<=^\s*)/,
-        /(?<type>module|program|interface|class|task|function|package|primitive|config)/,
-        // Mask automatic and return type
-        /\s+(?:automatic\s+)?(?:(?:\w*\s+){1,2}(?:\s*\[.*?\]\s*)?)?/,
+        /(?<type>module|program|interface|package|primitive|config)\s+/,
+        // Mask automatic
+        /(?:automatic\s+)?/,
         /(?<name>\w+)/,
-        /(?<port_param>\s*#?(\s*\([\W\w]*?\)))*?;/,
+        /(?<params>\s*#\s*\([\w\W]*?\))?/,
+        /(?<ports>\s*\([\W\w]*?\))?/,
+        /\s*;/,
         /(?<body>[\W\w]*?)/,
         /(?<end>end\1)/,
+    ].map(x => x.source).join(''), 'mg');
+
+    private r_decl_class: RegExp = new RegExp([
+        /(?<=^\s*(virtual)?\s*)/,
+        /(?<type>class)\s+/,
+        /(?<name>\w+)/,
+        /(\s+(extends|implements)\s+[\w\W]+?)*?/,
+        /\s*;/,
+        /(?<body>[\w\W]*?)/,
+        /(?<end>endclass)/
+    ].map(x => x.source).join(''), 'mg');
+
+    private r_decl_method: RegExp = new RegExp([
+        /(?<=^\s*(virtual|local|extern|pure\s+virtual)?\s*)/,
+        /(?<type>(function|task))\s+/,
+        /(?<return>[\w:\[\]\s*]+\s*)?/,
+        /\b(?<name>\w+)/,
+        /(?<ports>\s*\([\W\w]*?\))?/,
+        /\s*;/,
+        /(?<body>[\w\W]*?)/,
+        /(?<end>end(function|task))/
     ].map(x => x.source).join(''), 'mg');
 
     private r_typedef: RegExp = new RegExp([
@@ -82,7 +105,7 @@ export class SystemVerilogParser {
         let sub_blocks: RegExpMatchArray[] = [];
 
         // Find blocks
-        let regexes = [this.r_decl_block, this.r_typedef, this.r_instantiation];
+        let regexes = [this.r_decl_block, this.r_decl_class, this.r_decl_method, this.r_typedef, this.r_instantiation];
         for (let i = 0; i < regexes.length; i++) {
             while(1) {
                 let match: RegExpMatchArray = regexes[i].exec(text);
