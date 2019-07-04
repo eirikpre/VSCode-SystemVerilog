@@ -31,7 +31,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 // Show maximum `NUM_FILES` symbols for speedup
                 let maxSymbols = new List<SymbolInformation>();
 
-                this.indexer.symbols.values().forEach(list => {
+                this.indexer.symbols.forEach(list => {
                     if (maxSymbols.length + list.length >= this.NUM_FILES) {
                         let limit = this.NUM_FILES - maxSymbols.length;
                         maxSymbols = maxSymbols.concat(list.splice(0, limit));
@@ -46,7 +46,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
                 let results = new Array<SymbolInformation>();
 
-                this.indexer.symbols.values().forEach(list => {
+                this.indexer.symbols.forEach(list => {
                     list.forEach(symbol => {
                         if (exactMatch === true) {
                             if (symbol.name == query) {
@@ -75,7 +75,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             return undefined;
         } else {
             let symbolInfo = undefined;
-            this.indexer.symbols.values().forEach(list => {
+            this.indexer.symbols.forEach(list => {
                 list.forEach(symbol => {
                     if (symbol.name == query && symbol.containerName == "module") {
                         symbolInfo = symbol;

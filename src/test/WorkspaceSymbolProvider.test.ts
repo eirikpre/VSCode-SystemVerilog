@@ -245,7 +245,7 @@ function getSymbolsCount(): number {
 
   let count = 0;
 
-  symbols.values().forEach(list => {
+  symbols.forEach(list => {
     count += list.length;
   });
 
@@ -265,7 +265,7 @@ function symbolExists(symbolName: string): boolean {
 
   let exists = false;
 
-  symbols.values().forEach(list => {
+  symbols.forEach(list => {
     list.forEach((symbol: SymbolInformation) => {
       if (symbolName === symbol.name) {
         exists = true;

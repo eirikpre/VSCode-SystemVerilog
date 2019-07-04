@@ -9,6 +9,7 @@ export function getSymbolKind(name: String): SymbolKind {
         case 'parameter':
         case 'localparam': return SymbolKind.Constant;
         case 'package':
+        case 'program':
         case 'import': return SymbolKind.Package;
         case 'wire':
         case 'reg':
@@ -26,7 +27,6 @@ export function getSymbolKind(name: String): SymbolKind {
         case 'typedef': return SymbolKind.TypeParameter;
         case 'genvar': return SymbolKind.Operator;
         case 'module':
-        case 'program': return SymbolKind.Module;
         default: return SymbolKind.Variable;
     }
     /* Unused/Free SymbolKind icons
