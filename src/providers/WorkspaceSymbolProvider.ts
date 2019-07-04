@@ -1,8 +1,4 @@
-import {
-    SymbolInformation,
-    WorkspaceSymbolProvider,
-    CancellationToken
-} from 'vscode';
+import { SymbolInformation, WorkspaceSymbolProvider, CancellationToken } from 'vscode';
 import { SystemVerilogIndexerMap } from '../indexer_map';
 import { List } from 'collections/list';
 

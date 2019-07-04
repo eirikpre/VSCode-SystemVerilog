@@ -9,6 +9,7 @@ import {
 } from 'vscode'
 import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
+import { SystemVerilogParser } from '../parser';
 
 // See test/SymbolKind_icons.png for an overview of the icons
 export function getSymbolKind(name: String): SymbolKind {
@@ -43,6 +44,7 @@ export function getSymbolKind(name: String): SymbolKind {
 }
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
+    private parser: SystemVerilogParser;
     // XXX: Does not match input/output/inout ports, eg input logic din, ..
     private illegalTypes = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
 
@@ -54,21 +56,24 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         // Illegal Symbol types
         , this.illegalTypes
         // Symbol type
-        , /([:\w]+)\s+/
+        , /\b([:\w]+)\s+/
         // (modifier? returnType [.*]?      | parameterlist)?
-        , /(?:(?:\w*\s+)?\w+(?:\s*\[.*?\])?\s+|\s*#\s*\([\s\S]*?\)\s*)?/
+        , /(?:(?:\w*\s+)?\w+(?:\s*\[.*?\])?\s*|\s*#\s*\([\s\S]*?\)\s*)?/
         // Symbol name, ignore multiple defines FIXME
         , this.comment, this.illegalTypes
-        , /(\w+)(?:\s*,\s*\w+)*?/
+        , /(?<!\w)(\w+)(?:\s*,\s*\w+)*?/
         , this.comment
         // Port-list | class suffix
         , /(?:\s*\([\s\S]*?\)|(?:\s+(?:extends|implements)\s+\w+)+)?/
         // End of definition
-        , /\s*;/
+        , /\s*/
     ].map(x => x.source).join(''), 'mg');
 
+    constructor(parser) {
+        this.parser = parser;
+    }
 
-    /**  
+    /**
         Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
         If `documentSymbols` is not `undefined`, than the object is added to it, 
         otherwise add the objects to an empty list and return it.
@@ -100,24 +105,25 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                 regex = this.regex;
             }
             /* 
-                Matches the regex and uses the index from the regex to find the position
+            Matches the regex and uses the index from the regex to find the position
             */
-            do {
-                match = regex.exec(text);
-                if (match) {
-                    let symbolInfo = new SymbolInformation(
-                        match[2],
-                        getSymbolKind(match[1]),
-                        match[1],
-                        new Location(document.uri,
-                            new Range(document.positionAt(match.index),
-                                document.positionAt(match.index + match[0].length)
-                            )))
-                    symbols.push(symbolInfo);
-                }
-            } while (match != null);
+            resolve(this.parser.get_all_recursive(document,text));
+            // do {
+            //     match = regex.exec(text);
+            //     if (match) {
+            //         let symbolInfo = new SymbolInformation(
+            //             match[2],
+            //             getSymbolKind(match[1]),
+            //             match[1],
+            //             new Location(document.uri,
+            //                 new Range(document.positionAt(match.index),
+            //                     document.positionAt(match.index + match[0].length)
+            //                 )))
+            //         symbols.push(symbolInfo);
+            //     }
+            // } while (match != null);
 
-            resolve(symbols);
+            // resolve(symbols);
         });
     }
 }

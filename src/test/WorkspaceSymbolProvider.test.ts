@@ -163,7 +163,7 @@ async function setUp() {
 
   parser = new SystemVerilogParser();
   indexer = new SystemVerilogIndexerMap(statusBar, parser);
-  docProvider = new SystemVerilogDocumentSymbolProvider();
+  docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
   symbols = new FastMap<string, List<SymbolInformation>>();

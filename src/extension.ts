@@ -19,6 +19,7 @@ import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbo
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexerMap } from './indexer_map';
+import { SystemVerilogCompletionItemProvider } from './wip/CompletionItemProvider';
 
 /**
  * this method is called when your extension is activate.
@@ -47,7 +48,7 @@ export function activate(context: ExtensionContext) {
   const indexer = new SystemVerilogIndexerMap(statusBar, parser);
 
   // Providers
-  const docProvider = new SystemVerilogDocumentSymbolProvider();
+  const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
   const defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
   const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
@@ -63,6 +64,8 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
 
   // WIP
+  // const completionProvider = new SystemVerilogCompletionItemProvider(indexer);
+  // context.subscriptions.push(languages.registerCompletionItemProvider(selector, completionProvider));
   // window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
   // window.registerTreeDataProvider('systemverilogDocuementSymbols', new SystemVerilogDocumentSymbolTreeProvider())
 
