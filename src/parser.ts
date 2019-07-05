@@ -60,7 +60,7 @@ export class SystemVerilogParser {
         /(?<=^\s*(virtual)?\s*)/,
         /(?<type>class)\s+/,
         /(?<name>\w+)/,
-        /(\s+(extends|implements)\s+[\w\W]+?)*?/,
+        /(\s+(extends|implements)\s+[\w\W]+?|\s*#\s*\([\w\W]+?\))*?/,
         /\s*;/,
         /(?<body>[\w\W]*?)/,
         /(?<end>endclass)/
