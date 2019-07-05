@@ -8,8 +8,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
-## [0.7.1] - 2019.07.02
+## [0.7.1] - 2019.07.05
 - Back-end update to separate indexation and parsing from the providers
+- Work-in-Progress shell for CompletionProvider thanks to `Eivindfy`
 
 ## [0.7.0]
 - Instantiate module from already indexed module, big thanks to `oehaddouchi`

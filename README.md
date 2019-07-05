@@ -46,6 +46,7 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 See changelog for mode details
 ### 0.7
 - Instantiate module from already indexed module, thanks to `oehaddouchi`
+- Update to documentSymbolProvider
 ### 0.6
 - Stability and performance upgrade
 - PCRE Regexes

@@ -19,7 +19,6 @@ import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbo
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexerMap } from './indexer_map';
-import { SystemVerilogCompletionItemProvider } from './wip/CompletionItemProvider';
 
 /**
  * this method is called when your extension is activate.
