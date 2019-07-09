@@ -163,7 +163,7 @@ async function setUp() {
 
   parser = new SystemVerilogParser();
   indexer = new SystemVerilogIndexerMap(statusBar, parser);
-  docProvider = new SystemVerilogDocumentSymbolProvider();
+  docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
   symbols = new FastMap<string, List<SymbolInformation>>();
@@ -245,7 +245,7 @@ function getSymbolsCount(): number {
 
   let count = 0;
 
-  symbols.values().forEach(list => {
+  symbols.forEach(list => {
     count += list.length;
   });
 
@@ -265,7 +265,7 @@ function symbolExists(symbolName: string): boolean {
 
   let exists = false;
 
-  symbols.values().forEach(list => {
+  symbols.forEach(list => {
     list.forEach((symbol: SymbolInformation) => {
       if (symbolName === symbol.name) {
         exists = true;

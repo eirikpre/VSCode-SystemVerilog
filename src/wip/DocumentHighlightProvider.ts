@@ -21,33 +21,33 @@ export default class SystemVerilogDocumentHighlightProvider implements DocumentH
                 });
             }
             if (word === "") { reject() }
-            let symbolProvider = new(SystemVerilogDocumentSymbolProvider);
-            symbolProvider.provideDocumentSymbols(document, token).then( symbols => {
-                return symbols.map(e => e.name);
-            }).then( names => {
-                if (names.indexOf(word) > -1) {
-                    return word;
-                }
-            }).then( word => {
-                var highlights = [];
-                var regex = new RegExp('\b(' + word + ')\b');
-                for (var i = 0; i < document.lineCount; i++) {
-                    var line = document.lineAt(i);
-                    var match = regex.exec(line.text);
+            // let symbolProvider = new(SystemVerilogDocumentSymbolProvider);
+            // symbolProvider.provideDocumentSymbols(document, token).then( symbols => {
+            //     return symbols.map(e => e.name);
+            // }).then( names => {
+            //     if (names.indexOf(word) > -1) {
+            //         return word;
+            //     }
+            // }).then( word => {
+            //     var highlights = [];
+            //     var regex = new RegExp('\b(' + word + ')\b');
+            //     for (var i = 0; i < document.lineCount; i++) {
+            //         var line = document.lineAt(i);
+            //         var match = regex.exec(line.text);
                     
-                    if (match !== null) {
-                        highlights.push(new DocumentHighlight(new Range(
-                            line.lineNumber,
-                            line.text.indexOf(match[1]),
-                            line.lineNumber, 
-                            line.text.indexOf(match[1]) + match[2].length
-                        )))
-                    }
-                }
-                return highlights
-            }).then( h => {
-                resolve(h)
-            });
+            //         if (match !== null) {
+            //             highlights.push(new DocumentHighlight(new Range(
+            //                 line.lineNumber,
+            //                 line.text.indexOf(match[1]),
+            //                 line.lineNumber, 
+            //                 line.text.indexOf(match[1]) + match[2].length
+            //             )))
+            //         }
+            //     }
+            //     return highlights
+            // }).then( h => {
+            //     resolve(h)
+            // });
         });
     }
 }
