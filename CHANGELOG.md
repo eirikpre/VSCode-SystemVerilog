@@ -8,6 +8,10 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.8] - 2019.07.16
+- Compile an opened document using `Verilator` simulator, display errors/warnings as `Diagnostics` in documents: `oehaddouchi`
+- Add output channel `SystemVerilog` : `oehaddouchi`
+
 ## [0.7.1] - 2019.07.05
 - Back-end update to separate indexation and parsing from the providers
 - Work-in-Progress shell for CompletionProvider thanks to `Eivindfy`

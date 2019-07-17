@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.7.1",
+    "version": "0.8.0",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -55,6 +55,26 @@
                         "type": "string",
                         "default": "insert globPattern here",
                         "description": "Exclude files from indexing by a globPattern"
+                    },
+                    "systemverilog.verilator.path": {
+                        "type": "string",
+                        "default": "",
+                        "description": "The path to Verilator executable (for Windows, it's a path to a binary executable .exe, for Linux, it's a path to the /bin directory)"
+                    },
+                    "systemverilog.verilator.includesDirectory": {
+                        "type": "string",
+                        "default": "",
+                        "description": "Directory to search for includes. (Used for the `I<directory.path>` command)"
+                    },
+                    "systemverilog.verilator.arguments": {
+                        "type": "string",
+                        "default": "",
+                        "description": "Verilator's runtime arguments, `--lint-only -I<directory.path>` is used by default."
+                    },
+                    "systemverilog.verilator.enableStyleWarnings": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable style warnings (add -Wall to Verilator's runtime arguments)."
                     }
                 }
             }
@@ -117,6 +137,10 @@
             {
                 "command": "systemverilog.auto_instantiate",
                 "title": "SystemVerilog: Auto instantiate modules in workspace"
+            },
+            {
+                "command": "systemverilog.compile",
+                "title": "SystemVerilog: Compile the opened document"
             }
         ]
     },
@@ -135,6 +159,7 @@
         "vscode": "^1.1.35"
     },
     "dependencies": {
-        "collections": "^5.1.9"
+        "collections": "^5.1.9",
+        "child_process": "^1.0.2"
     }
 }

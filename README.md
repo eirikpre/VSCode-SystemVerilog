@@ -22,12 +22,32 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Instantiate module from already indexed module
 
     ![moduleInit_example](docs/moduleInit_demo.gif)
+- Compile opened document using `Verilator`
+
+    ![moduleInit_example](docs/compileDocument_demo.gif)
 
 
 ## Settings
 - Disable indexing
 - Exclude files from indexing
 - Number of files to process in parallel during indexing
+### Verilator
+- `systemverilog.verilator.path`: _string_, the path to `verilator` in your environment
+  * Windows: A path to the binary executable `verilator.exe`
+  * Linux: A path to the `~/bin/verilator` directory
+  * Dafault: if left blank, `verilator` command will be used.
+
+- `systemverilog.verilator.includesDirectory`: _string_, Added to `I<directory.path>` command.
+  * Windows: A path to the binary extable `verilator.exe`
+  * Linux: A path to the `/bin` directory
+  * Default: if left blank, the root directory for the compiled document will be used.
+
+- `systemverilog.verilator.arguments`: _string_, runtime arguments to add
+  * `--lint-only -I<directory.path>` is used by default.
+
+- `systemverilog.verilator.enableStyleWarnings`: _boolean_, , enables style warnings.
+  * Adds `-Wall` to the runtime arguments.
+
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
@@ -44,6 +64,9 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Release Notes
 See changelog for mode details
+### 0.8
+- Compile an opened document using `Verilator` simulator, display errors/warnings as `Diagnostics` in documents: `oehaddouchi`
+- Add output channel `SystemVerilog` : `oehaddouchi`
 ### 0.7
 - Instantiate module from already indexed module, thanks to `oehaddouchi`
 - Update to documentSymbolProvider
