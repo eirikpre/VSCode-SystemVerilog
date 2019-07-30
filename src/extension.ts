@@ -1,6 +1,5 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import 'vscode';
 import {
   workspace,
   window,
@@ -17,6 +16,7 @@ import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolP
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
+import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexerMap } from './indexer_map';
 
@@ -36,15 +36,18 @@ export function activate(context: ExtensionContext) {
     language: 'verilog'
   }];
 
+  //Output Channel
+  var outputChannel = window.createOutputChannel("SystemVerilog");
+
   // Status Bar
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
   statusBar.text = 'SystemVerilog: Active';
   statusBar.show();
   statusBar.command = 'systemverilog.build_index';
-  
+
   // Back-end classes
   const parser = new SystemVerilogParser();
-  const indexer = new SystemVerilogIndexerMap(statusBar, parser);
+  const indexer = new SystemVerilogIndexerMap(statusBar, parser, outputChannel);
 
   // Providers
   const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
@@ -52,6 +55,7 @@ export function activate(context: ExtensionContext) {
   const defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
   const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
   const moduleInstantiator = new SystemVerilogModuleInstantiator(symProvider);
+  const documentCompiler = new SystemVerilogCompiler(outputChannel);
 
   context.subscriptions.push(statusBar);
   context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
@@ -61,6 +65,7 @@ export function activate(context: ExtensionContext) {
   const build_handler = () => { indexer.rebuild() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
+  context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileDocument));
 
   // WIP
   // const completionProvider = new SystemVerilogCompletionItemProvider(indexer);
@@ -121,6 +126,14 @@ export function activate(context: ExtensionContext) {
         }
       }
     });
+  }
+
+  /**
+    Compiles the document opened in the editor, 
+    and displays `Diagnostics` to the `PROBLEMS` panel.
+  */
+  function compileDocument() {
+    documentCompiler.compileOpenedDocument(compilerType.Verilator);
   }
 }
 

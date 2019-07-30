@@ -1,6 +1,6 @@
 import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
-import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri } from 'vscode';
+import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
 
 export class SystemVerilogIndexerMap {
@@ -21,6 +21,8 @@ export class SystemVerilogIndexerMap {
     public globPattern: string = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
     public exclude: GlobPattern = undefined;
 
+    public outputChannel: OutputChannel;
+
     private regex = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
         , /(module|class|interface|package|program)\s+/
@@ -30,9 +32,11 @@ export class SystemVerilogIndexerMap {
         , /(end\1)/
     ].map(x => x.source).join(''), 'mg');
 
-    constructor(statusbar: StatusBarItem, parser: SystemVerilogParser) {
+    constructor(statusbar: StatusBarItem, parser: SystemVerilogParser, channel: OutputChannel) {
         this.statusbar = statusbar;
         this.parser = parser;
+        this.outputChannel = channel;
+
         const settings = workspace.getConfiguration();
         const exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
         const parallelProcessing: number = settings.get('systemverilog.parallelProcessing');
@@ -94,8 +98,8 @@ export class SystemVerilogIndexerMap {
                             this.symbolsCount += output.length;
                         }
                     }).catch((error) => {
-                        console.log("SystemVerilog: Indexing: Unable to process file: ", uri.toString());
-                        console.log(error);
+                        this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + uri.toString());
+                        this.outputChannel.appendLine(error);
                         return undefined
                     });
                 }));
@@ -157,8 +161,8 @@ export class SystemVerilogIndexerMap {
             this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
         }).catch((error) => {
             this.building = false;
-            console.log("SystemVerilog: Indexing: Unable to process file: ", document.uri.toString());
-            console.log(error);
+            this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + document.uri.toString());
+            this.outputChannel.appendLine(error);
         });
     }
 
@@ -182,8 +186,8 @@ export class SystemVerilogIndexerMap {
             this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
         }).catch((error) => {
             this.building = false;
-            console.log("SystemVerilog: Indexing: Unable to process file: ", uri.toString());
-            console.log(error);
+            this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + uri.toString());
+            this.outputChannel.appendLine(error);
         });
     }
 
@@ -205,7 +209,7 @@ export class SystemVerilogIndexerMap {
             this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
         }).catch((error) => {
             this.building = false;
-            console.log(error);
+            this.outputChannel.appendLine(error);
         });
     }
 

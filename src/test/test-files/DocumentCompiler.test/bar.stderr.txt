@@ -1,0 +1,9 @@
+%Warning-UNUSED: FILEPATH_PLACEHOLDER:13: Signal is not used: clk
+%Warning-UNUSED: Use "/* verilator lint_off UNUSED */" and lint_on around source to disable this message.
+%Warning-UNUSED: FILEPATH_PLACEHOLDER:14: Signal is not used: reset
+%Warning-UNUSED: FILEPATH_PLACEHOLDER:15: Signal is not used: a
+%Warning-UNUSED: FILEPATH_PLACEHOLDER:17: Signal is not used: b
+%Warning-UNUSED: FILEPATH_PLACEHOLDER:20: Signal is not used: valid
+%Warning-UNDRIVEN: FILEPATH_PLACEHOLDER:23: Signal is not driven: tmp_c
+%Error: Exiting due to 6 warning(s)
+%Error: Command Failed /usr/bin/verilator_bin --lint-only -sv -Wall FILEPATH_PLACEHOLDER

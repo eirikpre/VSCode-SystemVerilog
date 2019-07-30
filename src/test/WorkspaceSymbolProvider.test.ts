@@ -33,21 +33,7 @@ let nonSVUri = Uri.file(path.join(`${__dirname + testFolderLocation}test-files/f
 
 suite('UpdateIndex Tests', () => {
 
-  test('test #1: isSystemVerilogDocument', async () => {
-    await setUp();
-
-    const sVDocument = await workspace.openTextDocument(uri);
-    const nonSVDocument = await workspace.openTextDocument(nonSVUri);
-
-    assert.equal(true, indexer.isSystemVerilogDocument(sVDocument));
-    assert.equal(false, indexer.isSystemVerilogDocument(nonSVDocument));
-
-    //undefined/null document
-    assert.equal(false, indexer.isSystemVerilogDocument(undefined));
-    assert.equal(false, indexer.isSystemVerilogDocument(null));
-  });
-
-  test('test #2: addDocumentSymbols, removeDocumentSymbols', async () => {
+  test('test #1: addDocumentSymbols, removeDocumentSymbols', async () => {
     await setUp();
 
     const sVDocument = await workspace.openTextDocument(uri);
@@ -96,7 +82,7 @@ suite('UpdateIndex Tests', () => {
     assert.equal(getSymbolsCount(), 21);
   });
 
-  test('test #3: removeDocumentSymbols', async () => {
+  test('test #2: removeDocumentSymbols', async () => {
     await setUp();
 
     const sVDocument = await workspace.openTextDocument(uri);
@@ -162,7 +148,7 @@ async function setUp() {
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
 
   parser = new SystemVerilogParser();
-  indexer = new SystemVerilogIndexerMap(statusBar, parser);
+  indexer = new SystemVerilogIndexerMap(statusBar, parser, window.createOutputChannel("SystemVerilog"));
   docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 

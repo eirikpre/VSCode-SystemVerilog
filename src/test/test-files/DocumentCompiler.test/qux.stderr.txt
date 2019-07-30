@@ -1,0 +1,13 @@
+%Warning-DECLFILENAME: test-files/DocumentCompiler.test/qux.sv:17: Filename 'qux' does not match NOTFOUNDMODULE name: externalModule
+%Warning-DECLFILENAME: Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
+%Error: test-files/DocumentCompiler.test/qux.sv:17: Cannot find file containing module: externalModule
+%Error: test-files/DocumentCompiler.test/qux.sv:17: This may be because there's no search path specified with -I<dir>.
+%Error: test-files/DocumentCompiler.test/qux.sv:17: Looked in:
+%Error: test-files/DocumentCompiler.test/qux.sv:17:       externalModule
+%Error: test-files/DocumentCompiler.test/qux.sv:17:       externalModule.v
+%Error: test-files/DocumentCompiler.test/qux.sv:17:       externalModule.sv
+%Error: test-files/DocumentCompiler.test/qux.sv:17:       obj_dir/externalModule
+%Error: test-files/DocumentCompiler.test/qux.sv:17:       obj_dir/externalModule.v
+%Error: test-files/DocumentCompiler.test/qux.sv:17:       obj_dir/externalModule.sv
+%Error: Exiting due to 9 error(s), 1 warning(s)
+%Error: Command Failed /usr/bin/verilator_bin --lint-only -sv -Wall test-files/DocumentCompiler.test/qux.sv

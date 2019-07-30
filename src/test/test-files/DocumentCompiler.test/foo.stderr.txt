@@ -1,0 +1,16 @@
+%Error: FILEPATH_PLACEHOLDER:1: Cannot find include file: environment.sv
+%Error: FILEPATH_PLACEHOLDER:1: This may be because there's no search path specified with -I<dir>.
+%Error: FILEPATH_PLACEHOLDER:1: Looked in:
+%Error: FILEPATH_PLACEHOLDER:1:       environment.sv
+%Error: FILEPATH_PLACEHOLDER:1:       environment.sv.v
+%Error: FILEPATH_PLACEHOLDER:1:       environment.sv.sv
+%Error: FILEPATH_PLACEHOLDER:1:       obj_dir/environment.sv
+%Error: FILEPATH_PLACEHOLDER:1:       obj_dir/environment.sv.v
+%Error: FILEPATH_PLACEHOLDER:1:       obj_dir/environment.sv.sv
+%Error: FILEPATH_PLACEHOLDER:3: Unsupported: SystemVerilog 2005 reserved word not implemented: class
+%Error: FILEPATH_PLACEHOLDER:3: syntax error, unexpected IDENTIFIER
+%Error: FILEPATH_PLACEHOLDER:3: Unsupported: SystemVerilog 2005 reserved word not implemented: extends
+%Error: FILEPATH_PLACEHOLDER:15: Unsupported: SystemVerilog 2005 reserved word not implemented: endclass
+%Error: FILEPATH_PLACEHOLDER:28: syntax error, unexpected <=, expecting IDENTIFIER
+%Error: Exiting due to 14 error(s)
+%Error: Command Failed /usr/bin/verilator_bin --lint-only -sv -Wall FILEPATH_PLACEHOLDER
