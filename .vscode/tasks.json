@@ -15,6 +15,46 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Verilator: Compile",
+            "isBackground": true,
+            // "runOptions": {
+            //     "runOn": "folderOpen",
+            //     "reevaluateOnRerun": true
+            // },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "command": "wsl",
+            "args": [
+                "verilator",
+                "-sv",
+                "--language", "1800-2012",
+                "--lint-only",
+                "`wslpath", "'${relativeFile}'`"
+            ],
+            "problemMatcher": {
+                "owner": "systemverilog",
+                "pattern": [
+                    {
+                        "regexp": "^%([\\w-]+): ([\\w_\\./-]+):(\\d+):\\s+([\\w\\W]+)$",
+                        "severity": 1,
+                        "file": 2,
+                        "line": 3,
+                        "message": 4
+                    }
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
-    ]
+    ],
 }
