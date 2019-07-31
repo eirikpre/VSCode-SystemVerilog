@@ -56,25 +56,10 @@
                         "default": "insert globPattern here",
                         "description": "Exclude files from indexing by a globPattern"
                     },
-                    "systemverilog.verilator.path": {
+                    "systemverilog.verilator.launchConfiguration": {
                         "type": "string",
-                        "default": "",
-                        "description": "The path to Verilator executable (for Windows, it's a path to a binary executable .exe, for Linux, it's a path to the /bin directory)"
-                    },
-                    "systemverilog.verilator.includesDirectory": {
-                        "type": "string",
-                        "default": "",
-                        "description": "Directory to search for includes. (Used for the `I<directory.path>` command)"
-                    },
-                    "systemverilog.verilator.arguments": {
-                        "type": "string",
-                        "default": "",
-                        "description": "Verilator's runtime arguments, `--lint-only -I<directory.path>` is used by default."
-                    },
-                    "systemverilog.verilator.enableStyleWarnings": {
-                        "type": "boolean",
-                        "default": true,
-                        "description": "Enable style warnings (add -Wall to Verilator's runtime arguments)."
+                        "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
+                        "description": "Launch command for verilator"
                     }
                 }
             }
