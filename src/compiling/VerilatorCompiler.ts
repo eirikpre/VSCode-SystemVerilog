@@ -100,33 +100,7 @@ export class VerilatorCompiler extends DocumentCompiler {
             var filePath = normalizeFilePath(document.uri.fsPath);
 
             var args = [];
-
-            if (workspace.getConfiguration().has('systemverilog.verilator.path')) {
-                args.push(workspace.getConfiguration().get('systemverilog.verilator.path'));
-            } else {
-                args.push("verilator");
-            }
-
-            args.push("--lint-only");
-
-            if (isSystemVerilogDocument(document)) {
-                args.push("-sv");
-            }
-
-            if (workspace.getConfiguration().get('systemverilog.verilator.enableStyleWarnings')) {
-                args.push("-Wall");
-            }
-
-            if (workspace.getConfiguration().has('systemverilog.verilator.arguments')) {
-                args.push(workspace.getConfiguration().get('systemverilog.verilator.arguments'));
-            }
-
-            if (this.includesDirectory) {
-                args.push("-I" + this.includesDirectory);
-            }
-            else {
-                args.push("-I" + normalizeFilePath(path.dirname(filePath)));
-            }
+            args.push(workspace.getConfiguration().get('systemverilog.verilator.launchConfiguration'));
 
             args.push(filePath);
 

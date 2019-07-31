@@ -31,23 +31,9 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Disable indexing
 - Exclude files from indexing
 - Number of files to process in parallel during indexing
-### Verilator
-- `systemverilog.verilator.path`: _string_, the path to `verilator` in your environment
-  * Windows: A path to the binary executable `verilator.exe`
-  * Linux: A path to the `~/bin/verilator` directory
-  * Dafault: if left blank, `verilator` command will be used.
-
-- `systemverilog.verilator.includesDirectory`: _string_, Added to `I<directory.path>` command.
-  * Windows: A path to the binary extable `verilator.exe`
-  * Linux: A path to the `/bin` directory
-  * Default: if left blank, the root directory for the compiled document will be used.
-
-- `systemverilog.verilator.arguments`: _string_, runtime arguments to add
-  * `--lint-only -I<directory.path>` is used by default.
-
-- `systemverilog.verilator.enableStyleWarnings`: _boolean_, , enables style warnings.
-  * Adds `-Wall` to the runtime arguments.
-
+- Verilator Launch Configuration
+  * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
+  * If not in path, replace _verilator_ with the appropriate command
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
@@ -55,6 +41,7 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Known Issues
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
+- `randcase` is not matching with `endcase` brackets properly
 
 ## Future
 - Tree view of module hierarchy
