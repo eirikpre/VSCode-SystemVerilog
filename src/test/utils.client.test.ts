@@ -1,11 +1,11 @@
 import * as assert from 'assert';
 import * as path from 'path';
 import { workspace, Uri } from 'vscode';
-import { isSystemVerilogDocument, isVerilogDocument, normalizeFilePath } from './../tools';
+import { isSystemVerilogDocument, isVerilogDocument } from '../utils/client';
 
 const testFolderLocation = '../../../src/test/';
 
-suite('Tools Tests', () => {
+suite('Utils Client Tests', () => {
 
     test('test #1: isSystemVerilogDocument', async () => {
 
@@ -43,21 +43,5 @@ suite('Tools Tests', () => {
         //undefined/null document
         assert.equal(false, isVerilogDocument(undefined));
         assert.equal(false, isVerilogDocument(null));
-    });
-
-    test('test #3: normalizeFilePath', async () => {
-
-        let normalizedPath = "c:/Users/directory/design.sv";
-        let nonNormalizedPath = "c:\\Users\\directory\\design.sv";
-        let normalizedPathMultipleSlashes = "c://Users//directory//design.sv";
-
-        assert.equal(normalizedPath, normalizeFilePath(normalizedPath));
-        assert.equal(normalizedPath, normalizeFilePath(nonNormalizedPath));
-        assert.equal(normalizedPath, normalizeFilePath(normalizedPathMultipleSlashes));
-
-        //undefined/null/empty document
-        assert.equal("", normalizeFilePath(""));
-        assert.equal("", normalizeFilePath(undefined));
-        assert.equal("", normalizeFilePath(null));
     });
 });

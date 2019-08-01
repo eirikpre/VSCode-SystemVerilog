@@ -1,22 +1,14 @@
 import {
-    workspace,
-    window,
     Position,
     Range,
     DiagnosticSeverity,
     Diagnostic,
-    Uri,
-    TextDocument,
-    OutputChannel,
-    DiagnosticCollection
-} from 'vscode';
-import {
-    isSystemVerilogDocument,
-    isVerilogDocument,
-    normalizeFilePath
-} from '../tools';
+    TextDocument
+} from "vscode-languageserver";
 import * as child from 'child_process';
 import * as path from 'path';
+import { isSystemVerilogDocument, isVerilogDocument } from '../utils/server';
+import { getPathFromUri } from '../utils/common';
 import { DocumentCompiler } from './DocumentCompiler';
 
 /** 
@@ -54,14 +46,11 @@ function isDiagnosticDataUndefined(diagnosticData: DiagnosticData): boolean {
 }
 
 /**
- * SystemVerilog Document Compiler class contains functionality 
- * for a compiling a SystemVerilog/Verilog files using Verilator simulator.
+ * Verilator Compiler class contains functionality for compiling SystemVerilog/Verilog files using Verilator simulator.
  * Generates and takes in predefined runtime arguments,
- * and eventually parses the errors/warnings in `stderr` into IDE `Diagnostics`.
+ * and eventually parses the errors/warnings in `stderr` into `Diagnostic` array mapped to each unique document's uri.
 */
 export class VerilatorCompiler extends DocumentCompiler {
-    public includesDirectory: string;
-
     //Regex expressions
     regexError = new RegExp("%Error: (.*):([0-9]+):(.*)");
     regexErrorWarning = new RegExp("%Error-(.*): (.*):([0-9]+):(.*)");
@@ -72,58 +61,63 @@ export class VerilatorCompiler extends DocumentCompiler {
     regexLookedIn = new RegExp("%Error: (.*):([0-9]+): Looked in:");
     regexFilesSearchedSource = "%Error: (.*):([0-9]+):       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|)$";
 
-    constructor(collection: DiagnosticCollection, channel: OutputChannel) {
-        super(collection, channel);
-    }
-
     /**
-        Compiles the document opened in the editor, 
-        builds the runtime arguments based on the pre defined settings and the nature of the document.
-        and displays `Diagnostics` to IDE `PROBLEMS` panel.
+        Compiles the given `document`, builds the runtime arguments using on the pre defined settings,
+        and adds each `Diagnostic` to an array mapped to the referred document's uri.
 
-        @returns a message if an error occurred.
+        @param document the document to compile
+        @returns a `Thenable` map of entries mapping each uri to a `Diagnostic` array
     */
-    public compile(): Thenable<string> {
+    public getTextDocumentDiagnostics(document: TextDocument): Thenable<Map<string, Diagnostic[]>> {
         return new Promise((resolve, reject) => {
-            let document = window.activeTextEditor.document;
             if (!document) {
-                reject("There is no open document!");
+                reject("SystemVerilog: Invalid document.");
                 return;
             }
+
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 reject("The document is not a SystemVerilog/Verilog file.");
                 return;
             }
 
-            this.includesDirectory = normalizeFilePath(workspace.getConfiguration().get('systemverilog.verilator.includesDirectory'));
+            let diagnosticCollection: Map<string, Diagnostic[]> = new Map();
 
-            var filePath = normalizeFilePath(document.uri.fsPath);
+            var filePath = getPathFromUri(document.uri);
 
             var args = [];
-            args.push(workspace.getConfiguration().get('systemverilog.verilator.launchConfiguration'));
+
+            if (this.configurations.has(this.compilerConfigurationsKeys[0])) {
+                args.push(this.configurations.get(this.compilerConfigurationsKeys[0]));
+            }
+            else {
+                reject("'" + this.compilerConfigurationsKeys[0] + "' configuration is undefined.");
+                return;
+            }
+
 
             args.push(filePath);
 
-            this.outputChannel.appendLine(args.join(" "));
+            this.connection.console.log(args.join(" "));
 
             child.exec(args.join(" "), (error, stdout, stderr) => {
-                this.outputChannel.appendLine(stderr);
-                this.parseDiagnostics(stderr, document, filePath, this.diagnosticCollection);
+                this.connection.console.log(stderr);
+                this.parseDiagnostics(stderr, document, filePath, diagnosticCollection);
+                resolve(diagnosticCollection);
             });
         });
     }
 
     /**
         Parses `stderr` into `Diagnostics` that are added to `collection` 
-        by mapping the `Diagnostic` to the document's `Uri`.
+        by mapping the `Diagnostic` to the document's uri.
 
         @param stderr the error output to parse
         @param compiledDocument the compiled document
-        @param filePath the `document`'s file path
+        @param documentFilePath the `document`'s file path
         @param collection the collection to add the Diagnostics to
-        @returns a message if an error occurred.
+        @returns a map of entries mapping each uri to a `Diagnostic` array
     */
-    parseDiagnostics(stderr, compiledDocument, documentFilePath, collection): void {
+    parseDiagnostics(stderr: string, compiledDocument: TextDocument, documentFilePath: string, collection: Map<string, Diagnostic[]>): void {
         if (stderr === undefined || stderr === null || !compiledDocument) {
             return;
         }
@@ -207,24 +201,13 @@ export class VerilatorCompiler extends DocumentCompiler {
     }
 
     /** 
-        Gets the `range` of a line given a line number in the `document`
+        Gets the `range` of a line given the line number
 
-        @param document the document
         @param line the line number
         @return the line's range
     */
-    getLineRange(document: TextDocument, line: number): Range {
-        let range;
-        //if it's the last line in the document
-        if (line >= document.lineCount) {
-            let position = new Position(document.lineCount, 0);
-            range = new Range(position, position);
-        }
-        else {
-            range = document.lineAt(line).range;
-        }
-
-        return range;
+    getLineRange(line: number): Range {
+        return Range.create(Position.create(line, 0), Position.create(line, Number.MAX_VALUE));
     }
 
     /**
@@ -237,14 +220,20 @@ export class VerilatorCompiler extends DocumentCompiler {
         @param collection the collection to add the Diagnostics too
         @returns a message if an error occurred.
     */
-    publishDiagnosticForDocument(compiledDocument: TextDocument, resetDiagnostics: boolean, diagnosticData: DiagnosticData, collection: Map<Uri, Diagnostic[]>): void {
-        let diagnostic = undefined;
+    publishDiagnosticForDocument(compiledDocument: TextDocument, resetDiagnostics: boolean, diagnosticData: DiagnosticData, collection: Map<string, Diagnostic[]>): void {
+        let diagnostic: Diagnostic = undefined;
         let diagnostics = undefined;
 
-        if (normalizeFilePath(diagnosticData.filePath).localeCompare(normalizeFilePath(compiledDocument.uri.fsPath)) === 0) {
+        if (diagnosticData.filePath.localeCompare(getPathFromUri(compiledDocument.uri)) === 0) {
             //set `diagnostic`'s range
-            let range: Range = this.getLineRange(compiledDocument, diagnosticData.line);
-            diagnostic = new Diagnostic(range, diagnosticData.problem, diagnosticData.diagnosticSeverity);
+            let range: Range = this.getLineRange(diagnosticData.line);
+
+            diagnostic = {
+                severity: diagnosticData.diagnosticSeverity,
+                range: range,
+                message: diagnosticData.problem,
+                source: 'systemverilog'
+            };
 
             if (!resetDiagnostics && collection.has(compiledDocument.uri)) {
                 diagnostics = collection.get(compiledDocument.uri).concat([diagnostic]);
@@ -256,33 +245,47 @@ export class VerilatorCompiler extends DocumentCompiler {
             collection.set(compiledDocument.uri, diagnostics);
         }
         else {
-            //look in the workspace for the document using the file name
-            //if an exact match is found, concat the Diagnostic to the document's diagnostics
+            let filteredUris = this.filterDocumentsUris(diagnosticData.filePath);
 
-            let globPattern = "**/" + path.basename(diagnosticData.filePath);
+            if (filteredUris.length == 1) {
+                let uri = filteredUris[0];
 
-            workspace.findFiles(globPattern).then((uris: Uri[]) => {
-                if (uris.length == 1) {
-                    let uri = uris[0];
+                let document: TextDocument = this.documents.get(uri);
 
-                    workspace.openTextDocument(uri).then((document: TextDocument) => {
-                        //set `diagnostic`'s range
-                        let range: Range = this.getLineRange(document, diagnosticData.line);
-                        diagnostic = new Diagnostic(range, diagnosticData.problem, diagnosticData.diagnosticSeverity);
+                let range: Range = this.getLineRange(diagnosticData.line);
+                diagnostic = {
+                    severity: diagnosticData.diagnosticSeverity,
+                    range: range,
+                    message: diagnosticData.problem,
+                    source: 'systemverilog'
+                };
 
-                        if (!resetDiagnostics && collection.has(uri)) {
-                            diagnostics = collection.get(uri).concat([diagnostic]);
-                        }
-                        else {
-                            diagnostics = [diagnostic];
-                        }
-
-                        collection.set(uri, diagnostics);
-                    });
+                if (!resetDiagnostics && collection.has(uri)) {
+                    diagnostics = collection.get(uri).concat([diagnostic]);
                 }
-            });
+                else {
+                    diagnostics = [diagnostic];
+                }
+
+                collection.set(uri, diagnostics);
+            }
         }
 
+    }
+
+    /**
+        Filters the keys for `documents` by comparing the basename of each key with the basename of a given `filePath`
+
+        @param filePath the filePath to compare too
+        @returns the array of filtered keys
+    */
+    filterDocumentsUris(filePath: string): string[] {
+        return this.documents.keys().filter(function (key: string) {
+            if (path.basename(key.trim()).localeCompare(path.basename(filePath.trim())) === 0) {
+                return true;
+            }
+            return false;
+        });
     }
 
     /**

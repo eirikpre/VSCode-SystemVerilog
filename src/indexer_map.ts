@@ -2,6 +2,7 @@ import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
 import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
+import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
 
 export class SystemVerilogIndexerMap {
     /*
@@ -147,7 +148,7 @@ export class SystemVerilogIndexerMap {
         this.building = true;
 
         return await new Promise(async (resolve) => {
-            if (!this.isSystemVerilogDocument(document)) {
+            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 return;
             }
             let count = this.removeDocumentSymbols(document.uri.fsPath, this.symbols);
@@ -213,30 +214,6 @@ export class SystemVerilogIndexerMap {
         });
     }
 
-    /**
-        Check if a given `document` is a Verilog/SystemVerilog file.
-
-        @param document the document to check
-        @return true if the document is a Verilog/SystemVerilog file
-    */
-    isSystemVerilogDocument(document: TextDocument): boolean {
-        if (!document) {
-            return false;
-        }
-
-        let filePath = document.uri.path;
-        let fileName = filePath.substr(filePath.lastIndexOf('\\') + 1).split('.');
-        let fileExtension = fileName[fileName.length - 1];
-
-        for (let i = 0; i < this.systemVerilogFileExtensions.length; i++) {
-            if (fileExtension == this.systemVerilogFileExtensions[i]) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     /**
         Adds the given `document`'s symbols to `symbolsMap`.
@@ -252,7 +229,7 @@ export class SystemVerilogIndexerMap {
                 return;
             }
 
-            if (!this.isSystemVerilogDocument(document)) {
+            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 resolve(new List<SymbolInformation>());
                 return;
             }

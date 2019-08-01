@@ -9,16 +9,32 @@ import {
   DocumentSelector,
   ExtensionContext,
   InputBoxOptions,
-  TextDocument
+  TextDocument,
+  ProgressLocation
 } from 'vscode';
+import {
+  LanguageClient,
+  ServerOptions,
+  TransportKind,
+  LanguageClientOptions
+} from "vscode-languageclient";
+import * as path from 'path';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
-import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexerMap } from './indexer_map';
+
+
+// the LSP's client
+let client: LanguageClient;
+
+/* 
+  this flag is used to determine when to close the `Progress` window after `compile` command is fired. 
+*/
+let closeWindowProgress = true;
 
 /**
  * this method is called when your extension is activate.
@@ -35,6 +51,59 @@ export function activate(context: ExtensionContext) {
     scheme: 'file',
     language: 'verilog'
   }];
+
+  /** Starts the `LanguageClient` */
+
+  // point to the path of the server's module
+  let serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
+  // The debug options for the server
+  // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
+  let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+
+  // If the extension is launched in debug mode then the debug server options are used
+  // Otherwise the run options are used
+  let serverOptions: ServerOptions = {
+    run: { module: serverModule, transport: TransportKind.ipc },
+    debug: {
+      module: serverModule,
+      transport: TransportKind.ipc,
+      options: debugOptions
+    }
+  };
+
+  // Options to control the language client
+  let clientOptions: LanguageClientOptions = {
+    // Register the server for selected documents
+    documentSelector: selector as string[]
+    /*
+    synchronize: {
+      // Notify the server about file changes to SystemVerilog/Verilog files contained in the workspace
+      fileEvents: workspace.createFileSystemWatcher(indexer.globPattern)
+    }*/
+  };
+
+  // Create the language client and start the client.
+  client = new LanguageClient(
+    'SystemVerilogLanguageServer',
+    'System Verilog Language Server',
+    serverOptions,
+    clientOptions
+  );
+
+  // Start the client. This will also launch the server
+  client.start();
+
+  client.onReady().then(() => {
+    /* Update `closeWindowProgress` to true when the client is notified by the server. */
+    client.onNotification("closeWindowProgress", function () {
+      this.closeWindowProgress = true;
+    });
+
+    /* Notify the server that the workspace configuration has been changed */
+    workspace.onDidChangeConfiguration(() => {
+      client.sendNotification("onDidChangeConfiguration");
+    });
+  });
 
   //Output Channel
   var outputChannel = window.createOutputChannel("SystemVerilog");
@@ -55,7 +124,6 @@ export function activate(context: ExtensionContext) {
   const defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
   const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
   const moduleInstantiator = new SystemVerilogModuleInstantiator(symProvider);
-  const documentCompiler = new SystemVerilogCompiler(outputChannel);
 
   context.subscriptions.push(statusBar);
   context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
@@ -65,7 +133,7 @@ export function activate(context: ExtensionContext) {
   const build_handler = () => { indexer.rebuild() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
-  context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileDocument));
+  context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
 
   // WIP
   // const completionProvider = new SystemVerilogCompletionItemProvider(indexer);
@@ -129,15 +197,51 @@ export function activate(context: ExtensionContext) {
   }
 
   /**
-    Compiles the document opened in the editor, 
-    and displays `Diagnostics` to the `PROBLEMS` panel.
+    Sends a notification to the LSP to compile the opened document.
+    Keeps the `Progress` window opened until `extensionLanguageClient.closeWindowProgress` is set to true or 
+    the interval iterations count reaches the maximum value.
+    `closeWindowProgress` is updated to true when a notification is sent to the client from LSP.
   */
-  function compileDocument() {
-    documentCompiler.compileOpenedDocument(compilerType.Verilator);
+  function compileOpenedDocument(): void {
+    let document = window.activeTextEditor.document;
+    if (!document) {
+      window.showErrorMessage("There is no open document!");
+      return;
+    }
+
+    closeWindowProgress = false;
+    Promise.resolve(window.withProgress({
+      location: ProgressLocation.Notification,
+      title: "SystemVerilog Document compiling...",
+      cancellable: true
+    }, async (_progress, token) => {
+      client.sendNotification("compileOpenedDocument", document.uri.toString());
+
+      var intervalCount = 0;
+      var interval = setInterval(function () {
+        if (closeWindowProgress || intervalCount > 5) {
+          clearInterval(interval);
+        }
+        intervalCount++;
+      },
+        500);
+
+
+    })).catch((error) => {
+      outputChannel.appendLine(error);
+      window.showErrorMessage(error);
+    });
   }
 }
+
+
 
 /** 
  * this method is called when your extension is deactivated
  */
-export function deactivate() { }
+export function deactivate(): Thenable<void> | undefined {
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
+}
