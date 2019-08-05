@@ -1,4 +1,3 @@
-import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
 import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
@@ -10,7 +9,8 @@ export class SystemVerilogIndexerMap {
     * each entry's key represents a file path,
     * and the entry's value is a list of the symbols that exist in the file
     */
-    public symbols: FastMap<string, List<SymbolInformation>>;
+    public symbols: Map<string, List<SymbolInformation>>;
+    public mostRecentSymbols: Array<SymbolInformation>;
     public building: Boolean = false;
     public statusbar: StatusBarItem;
     public parser: SystemVerilogParser;
@@ -51,7 +51,9 @@ export class SystemVerilogIndexerMap {
                 this.parallelProcessing = parallelProcessing;
             }
 
-            this.build_index();
+            this.build_index().then(() => {
+                this.updateMostRecentSymbols(undefined);
+            });
         }
     };
 
@@ -78,7 +80,7 @@ export class SystemVerilogIndexerMap {
             title: "SystemVerilog Indexing...",
             cancellable: true
         }, async (_progress, token) => {
-            this.symbols = new FastMap<string, List<SymbolInformation>>();
+            this.symbols = new Map<string, List<SymbolInformation>>();
             let uris = await Promise.resolve(workspace.findFiles(this.globPattern, this.exclude, undefined, token));
             console.time('build_index');
 
@@ -222,7 +224,7 @@ export class SystemVerilogIndexerMap {
         @param symbolsMap the symbols map
         @return number of added files
     */
-    addDocumentSymbols(document: TextDocument, symbolsMap: FastMap<string, List<SymbolInformation>>): Thenable<number> {
+    addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, List<SymbolInformation>>): Thenable<number> {
         return new Promise(async (resolve) => {
             if (!document || !symbolsMap) {
                 resolve(new List<SymbolInformation>());
@@ -253,7 +255,7 @@ export class SystemVerilogIndexerMap {
         @param symbolsMap the symbols map
         @return number of deleted files multiplied by -1
     */
-    removeDocumentSymbols(fsPath: string, symbolsMap: FastMap<string, List<SymbolInformation>>): number {
+    removeDocumentSymbols(fsPath: string, symbolsMap: Map<string, List<SymbolInformation>>): number {
         if (!fsPath || !symbolsMap) {
             return 0;
         }
@@ -266,6 +268,60 @@ export class SystemVerilogIndexerMap {
         }
 
         return deletedCount * -1;
+    }
+
+    /**
+        Updates `mostRecentSymbols` with the most recently used symbols
+        When `mostRecentSymbols` is undefined, add the top `this.NUM_FILES` symbol from `this.symbols`
+        When `mostRecentSymbols` is defined, add the symbols in `recentSymbols` one by one to the top of the array
+        
+        @param recentSymbols the recent symbols
+    */
+    updateMostRecentSymbols(recentSymbols: Array<SymbolInformation>): void {
+        if (this.mostRecentSymbols) {
+            if (!recentSymbols) {
+                return;
+            }
+
+            while (recentSymbols.length > 0) {
+                let currentSymbol = recentSymbols.pop();
+
+                //if symbol already exists, remove it
+                for (let i = 0; i < this.mostRecentSymbols.length; i++) {
+                    let symbol = this.mostRecentSymbols[i];
+                    if (symbol == currentSymbol) {
+                        this.mostRecentSymbols.splice(i, 1);
+                        break;
+                    }
+                }
+
+                //if the array has reached maximum capacity, remove the last element
+                if (this.mostRecentSymbols.length >= this.NUM_FILES) {
+                    this.mostRecentSymbols.pop();
+                }
+
+                //add the symbol to the top of the array
+                this.mostRecentSymbols.unshift(currentSymbol);
+            }
+        }
+        else {
+
+            let maxSymbols = new List<SymbolInformation>();
+
+            //collect the top symbols in `this.symbols`
+            for (var list of this.symbols.values()) {
+                if (maxSymbols.length + list.length >= this.NUM_FILES) {
+                    let limit = this.NUM_FILES - maxSymbols.length;
+                    maxSymbols = maxSymbols.concat(list.slice(-1 * limit));
+                    break;
+                }
+                else {
+                    maxSymbols = maxSymbols.concat(list);
+                }
+            }
+
+            this.mostRecentSymbols = maxSymbols.toArray();
+        }
     }
 
 }

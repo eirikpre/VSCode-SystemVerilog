@@ -28,20 +28,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SymbolInformation>> {
         return new Promise((resolve, reject) => {
             if (query.length === 0) {
-                // Show maximum `NUM_FILES` symbols for speedup
-                let maxSymbols = new List<SymbolInformation>();
-
-                this.indexer.symbols.forEach(list => {
-                    if (maxSymbols.length + list.length >= this.NUM_FILES) {
-                        let limit = this.NUM_FILES - maxSymbols.length;
-                        maxSymbols = maxSymbols.concat(list.splice(0, limit));
-                    }
-                    else {
-                        maxSymbols = maxSymbols.concat(list);
-                    }
-                });
-
-                resolve(maxSymbols.toArray());
+                resolve(this.indexer.mostRecentSymbols);
             } else {
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
                 let results = new Array<SymbolInformation>();
@@ -59,6 +46,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     });
                 });
 
+                this.indexer.updateMostRecentSymbols(results.slice(0)); //pass a shallow copy of the array
                 resolve(results);
             }
         });
@@ -88,6 +76,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 }
             });
 
+            this.indexer.updateMostRecentSymbols([symbolInfo]);
             return symbolInfo;
         }
     }

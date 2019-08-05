@@ -7,7 +7,6 @@ import {
     SymbolKind,
     Range
 } from 'vscode'
-import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
 import { SystemVerilogParser } from '../parser';
 
@@ -107,7 +106,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             /* 
             Matches the regex and uses the index from the regex to find the position
             */
-            resolve(this.parser.get_all_recursive(document,text));
+            resolve(this.parser.get_all_recursive(document, text));
             // do {
             //     match = regex.exec(text);
             //     if (match) {

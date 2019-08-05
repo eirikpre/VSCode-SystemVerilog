@@ -8,6 +8,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.8.2] - 2019.08.01
+- Keep track of the recently used modules in the indexer
+
 ## [0.8.1] - 2019.07.31
 - Implemented the LSP structure: client/server functionality to communicate with the server from the extension.
 - Migrated the compiling feature from the extension to the server.

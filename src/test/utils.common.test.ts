@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 import { getPathFromUri } from '../utils/common';
-import * as urijs from 'uri-js';
 
 const testFolderLocation = '../../../src/test/';
 
