@@ -6,20 +6,25 @@ const testFolderLocation = '../../../src/test/';
 suite('Utils Common Tests', () => {
 
     test('test #1: getPathFromUri', async () => {
+        let rootPath = "c:/home/users/workspace";
 
-        let expectedPath = "c:/Users/directory/design.sv";
-        let uri = "file:///c%3A/Users/directory/design.sv";
-        let uriTrailingSlashes = "file:///c%3A/Users/directory/design.sv/";
+        let expectedPath = "c:/home/users/workspace/directory/design.sv";
+        let uri = "file:///c%3A/home/users/workspace/directory/design.sv";
 
-        assert.equal(expectedPath, getPathFromUri(uri));
-        assert.equal(expectedPath, getPathFromUri(uriTrailingSlashes));
+        assert.equal(expectedPath, getPathFromUri(uri, rootPath));
+
+        rootPath = "/home/users/workspace";
+        expectedPath = "/home/users/workspace/directory/design.sv";
+        uri = "file:///home/users/workspace/directory/design.sv";
+
+        assert.equal(expectedPath, getPathFromUri(uri, rootPath));
 
         //uri without a path
-        assert.equal("", getPathFromUri("file:///"));
+        assert.equal("", getPathFromUri("file:///", ""));
 
         //undefined/null/empty document
-        assert.equal("", getPathFromUri(""));
-        assert.equal("", getPathFromUri(undefined));
-        assert.equal("", getPathFromUri(null));
+        assert.equal("", getPathFromUri("", ""));
+        assert.equal("", getPathFromUri(undefined, undefined));
+        assert.equal("", getPathFromUri(null, null));
     });
 });

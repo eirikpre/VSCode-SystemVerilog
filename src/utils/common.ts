@@ -4,10 +4,11 @@ import * as uriJs from 'uri-js';
     Get path from a given `uri`
 
     @param uri the uri
+    @param rootPath the root path
     @return the path
 */
-export function getPathFromUri(uri: string): string {
-    if (!uri) {
+export function getPathFromUri(uri: string, rootPath: string): string {
+    if (!uri || !rootPath) {
         return "";
     }
 
@@ -18,6 +19,13 @@ export function getPathFromUri(uri: string): string {
         return "";
     }
 
-    //remove preceding and trailing slashes 
-    return parsedUri.path.replace(/^\/|\/$/g, '')
+    rootPath = rootPath.replace(/\\/g, '/');
+    let regex = new RegExp("/?" + rootPath + "(.*)");
+
+    let matches;
+    if ((matches = regex.exec(parsedUri.path)) && matches.length > 1) {
+        return rootPath + matches[1];
+    }
+
+    return "";
 }

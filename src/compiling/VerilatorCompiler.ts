@@ -82,7 +82,7 @@ export class VerilatorCompiler extends DocumentCompiler {
 
             let diagnosticCollection: Map<string, Diagnostic[]> = new Map();
 
-            var filePath = getPathFromUri(document.uri);
+            var filePath = getPathFromUri(document.uri, this.workspaceRootPath);
 
             var args = [];
 
@@ -224,7 +224,7 @@ export class VerilatorCompiler extends DocumentCompiler {
         let diagnostic: Diagnostic = undefined;
         let diagnostics = undefined;
 
-        if (diagnosticData.filePath.localeCompare(getPathFromUri(compiledDocument.uri)) === 0) {
+        if (diagnosticData.filePath.localeCompare(getPathFromUri(compiledDocument.uri, this.workspaceRootPath)) === 0) {
             //set `diagnostic`'s range
             let range: Range = this.getLineRange(diagnosticData.line);
 

@@ -19,7 +19,7 @@ const testFolderLocation = '../../src/test/';
 const file_path_placeholder = "FILEPATH_PLACEHOLDER";
 
 let diagnosticCollection: Map<string, Diagnostic[]>;
-let documentCompiler = new VerilatorCompiler(undefined, undefined, undefined, undefined);
+let documentCompiler = new VerilatorCompiler(undefined, undefined, undefined, undefined, undefined);
 
 suite('DocumentCompiler Tests', () => {
     test('test #1: Diagnostics from %Error', async () => {
@@ -32,7 +32,7 @@ suite('DocumentCompiler Tests', () => {
 
         let document: TextDocument = castTextDocument(documentWorkspace);
 
-        let compiledFilePath = getPathFromUri(document.uri);
+        let compiledFilePath = getPathFromUri(document.uri, __dirname);
 
         let stderrFile = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/foo.stderr.txt`);
 
@@ -64,7 +64,7 @@ suite('DocumentCompiler Tests', () => {
 
         let document: TextDocument = castTextDocument(documentWorkspace);
 
-        let compiledFilePath = getPathFromUri(document.uri);
+        let compiledFilePath = getPathFromUri(document.uri, __dirname);
 
         let stderrFile = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/bar.stderr.txt`);
 
@@ -95,7 +95,7 @@ suite('DocumentCompiler Tests', () => {
 
         let document: TextDocument = castTextDocument(documentWorkspace);
 
-        let compiledFilePath = getPathFromUri(document.uri);
+        let compiledFilePath = getPathFromUri(document.uri, __dirname);
 
         documentCompiler.parseDiagnostics("", document, compiledFilePath, diagnosticCollection);
 
@@ -113,7 +113,7 @@ suite('DocumentCompiler Tests', () => {
 
         let uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
         let document = await workspace.openTextDocument(uriDoc);
-        let compiledFilePath = getPathFromUri(document.uri.toString());
+        let compiledFilePath = getPathFromUri(document.uri.toString(), __dirname);
 
         let stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
@@ -132,7 +132,7 @@ suite('DocumentCompiler Tests', () => {
 
         uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
         document = await workspace.openTextDocument(uriDoc);
-        compiledFilePath = getPathFromUri(document.uri.toString());
+        compiledFilePath = getPathFromUri(document.uri.toString(), __dirname);
 
         stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
