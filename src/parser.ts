@@ -1,4 +1,3 @@
-import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
 import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri } from "vscode";
 
