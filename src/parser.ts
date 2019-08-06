@@ -1,8 +1,9 @@
 import { List } from 'collections/list';
-import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri } from "vscode";
+import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri, Position } from "vscode";
 
 
-// See test/SymbolKind_icons.png for an overview of the icons
+// See docs/SymbolKind_icons.png for an overview of the available icons
+// Use show_SymbolKinds to see the latest symbols
 export function getSymbolKind(name: String): SymbolKind {
     switch (name) {
         case 'parameter':
@@ -10,12 +11,6 @@ export function getSymbolKind(name: String): SymbolKind {
         case 'package':
         case 'program':
         case 'import': return SymbolKind.Package;
-        case 'wire':
-        case 'reg':
-        case 'logic':
-        case 'int':
-        case 'char':
-        case 'float': return SymbolKind.Field;
         case 'string': return SymbolKind.String;
         case 'class': return SymbolKind.Class;
         case 'task': return SymbolKind.Method;
@@ -25,8 +20,16 @@ export function getSymbolKind(name: String): SymbolKind {
         case 'struct': return SymbolKind.Struct;
         case 'typedef': return SymbolKind.TypeParameter;
         case 'genvar': return SymbolKind.Operator;
+        case 'enum': return SymbolKind.Enum;
+        case 'wire':
+        case 'reg':
+        case 'bit':
+        case 'logic':
+        case 'int':
+        case 'char':
+        case 'float': return SymbolKind.Variable;
         case 'module':
-        default: return SymbolKind.Variable;
+        default: return SymbolKind.Field;
     }
     /* Unused/Free SymbolKind icons
         return SymbolKind.Number;
@@ -126,11 +129,12 @@ export class SystemVerilogParser {
                         )))
                 symbols.push(symbolInfo);
 
+                // TODO: Match parameter/port-lists
+
                 if (match.groups.body) {
                     sub_blocks.push(match);
                 }
 
-                // TODO: Match parameter/port-lists
             }
             
         }
@@ -199,4 +203,37 @@ export class SystemVerilogParser {
         });
     }
 
+}
+
+
+// Function to easily show all the SymbolKind icons
+function show_SymbolKinds(uri: Uri): Array<SymbolInformation> {
+    return new Array<SymbolInformation>(
+        new SymbolInformation("File",           SymbolKind.File,          "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Module",         SymbolKind.Module,        "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Namespace",      SymbolKind.Namespace,     "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Package",        SymbolKind.Package,       "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Class",          SymbolKind.Class,         "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Method",         SymbolKind.Method,        "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Property",       SymbolKind.Property,      "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Field",          SymbolKind.Field,         "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constructor",    SymbolKind.Constructor,   "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Enum",           SymbolKind.Enum,          "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Interface",      SymbolKind.Interface,     "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Function",       SymbolKind.Function,      "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Variable",       SymbolKind.Variable,      "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constant",       SymbolKind.Constant,      "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("String",         SymbolKind.String,        "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Number",         SymbolKind.Number,        "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Boolean",        SymbolKind.Boolean,       "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Array",          SymbolKind.Array,         "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Object",         SymbolKind.Object,        "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Key",            SymbolKind.Key,           "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Null",           SymbolKind.Null,          "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("EnumMember",     SymbolKind.EnumMember,    "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Struct",         SymbolKind.Struct,        "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Event",          SymbolKind.Event,         "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Operator",       SymbolKind.Operator,      "undefined", new Location(uri, new Position(0,0))),
+        new SymbolInformation("TypeParameter",  SymbolKind.TypeParameter, "undefined", new Location(uri, new Position(0,0)))
+    );
 }
