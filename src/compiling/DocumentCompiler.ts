@@ -11,12 +11,14 @@ import {
 export abstract class DocumentCompiler {
     public connection: Connection;
     public documents: TextDocuments;
+    public workspaceRootPath: string;
     public configurations: Map<string, any>;
     public compilerConfigurationsKeys: string[]
 
-    constructor(connection: Connection, documents: TextDocuments, configurations: Map<string, any>, compilerConfigurationsKeys: string[]) {
+    constructor(connection: Connection, documents: TextDocuments, workspaceRootPath: string, configurations: Map<string, any>, compilerConfigurationsKeys: string[]) {
         this.connection = connection;
         this.documents = documents;
+        this.workspaceRootPath = workspaceRootPath;
         this.configurations = configurations;
         this.compilerConfigurationsKeys = compilerConfigurationsKeys;
     }

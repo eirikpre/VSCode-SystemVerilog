@@ -21,12 +21,14 @@ export class SystemVerilogCompiler {
     compiler: DocumentCompiler;
     connection: Connection;
     documents: TextDocuments;
+    workspaceRootPath: string;
     configurations: Map<string, any>;
     compilerConfigurationsKeys: string[]
 
-    constructor(connection: Connection, documents: TextDocuments, configurations: Map<string, any>, compilerConfigurationsKeys: string[]) {
+    constructor(connection: Connection, documents: TextDocuments, workspaceRootPath: string, configurations: Map<string, any>, compilerConfigurationsKeys: string[]) {
         this.connection = connection;
         this.documents = documents;
+        this.workspaceRootPath = workspaceRootPath;
         this.configurations = configurations;
         this.compilerConfigurationsKeys = compilerConfigurationsKeys;
     }
@@ -38,7 +40,7 @@ export class SystemVerilogCompiler {
     */
     public async validateTextDocument(document: TextDocument, type: compilerType): Promise<Map<string, Diagnostic[]>> {
         if (type == compilerType.Verilator) {
-            this.compiler = new VerilatorCompiler(this.connection, this.documents, this.configurations, this.compilerConfigurationsKeys);
+            this.compiler = new VerilatorCompiler(this.connection, this.documents, this.workspaceRootPath, this.configurations, this.compilerConfigurationsKeys);
         }
         else {
             this.connection.console.log("SystemVerilog: '" + type + "' is an invalid compiler type.");

@@ -34,12 +34,12 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 connection.onInitialized(async () => {
-	await updateConfigurationsSettings().then(() => {
-		documentCompiler = new SystemVerilogCompiler(connection, documents, configurations, compilerConfigurationsKeys);
-	});
-
+	await updateConfigurationsSettings();
 });
 
+connection.onNotification("workspaceRootPath", (rootPath: string) => {
+	documentCompiler = new SystemVerilogCompiler(connection, documents, rootPath, configurations, compilerConfigurationsKeys);
+});
 
 connection.onNotification("onDidChangeConfiguration", async () => {
 	await updateConfigurationsSettings();
@@ -85,6 +85,9 @@ connection.onNotification("compileOpenedDocument", (uri: string) => {
 	@param document the document to compile
  */
 async function compile(document: TextDocument): Promise<void> {
+	if (!documentCompiler) {
+		return;
+	}
 
 	documentCompiler.validateTextDocument(document, compilerType.Verilator).then((diagnosticCollection: Map<string, Diagnostic[]>) => {
 		// Send the computed diagnostics to VSCode for each document

@@ -58,6 +58,7 @@ See changelog for mode details
 - Compile documents on save feature using `Verilator` simulator
 - Added output channel `SystemVerilog`
 - Added an `LSP`, set it to communicate with the extension's client
+- Keep track of the recently used modules in the indexer
 ### 0.7
 - Instantiate module from already indexed module, thanks to `oehaddouchi`
 - Update to documentSymbolProvider

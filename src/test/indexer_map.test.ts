@@ -12,7 +12,6 @@ import {
 } from 'vscode';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
-import { FastMap } from 'collections/fast-map';
 import { List } from 'collections/list';
 import { SystemVerilogIndexerMap } from '../indexer_map';
 import { SystemVerilogParser } from '../parser';
@@ -22,7 +21,7 @@ let symProvider: SystemVerilogWorkspaceSymbolProvider;
 let indexer: SystemVerilogIndexerMap;
 let parser: SystemVerilogParser;
 
-let symbols: FastMap<string, List<SymbolInformation>>;
+let symbols: Map<string, List<SymbolInformation>>;
 
 const testFolderLocation = '../../../src/test/';
 
@@ -31,7 +30,7 @@ let documentSymbols = ["adder", "bar", "akker", "accer", "anner", "atter", "appe
 
 let nonSVUri = Uri.file(path.join(`${__dirname + testFolderLocation}test-files/foo.txt`));
 
-suite('UpdateIndex Tests', () => {
+suite('indexer_map Tests', () => {
 
   test('test #1: addDocumentSymbols, removeDocumentSymbols', async () => {
     await setUp();
@@ -39,11 +38,11 @@ suite('UpdateIndex Tests', () => {
     const sVDocument = await workspace.openTextDocument(uri);
     const nonSVDocument = await workspace.openTextDocument(nonSVUri);
 
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     let count = await indexer.addDocumentSymbols(sVDocument, symbols);
 
     assert.equal(count, 8);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(symbols.get(uri.fsPath).length, 8);
     assert.equal(getSymbolsCount(), 21);
 
@@ -56,29 +55,29 @@ suite('UpdateIndex Tests', () => {
     //non SV document
     count = await indexer.addDocumentSymbols(nonSVDocument, symbols);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(symbols.get(nonSVUri.fsPath), undefined);
     assert.equal(getSymbolsCount(), 21);
 
     //undefined/null document
     count = await indexer.addDocumentSymbols(undefined, symbols);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(getSymbolsCount(), 21);
 
     count = await indexer.addDocumentSymbols(sVDocument, undefined);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(getSymbolsCount(), 21);
 
     count = await indexer.addDocumentSymbols(undefined, undefined);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(getSymbolsCount(), 21);
 
     count = await indexer.addDocumentSymbols(null, symbols);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(getSymbolsCount(), 21);
   });
 
@@ -88,11 +87,11 @@ suite('UpdateIndex Tests', () => {
     const sVDocument = await workspace.openTextDocument(uri);
     const nonSVDocument = await workspace.openTextDocument(nonSVUri);
 
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     let count = await indexer.addDocumentSymbols(sVDocument, symbols);
 
     assert.equal(count, 8);
-    assert.equal(symbols.length, 5);
+    assert.equal(symbols.size, 5);
     assert.equal(getSymbolsCount(), 21);
 
     count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, symbols);
@@ -104,37 +103,64 @@ suite('UpdateIndex Tests', () => {
     });
 
     assert.equal(count, -8);
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     assert.equal(getSymbolsCount(), 13);
 
     //non SV document
     count = indexer.removeDocumentSymbols(nonSVDocument.uri.fsPath, symbols);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     assert.equal(getSymbolsCount(), 13);
 
     //undefined/null document
     count = indexer.removeDocumentSymbols(undefined, symbols);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     assert.equal(getSymbolsCount(), 13);
 
     count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, undefined);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     assert.equal(getSymbolsCount(), 13);
 
     count = indexer.removeDocumentSymbols(undefined, undefined);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     assert.equal(getSymbolsCount(), 13);
 
     count = indexer.removeDocumentSymbols(null, symbols);
     assert.equal(count, 0);
-    assert.equal(symbols.length, 4);
+    assert.equal(symbols.size, 4);
     assert.equal(getSymbolsCount(), 13);
   });
 
+  test('test #3: updateMostRecentModules', async () => {
+    await setUp();
+
+    indexer.NUM_FILES = 5;
+    indexer.symbols = symbols;
+    indexer.updateMostRecentSymbols(undefined);
+    assert.equal(indexer.mostRecentSymbols.length, 5);
+
+    let recentSymbols = new Array<SymbolInformation>();
+    let symbolInfo_1 = new SymbolInformation("symbolInfo_1", SymbolKind.Variable, "module", undefined);
+    let symbolInfo_2 = new SymbolInformation("symbolInfo_2", SymbolKind.Boolean, "logic", undefined);
+    let symbolInfo_3 = new SymbolInformation("symbolInfo_3", SymbolKind.Function, "function", undefined);
+    let symbolInfo_4 = indexer.mostRecentSymbols[0];
+    let symbolInfo_5 = indexer.mostRecentSymbols[1];
+
+    recentSymbols.push(symbolInfo_1);
+    recentSymbols.push(symbolInfo_2);
+    recentSymbols.push(symbolInfo_3);
+
+    indexer.updateMostRecentSymbols(recentSymbols);
+    assert.equal(indexer.mostRecentSymbols.length, 5);
+    assert.equal(indexer.mostRecentSymbols[0], symbolInfo_1);
+    assert.equal(indexer.mostRecentSymbols[1], symbolInfo_2);
+    assert.equal(indexer.mostRecentSymbols[2], symbolInfo_3);
+    assert.equal(indexer.mostRecentSymbols[3], symbolInfo_4);
+    assert.equal(indexer.mostRecentSymbols[4], symbolInfo_5);
+  });
 
 });
 
@@ -152,7 +178,7 @@ async function setUp() {
   docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
-  symbols = new FastMap<string, List<SymbolInformation>>();
+  symbols = new Map<string, List<SymbolInformation>>();
 
   let location = new Location(uri,
     new Range(document.positionAt(0),
