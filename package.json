@@ -26,7 +26,7 @@
         "url": "https://github.com/eirikpre/VSCode-SystemVerilog"
     },
     "engines": {
-        "vscode": "^1.23.0"
+        "vscode": "^1.31.0"
     },
     "categories": [
         "Programming Languages"
@@ -34,7 +34,8 @@
     "main": "./out/extension.js",
     "activationEvents": [
         "onLanguage:systemverilog",
-        "onLanguage:verilog"
+        "onLanguage:verilog",
+        "workspaceContains:**/*.{sv,v}"
     ],
     "contributes": {
         "configuration": [
@@ -63,7 +64,7 @@
                     },
                     "systemverilog.verilator.compileOnSave": {
                         "type": "boolean",
-                        "default": true,
+                        "default": false,
                         "description": "Compile SystemVerilog/Verilog files when saved."
                     }
                 }
@@ -143,10 +144,10 @@
     },
     "devDependencies": {
         "@types/mocha": "^5.2.7",
-        "@types/node": "^10.14.10",
+        "@types/node": "^12.7.0",
         "languages": "0.1.3",
-        "typescript": "^3.5.2",
-        "vscode": "^1.1.35"
+        "typescript": "^3.5.3",
+        "vscode": "^1.1.36"
     },
     "dependencies": {
         "child_process": "^1.0.2",
