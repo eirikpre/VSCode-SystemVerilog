@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -61,6 +61,11 @@
                         "type": "string",
                         "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
                         "description": "Launch command for verilator"
+                    },
+                    "systemverilog.verilator.compileOnSave": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Compile SystemVerilog/Verilog files when saved."
                     }
                 }
             }
@@ -139,13 +144,16 @@
     },
     "devDependencies": {
         "@types/mocha": "^5.2.7",
-        "@types/node": "^12.6.9",
+        "@types/node": "^12.7.0",
         "languages": "0.1.3",
         "typescript": "^3.5.3",
         "vscode": "^1.1.36"
     },
     "dependencies": {
+        "child_process": "^1.0.2",
         "collections": "^5.1.9",
-        "child_process": "^1.0.2"
+        "uri-js": "^4.2.2",
+        "vscode-languageclient": "^5.2.1",
+        "vscode-languageserver": "^5.2.1"
     }
 }

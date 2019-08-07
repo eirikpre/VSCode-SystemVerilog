@@ -1,4 +1,9 @@
-import { window, ProgressLocation, OutputChannel, DiagnosticCollection, languages } from 'vscode';
+import {
+    Connection,
+    TextDocument,
+    Diagnostic,
+    TextDocuments
+} from 'vscode-languageserver';
 import { DocumentCompiler } from "./DocumentCompiler";
 import { VerilatorCompiler } from "./VerilatorCompiler";
 
@@ -8,42 +13,38 @@ export enum compilerType {
     Verilator = 1
 };
 
-/* SystemVerilog Compiler handles functionality for compiling documents using supported simulators. */
+/* 
+    SystemVerilog Compiler handles functionality for compiling documents using the supported simulators.
+    Used by the LSP's `connection` to handle getting `Diagnostics` for `documents`
+*/
 export class SystemVerilogCompiler {
-    public diagnosticCollection: DiagnosticCollection;
     compiler: DocumentCompiler;
-    outputChannel: OutputChannel;
+    connection: Connection;
+    documents: TextDocuments;
+    configurations: Map<string, any>;
+    compilerConfigurationsKeys: string[]
 
-    constructor(channel: OutputChannel) {
-        this.diagnosticCollection = languages.createDiagnosticCollection();
-        this.outputChannel = channel;
+    constructor(connection: Connection, documents: TextDocuments, configurations: Map<string, any>, compilerConfigurationsKeys: string[]) {
+        this.connection = connection;
+        this.documents = documents;
+        this.configurations = configurations;
+        this.compilerConfigurationsKeys = compilerConfigurationsKeys;
     }
 
     /**
-        Compiles the document opened in the editorusing the compiler/simulator specified by `type`
+        Compiles the given `document` using the compiler/simulator specified by `type`.
 
-        @returns a message if an error occurred.
+        @returns a `Promise` of a map of entries mapping each uri to a `Diagnostic` array
     */
-    public async compileOpenedDocument(type: compilerType) {
+    public async validateTextDocument(document: TextDocument, type: compilerType): Promise<Map<string, Diagnostic[]>> {
         if (type == compilerType.Verilator) {
-            this.compiler = new VerilatorCompiler(this.diagnosticCollection, this.outputChannel);
+            this.compiler = new VerilatorCompiler(this.connection, this.documents, this.configurations, this.compilerConfigurationsKeys);
         }
         else {
-            this.outputChannel.appendLine("Invalid compiler type.");
+            this.connection.console.log("SystemVerilog: '" + type + "' is an invalid compiler type.");
             return;
         }
 
-        Promise.resolve(await window.withProgress({
-            location: ProgressLocation.Notification,
-            title: "SystemVerilog Document compiling...",
-            cancellable: true
-        }, async (_progress, token) => {
-            this.compiler.compile().then((error: string) => {
-                window.showErrorMessage(error);
-            });
-        })).catch((error) => {
-            this.outputChannel.appendLine(error);
-            window.showErrorMessage(error);
-        });
+        return this.compiler.getTextDocumentDiagnostics(document);
     }
 }
