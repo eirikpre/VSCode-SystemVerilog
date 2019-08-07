@@ -1,3 +1,5 @@
+/* Defines tools that require `vscode` module */
+
 import { TextDocument } from 'vscode';
 
 /**
@@ -34,25 +36,4 @@ export function isVerilogDocument(document: TextDocument): boolean {
     }
 
     return false;
-}
-
-/**
-    Normalizes a file path.
-
-    @param filePath the file path
-    @return the normalized file path
-*/
-export function normalizeFilePath(filePath: string): string {
-    if (!filePath) {
-        return "";
-    }
-
-    filePath = filePath.replace(/\\/g, "/");
-    filePath = filePath.replace(/\/+/g, "/");
-
-    if (filePath.charAt(filePath.length - 1) == "/") {
-        return filePath.substr(0, filePath.length - 1);
-    }
-
-    return filePath;
 }

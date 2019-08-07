@@ -8,7 +8,12 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
-## [0.8] - 2019.07.16
+## [0.8.1] - 2019.07.31
+- Implemented the LSP structure: client/server functionality to communicate with the server from the extension.
+- Migrated the compiling feature from the extension to the server.
+- Added compile `onSave` event to trigger compiling documents if `systemverilog.verilator.compileOnSave` is set to true in the VSCode's settings
+
+## [0.8.0] - 2019.07.16
 - Compile an opened document using `Verilator` simulator, display errors/warnings as `Diagnostics` in documents: `oehaddouchi`
 - Add output channel `SystemVerilog` : `oehaddouchi`
 
