@@ -151,7 +151,6 @@
     },
     "dependencies": {
         "child_process": "^1.0.2",
-        "collections": "^5.1.9",
         "uri-js": "^4.2.2",
         "vscode-languageclient": "^5.2.1",
         "vscode-languageserver": "^5.2.1"

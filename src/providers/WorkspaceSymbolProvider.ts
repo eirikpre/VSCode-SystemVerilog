@@ -1,11 +1,10 @@
 import { SymbolInformation, WorkspaceSymbolProvider, CancellationToken } from 'vscode';
 import { SystemVerilogIndexerMap } from '../indexer_map';
-import { List } from 'collections/list';
 
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
     /* 
-    * this.symbols: filePath => List<SymbolInformation>
+    * this.symbols: filePath => Array<SymbolInformation>
     * each entry's key represents a file path, 
     * and the entry's value is a list of the symbols that exist in the file
     */

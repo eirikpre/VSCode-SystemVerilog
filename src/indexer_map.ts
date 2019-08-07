@@ -1,15 +1,14 @@
-import { List } from 'collections/list';
 import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
 
 export class SystemVerilogIndexerMap {
     /*
-    * this.symbols: filePath => List<SymbolInformation>
+    * this.symbols: filePath => Array<SymbolInformation>
     * each entry's key represents a file path,
     * and the entry's value is a list of the symbols that exist in the file
     */
-    public symbols: Map<string, List<SymbolInformation>>;
+    public symbols: Map<string, Array<SymbolInformation>>;
     public mostRecentSymbols: Array<SymbolInformation>;
     public building: Boolean = false;
     public statusbar: StatusBarItem;
@@ -80,7 +79,7 @@ export class SystemVerilogIndexerMap {
             title: "SystemVerilog Indexing...",
             cancellable: true
         }, async (_progress, token) => {
-            this.symbols = new Map<string, List<SymbolInformation>>();
+            this.symbols = new Map<string, Array<SymbolInformation>>();
             let uris = await Promise.resolve(workspace.findFiles(this.globPattern, this.exclude, undefined, token));
             console.time('build_index');
 
@@ -95,7 +94,7 @@ export class SystemVerilogIndexerMap {
                         resolve(workspace.openTextDocument(uri).then(doc => {
                             return this.parser.get_symbols(doc, this.regex);
                         }))
-                    }).then((output: List<SymbolInformation>) => {
+                    }).then((output: Array<SymbolInformation>) => {
                         if (output.length > 0) {
                             this.symbols.set(uri.fsPath, output);
                             this.symbolsCount += output.length;
@@ -224,22 +223,22 @@ export class SystemVerilogIndexerMap {
         @param symbolsMap the symbols map
         @return number of added files
     */
-    addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, List<SymbolInformation>>): Thenable<number> {
+    addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, Array<SymbolInformation>>): Thenable<number> {
         return new Promise(async (resolve) => {
             if (!document || !symbolsMap) {
-                resolve(new List<SymbolInformation>());
+                resolve(new Array<SymbolInformation>());
                 return;
             }
 
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
-                resolve(new List<SymbolInformation>());
+                resolve(new Array<SymbolInformation>());
                 return;
             }
 
             resolve(workspace.openTextDocument(document.uri).then(doc => {
                 return this.parser.get_symbols(document, this.regex);
             }))
-        }).then((output: List<SymbolInformation>) => {
+        }).then((output: Array<SymbolInformation>) => {
             if (output.length > 0) {
                 symbolsMap.set(document.uri.fsPath, output);
             }
@@ -255,7 +254,7 @@ export class SystemVerilogIndexerMap {
         @param symbolsMap the symbols map
         @return number of deleted files multiplied by -1
     */
-    removeDocumentSymbols(fsPath: string, symbolsMap: Map<string, List<SymbolInformation>>): number {
+    removeDocumentSymbols(fsPath: string, symbolsMap: Map<string, Array<SymbolInformation>>): number {
         if (!fsPath || !symbolsMap) {
             return 0;
         }
@@ -306,7 +305,7 @@ export class SystemVerilogIndexerMap {
         }
         else {
 
-            let maxSymbols = new List<SymbolInformation>();
+            let maxSymbols = new Array<SymbolInformation>();
 
             //collect the top symbols in `this.symbols`
             for (var list of this.symbols.values()) {
@@ -320,7 +319,7 @@ export class SystemVerilogIndexerMap {
                 }
             }
 
-            this.mostRecentSymbols = maxSymbols.toArray();
+            this.mostRecentSymbols = maxSymbols;
         }
     }
 

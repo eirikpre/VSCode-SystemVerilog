@@ -1,4 +1,3 @@
-import { List } from 'collections/list';
 import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri, Position } from "vscode";
 
 
@@ -162,9 +161,9 @@ export class SystemVerilogParser {
         @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public get_symbols(document: TextDocument, regex: RegExp): Thenable<List<SymbolInformation>> {
+    public get_symbols(document: TextDocument, regex: RegExp): Thenable<Array<SymbolInformation>> {
         return new Promise((resolve) => {
-            var symbols: List<SymbolInformation> = new List<SymbolInformation>();
+            var symbols: Array<SymbolInformation> = new Array<SymbolInformation>();
 
             var match;
             let text = document.getText();
@@ -196,7 +195,7 @@ export class SystemVerilogParser {
      * @param document
      * @param module
      */
-    public get_ports(document: TextDocument, module: String): Thenable<List<SymbolInformation>> {
+    public get_ports(document: TextDocument, module: String): Thenable<Array<SymbolInformation>> {
 
         return new Promise((resolve) => {
             resolve();

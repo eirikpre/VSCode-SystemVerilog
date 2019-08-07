@@ -12,7 +12,6 @@ import {
 } from 'vscode';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
-import { List } from 'collections/list';
 import { SystemVerilogIndexerMap } from '../indexer_map';
 import { SystemVerilogParser } from '../parser';
 
@@ -21,7 +20,7 @@ let symProvider: SystemVerilogWorkspaceSymbolProvider;
 let indexer: SystemVerilogIndexerMap;
 let parser: SystemVerilogParser;
 
-let symbols: Map<string, List<SymbolInformation>>;
+let symbols: Map<string, Array<SymbolInformation>>;
 
 const testFolderLocation = '../../../src/test/';
 
@@ -178,7 +177,7 @@ async function setUp() {
   docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
-  symbols = new Map<string, List<SymbolInformation>>();
+  symbols = new Map<string, Array<SymbolInformation>>();
 
   let location = new Location(uri,
     new Range(document.positionAt(0),
@@ -188,7 +187,7 @@ async function setUp() {
   //file_1
   let file_1 = path.join(`${__dirname + testFolderLocation}test-files/file_1.v`);
 
-  let list_1 = new List<SymbolInformation>();
+  let list_1 = new Array<SymbolInformation>();
   //add symbolInformation objects to list_1
   let list_1_SymbolInfo_1 = new SymbolInformation("list_1_SymbolInfo_1", SymbolKind.Variable, "module", location);
   let list_1_SymbolInfo_2 = new SymbolInformation("list_1_SymbolInfo_2", SymbolKind.Boolean, "logic", location);
@@ -203,7 +202,7 @@ async function setUp() {
   //file_2
   let file_2 = path.join(`${__dirname + testFolderLocation}test-files/file_2.v`);
 
-  let list_2 = new List<SymbolInformation>();
+  let list_2 = new Array<SymbolInformation>();
   //add symbolInformation objects to list_1
   let list_2_SymbolInfo_1 = new SymbolInformation("list_2_SymbolInfo_1", SymbolKind.Boolean, "logic", location);
   let list_2_SymbolInfo_2 = new SymbolInformation("list_2_SymbolInfo_2", SymbolKind.Boolean, "logic", location);
@@ -216,7 +215,7 @@ async function setUp() {
   //file_3
   let file_3 = path.join(`${__dirname + testFolderLocation}test-files/file_3.v`);
 
-  let list_3 = new List<SymbolInformation>();
+  let list_3 = new Array<SymbolInformation>();
   //add symbolInformation objects to list_1
   let list_3_SymbolInfo_1 = new SymbolInformation("list_3_SymbolInfo_1", SymbolKind.Boolean, "logic", location);
   let list_3_SymbolInfo_2 = new SymbolInformation("list_3_SymbolInfo_2", SymbolKind.Boolean, "logic", location);
@@ -235,7 +234,7 @@ async function setUp() {
   //file_4
   let file_4 = path.join(`${__dirname + testFolderLocation}test-files/file_4.v`);
 
-  let list_4 = new List<SymbolInformation>();
+  let list_4 = new Array<SymbolInformation>();
 
   //map the lists to the files
   symbols.set(file_1, list_1);
