@@ -41,7 +41,7 @@ export function getSymbolKind(name: String): SymbolKind {
 }
 
 export class SystemVerilogParser {
-    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign)/
+    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert)/
     private comment = /(?:\/\/.*$)?/
 
     private r_decl_block: RegExp = new RegExp([
