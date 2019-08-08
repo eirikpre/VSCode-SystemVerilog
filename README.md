@@ -13,19 +13,16 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Go to symbol in document
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages)
 - Keyboard shortcut to show the top symbols: `Ctrl + T`
-- Go to definition
+- Go to definition (_Works for module/interface/program/class/package names, and for ports to!_)
 
-    Works for module/interface/program/class/package names, and for ports to!
     ![goToDef_example](docs/goToDef_demo.gif)
 
 - Code snippets for many common blocks
 - Instantiate module from already indexed module
 
     ![moduleInit_example](docs/moduleInit_demo.gif)
-- Compile opened document using `Verilator`
 
-    ![moduleInit_example](docs/compileDocument_demo.gif)
-
+- Linter capabilites with simulators ( [More info on the wiki](https://github.com/eirikpre/VSCode-SystemVerilog/wiki) )
 
 ## Settings
 - Disable indexing
