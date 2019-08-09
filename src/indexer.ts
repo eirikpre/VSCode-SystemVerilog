@@ -2,7 +2,7 @@ import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation
 import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
 
-export class SystemVerilogIndexerMap {
+export class SystemVerilogIndexer {
     /*
     * this.symbols: filePath => Array<SymbolInformation>
     * each entry's key represents a file path,
@@ -22,15 +22,6 @@ export class SystemVerilogIndexerMap {
     public exclude: GlobPattern = undefined;
 
     public outputChannel: OutputChannel;
-
-    private regex = new RegExp([
-        , /(?<=^\s*(?:virtual\s+)?)/
-        , /(module|class|interface|package|program)\s+/
-        , /(?:automatic\s+)?/
-        , /(\w+)/
-        , /[\w\W.]*?/
-        , /(end\1)/
-    ].map(x => x.source).join(''), 'mg');
 
     constructor(statusbar: StatusBarItem, parser: SystemVerilogParser, channel: OutputChannel) {
         this.statusbar = statusbar;
@@ -92,7 +83,15 @@ export class SystemVerilogIndexerMap {
                 await Promise.all(subset.map(uri => {
                     return new Promise(async (resolve) => {
                         resolve(workspace.openTextDocument(uri).then(doc => {
-                            return this.parser.get_symbols(doc, this.regex);
+                            if (uris.length >= 1000*this.parallelProcessing) {
+                                return this.parser.get_all_recursive(doc, "fast", 0);
+                            }
+                            else if (uris.length >= 100*this.parallelProcessing) {
+                                return this.parser.get_all_recursive(doc, "declaration", 0);
+                            }
+                            else {
+                                return this.parser.get_all_recursive(doc, "declaration", 1);
+                            }
                         }))
                     }).then((output: Array<SymbolInformation>) => {
                         if (output.length > 0) {
@@ -236,7 +235,7 @@ export class SystemVerilogIndexerMap {
             }
 
             resolve(workspace.openTextDocument(document.uri).then(doc => {
-                return this.parser.get_symbols(document, this.regex);
+                return this.parser.get_all_recursive(doc, "declaration", 1);
             }))
         }).then((output: Array<SymbolInformation>) => {
             if (output.length > 0) {

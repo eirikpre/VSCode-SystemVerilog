@@ -101,12 +101,56 @@ export class SystemVerilogParser {
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
 
-    public get_all_recursive(document: TextDocument, text: string, offset: number=0, parent?: string): SymbolInformation[] {
-        let symbols: SymbolInformation[] = [];
-        let sub_blocks: RegExpMatchArray[] = [];
+    private r_block_fast = new RegExp([
+        , /(?<=^\s*(?:virtual\s+)?)/
+        , /(?<type>module|class|interface|package|program)\s+/
+        , /(?:automatic\s+)?/
+        , /(?<name>\w+)/
+        , /[\w\W.]*?/
+        , /(end\1)/
+    ].map(x => x.source).join(''), 'mg');
+
+    public readonly full_parse = [
+        this.r_decl_block,
+        this.r_decl_class,
+        this.r_decl_method,
+        this.r_typedef,
+        this.r_instantiation
+    ];
+
+    public readonly declaration_parse = [
+        this.r_decl_block,
+        this.r_decl_class,
+        this.r_decl_method,
+        this.r_typedef
+    ];
+
+    public readonly fast_parse = [
+        this.r_block_fast
+    ];
+
+    /**
+        Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
+        Add the objects to an empty list and return it.
+
+        @param document The document in which the command was invoked.
+        @param precision How much the parser will look for, must be "full", "declaration" or "fast"
+        @param maxDepth How many deep it will traverse the hierarchy
+        @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
+        signaled by returning `undefined`, `null`, or an empty list.
+    */
+    public get_all_recursive(document: TextDocument, precision: string="full", maxDepth: number=-1,
+                             text?: string, offset: number=0, parent?: string, depth: number=0): Array<SymbolInformation> {
+        let symbols: Array<SymbolInformation> = [];
+        let sub_blocks: Array<RegExpMatchArray> = [];
+
+        if (!text) {
+            text = document.getText();
+        }
+
+        let regexes = this.translate_precision(precision);
 
         // Find blocks
-        let regexes = [this.r_decl_block, this.r_decl_class, this.r_decl_method, this.r_typedef, this.r_instantiation];
         for (let i = 0; i < regexes.length; i++) {
             while(1) {
                 let match: RegExpMatchArray = regexes[i].exec(text);
@@ -137,58 +181,23 @@ export class SystemVerilogParser {
             }
             
         }
-        for (const i in sub_blocks) {
-            const match = sub_blocks[i];
-            let sub = this.get_all_recursive(
-                document,
-                match.groups.body,
-                match.index + offset + match[0].indexOf(match.groups.body),
-                match.groups.name
-            )
-            symbols = symbols.concat(sub)
+        if (depth != maxDepth) {
+            for (const i in sub_blocks) {
+                const match = sub_blocks[i];
+                let sub = this.get_all_recursive(
+                    document,
+                    precision,
+                    maxDepth,
+                    match.groups.body,
+                    match.index + offset + match[0].indexOf(match.groups.body),
+                    match.groups.name,
+                    depth+1
+                )
+                symbols = symbols.concat(sub)
+            }
         }
-
         return symbols;
     };
-
-
-    /**
-        Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
-        Add the objects to an empty list and return it.
-
-        @param document The document in which the command was invoked.
-        @param regex pattern that maps symbols, group(1) is the type, group(2) is the name
-        @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
-        signaled by returning `undefined`, `null`, or an empty list.
-    */
-    public get_symbols(document: TextDocument, regex: RegExp): Thenable<Array<SymbolInformation>> {
-        return new Promise((resolve) => {
-            var symbols: Array<SymbolInformation> = new Array<SymbolInformation>();
-
-            var match;
-            let text = document.getText();
-
-            /*
-                Matches the regex and uses the index from the regex to find the position
-            */
-            do {
-                match = regex.exec(text);
-                if (match) {
-                    let symbolInfo = new SymbolInformation(
-                        match[2],
-                        getSymbolKind(match[1]),
-                        match[1],
-                        new Location(document.uri,
-                            new Range(document.positionAt(match.index),
-                                document.positionAt(match.index + match[0].length)
-                            )))
-                    symbols.push(symbolInfo);
-                }
-            } while (match != null);
-
-            resolve(symbols);
-        });
-    }
 
     /**
      * TODO
@@ -200,6 +209,19 @@ export class SystemVerilogParser {
         return new Promise((resolve) => {
             resolve();
         });
+    }
+
+    private translate_precision(precision: string): Array<RegExp> {
+        switch (precision) {
+            case "full":
+                return this.full_parse;
+            case "declaration":
+                return this.declaration_parse;
+            case "fast":
+                return this.fast_parse;
+            default:
+                throw "Illegal precision";
+        }
     }
 
 }

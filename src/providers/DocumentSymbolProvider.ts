@@ -20,13 +20,12 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     */
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<Array<SymbolInformation>> {
         return new Promise((resolve) => {
-            let text = document.getText();
             /* 
             Matches the regex and uses the index from the regex to find the position
             TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
-            resolve(this.parser.get_all_recursive(document, text));
+            resolve(this.parser.get_all_recursive(document, "full"));
         });
     }
 }

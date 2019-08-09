@@ -10,13 +10,13 @@ import {
   ExtensionContext,
   InputBoxOptions,
   TextDocument,
-  ProgressLocation
+  ProgressLocation,
 } from 'vscode';
 import {
   LanguageClient,
   ServerOptions,
   TransportKind,
-  LanguageClientOptions
+  LanguageClientOptions,
 } from "vscode-languageclient";
 import * as path from 'path';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
@@ -25,7 +25,7 @@ import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
-import { SystemVerilogIndexerMap } from './indexer_map';
+import { SystemVerilogIndexer } from './indexer';
 
 
 // the LSP's client
@@ -118,7 +118,7 @@ export function activate(context: ExtensionContext) {
 
   // Back-end classes
   const parser = new SystemVerilogParser();
-  const indexer = new SystemVerilogIndexerMap(statusBar, parser, outputChannel);
+  const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
 
   // Providers
   const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
@@ -151,14 +151,9 @@ export function activate(context: ExtensionContext) {
   }));
 
   let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-
-  watcher.onDidCreate((uri) => {
-    indexer.onCreate(uri);
-  });
-
-  watcher.onDidDelete((uri) => {
-    indexer.onDelete(uri);
-  });
+  watcher.onDidCreate((uri) => { indexer.onCreate(uri); });
+  watcher.onDidDelete((uri) => { indexer.onDelete(uri); });
+  window.onDidChangeActiveTextEditor((doc) => { indexer.onSave(doc.document) });
 
   context.subscriptions.push(watcher);
 

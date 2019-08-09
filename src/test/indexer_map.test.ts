@@ -12,12 +12,12 @@ import {
 } from 'vscode';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
-import { SystemVerilogIndexerMap } from '../indexer_map';
+import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
 
 let docProvider: SystemVerilogDocumentSymbolProvider;
 let symProvider: SystemVerilogWorkspaceSymbolProvider;
-let indexer: SystemVerilogIndexerMap;
+let indexer: SystemVerilogIndexer;
 let parser: SystemVerilogParser;
 
 let symbols: Map<string, Array<SymbolInformation>>;
@@ -173,7 +173,7 @@ async function setUp() {
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
 
   parser = new SystemVerilogParser();
-  indexer = new SystemVerilogIndexerMap(statusBar, parser, window.createOutputChannel("SystemVerilog"));
+  indexer = new SystemVerilogIndexer(statusBar, parser, window.createOutputChannel("SystemVerilog"));
   docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 

@@ -49,7 +49,7 @@
                     },
                     "systemverilog.parallelProcessing": {
                         "type": "integer",
-                        "default": 50,
+                        "default": 10,
                         "description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
                     },
                     "systemverilog.excludeIndexing": {
