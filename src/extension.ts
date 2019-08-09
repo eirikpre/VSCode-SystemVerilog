@@ -132,7 +132,7 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
-  const build_handler = () => { indexer.rebuild() };
+  const build_handler = () => { indexer.build_index() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
   context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
@@ -146,16 +146,15 @@ export function activate(context: ExtensionContext) {
   // Built-in DocumentHighlightProvider is better
   // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
-  context.subscriptions.push(workspace.onDidSaveTextDocument((document: TextDocument) => {
-    indexer.onSave(document);
-  }));
-
+  // Background processes
+  context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
+  context.subscriptions.push(window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document) }));
   let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-  watcher.onDidCreate((uri) => { indexer.onCreate(uri); });
-  watcher.onDidDelete((uri) => { indexer.onDelete(uri); });
-  window.onDidChangeActiveTextEditor((doc) => { indexer.onSave(doc.document) });
-
+  context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
+  context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
+  context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
   context.subscriptions.push(watcher);
+
 
   /**
     Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.

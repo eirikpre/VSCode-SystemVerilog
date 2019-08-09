@@ -13,10 +13,10 @@ export class SystemVerilogIndexer {
     public building: Boolean = false;
     public statusbar: StatusBarItem;
     public parser: SystemVerilogParser;
-    public symbolsCount: number;
+    public symbolsCount: number = 0;
 
     public NUM_FILES: number = 250;
-    public parallelProcessing: number = 50;
+    public parallelProcessing: number;
     public systemVerilogFileExtensions = ["sv", "v", "svh", "vh"];
     public globPattern: string = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
     public exclude: GlobPattern = undefined;
@@ -27,30 +27,17 @@ export class SystemVerilogIndexer {
         this.statusbar = statusbar;
         this.parser = parser;
         this.outputChannel = channel;
+        this.symbols = new Map<string, Array<SymbolInformation>>()
 
-        const settings = workspace.getConfiguration();
-        const exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
-        const parallelProcessing: number = settings.get('systemverilog.parallelProcessing');
+        const settings = workspace.getConfiguration();      
         if (settings.get('systemverilog.disableIndexing')) {
-            this.statusbar.text = "SystemVerilog: Indexing disabled"
+            this.statusbar.text = "SystemVerilog: Indexing disabled on boot"
         } else {
-            if (exclude != "insert globPattern here") {
-                this.exclude = exclude;
-            }
-            if (parallelProcessing) {
-                this.parallelProcessing = parallelProcessing;
-            }
-
             this.build_index().then(() => {
                 this.updateMostRecentSymbols(undefined);
             });
         }
     };
-
-
-    public dispose() {
-        delete this.symbols
-    }
 
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
@@ -64,6 +51,12 @@ export class SystemVerilogIndexer {
         this.building = true;
         this.symbolsCount = 0;
         this.statusbar.text = "SystemVerilog: Indexing.."
+        const settings = workspace.getConfiguration();
+        this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
+        let exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
+        if (exclude = "insert globPattern here") {
+            exclude = undefined;
+        }
 
         return await window.withProgress({
             location: ProgressLocation.Notification,
@@ -71,9 +64,9 @@ export class SystemVerilogIndexer {
             cancellable: true
         }, async (_progress, token) => {
             this.symbols = new Map<string, Array<SymbolInformation>>();
-            let uris = await Promise.resolve(workspace.findFiles(this.globPattern, this.exclude, undefined, token));
+            let uris = await Promise.resolve(workspace.findFiles(this.globPattern, exclude, undefined, token));
+            
             console.time('build_index');
-
             for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                 let subset = uris.slice(filenr, filenr + this.parallelProcessing)
                 if (token.isCancellationRequested) {
@@ -81,28 +74,7 @@ export class SystemVerilogIndexer {
                     break;
                 }
                 await Promise.all(subset.map(uri => {
-                    return new Promise(async (resolve) => {
-                        resolve(workspace.openTextDocument(uri).then(doc => {
-                            if (uris.length >= 1000*this.parallelProcessing) {
-                                return this.parser.get_all_recursive(doc, "fast", 0);
-                            }
-                            else if (uris.length >= 100*this.parallelProcessing) {
-                                return this.parser.get_all_recursive(doc, "declaration", 0);
-                            }
-                            else {
-                                return this.parser.get_all_recursive(doc, "declaration", 1);
-                            }
-                        }))
-                    }).then((output: Array<SymbolInformation>) => {
-                        if (output.length > 0) {
-                            this.symbols.set(uri.fsPath, output);
-                            this.symbolsCount += output.length;
-                        }
-                    }).catch((error) => {
-                        this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + uri.toString());
-                        this.outputChannel.appendLine(error);
-                        return undefined
-                    });
+                    return this.processFile(uri, uris.length)
                 }));
             }
         }).then(() => {
@@ -116,23 +88,46 @@ export class SystemVerilogIndexer {
         });
     }
 
-
     /**
-     * Builds the symbols index. Scans the workspace for symbols.
-     */
-    public async rebuild(): Promise<any> {
-        if (!this.building) {
-            let settings = workspace.getConfiguration();
-            const exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
-            const parallelProcessing: number = settings.get('systemverilog.parallelProcessing');
-            if (exclude != "insert globPattern here") {
-                this.exclude = exclude;
+        Processes one file and updates this.symbols with an entry if symbols exist in the file.
+
+        @param uri uri to the document
+        @param total_files total number of files to determine parse-precision
+    */
+    public async processFile(uri: Uri, total_files: number=0) {
+        return new Promise(async (resolve) => {
+            resolve(workspace.openTextDocument(uri).then(doc => {
+                if (total_files >= 1000*this.parallelProcessing) {
+                    return this.parser.get_all_recursive(doc, "fast", 0);
+                }
+                else if (total_files >= 100*this.parallelProcessing) {
+                    return this.parser.get_all_recursive(doc, "declaration", 0);
+                }
+                else {
+                    return this.parser.get_all_recursive(doc, "declaration", 1);
+                }
+            }))
+        }).then((output: Array<SymbolInformation>) => {
+            if (output.length > 0) {
+                if (this.symbols.has(uri.fsPath)) {
+                    this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
+                } else {
+                    this.symbolsCount += output.length;
+                }
+                this.symbols.set(uri.fsPath, output);
+                if (total_files == 0) { // If total files is 0, it is being used onChange
+                    this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
+                }
             }
-            if (parallelProcessing) {
-                this.parallelProcessing = parallelProcessing;
+        }).catch((error) => {
+            this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + uri.toString());
+            this.outputChannel.appendLine(error);
+            if (this.symbols.has(uri.fsPath)) {
+                this.symbolsCount -= this.symbols.get(uri.fsPath).length;
+                this.symbols.delete(uri.fsPath);
             }
-            return await this.build_index();
-        }
+            return undefined
+        });
     }
 
 
@@ -141,31 +136,19 @@ export class SystemVerilogIndexer {
         Gets the current symbols which exist on the document to add to `this.symbols`.
         Updates the status bar with the current symbols count in the workspace.
 
-        @param document the document that's been saved
+        @param document the document that's been changed
         @return status message when indexing is successful or failed with an error.
     */
-    public async onSave(document: TextDocument): Promise<any> {
-        this.building = true;
-
-        return await new Promise(async (resolve) => {
+    public async onChange(document: TextDocument): Promise<any> {
+        return await new Promise( () => {
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 return;
+            } else {
+                return this.processFile(document.uri)
             }
-            let count = this.removeDocumentSymbols(document.uri.fsPath, this.symbols);
-
-            count += await this.addDocumentSymbols(document, this.symbols);
-
-            resolve(count);
-        }).then((count: number) => {
-            this.building = false;
-            this.symbolsCount += count;
-            this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
-        }).catch((error) => {
-            this.building = false;
-            this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + document.uri.toString());
-            this.outputChannel.appendLine(error);
-        });
+        })
     }
+
 
     /**
         Adds the given `document`'s symbols to `this.symbols`.
@@ -175,20 +158,10 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onCreate(uri: Uri): Promise<any> {
-        this.building = true;
-
-        return await new Promise(async (resolve) => {
-            resolve(workspace.openTextDocument(uri).then((document) => {
-                return this.addDocumentSymbols(document, this.symbols);
-            }));
-        }).then((count: number) => {
-            this.building = false;
-            this.symbolsCount += count;
-            this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
-        }).catch((error) => {
-            this.building = false;
-            this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + uri.toString());
-            this.outputChannel.appendLine(error);
+        return await new Promise( () => {
+            return workspace.openTextDocument(uri).then((document) => {
+                return this.onChange(document);
+            })
         });
     }
 
@@ -200,17 +173,10 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onDelete(uri: Uri): Promise<any> {
-        this.building = true;
-
-        return await new Promise(async (resolve) => {
-            resolve(this.removeDocumentSymbols(uri.fsPath, this.symbols));
-        }).then((count: number) => {
-            this.building = false;
-            this.symbolsCount += count;
-            this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
-        }).catch((error) => {
-            this.building = false;
-            this.outputChannel.appendLine(error);
+        return await new Promise( () => {
+            return workspace.openTextDocument(uri).then((document) => {
+                return this.onChange(document);
+            })
         });
     }
 
