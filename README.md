@@ -34,8 +34,10 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Verilator Launch Configuration
   * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
   * If not in path, replace _verilator_ with the appropriate command
-- `systemverilog.verilator.compileOnSave`: _Boolean_, compile files when saved.
+- `systemverilog.compileOnSave`: _Boolean_, compile files when saved.
   * Default: *true*
+- `systemverilog.compilerType`: _String_, drop down list to select a compiler type.
+  * Default: *Verilator*
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
@@ -59,6 +61,7 @@ See changelog for mode details
 - Added output channel `SystemVerilog`
 - Added an `LSP`, set it to communicate with the extension's client
 - Keep track of the recently used modules in the indexer
+- Added diagnostic support for `VCS` compiler
 ### 0.7
 - Instantiate module from already indexed module, thanks to `oehaddouchi`
 - Update to documentSymbolProvider

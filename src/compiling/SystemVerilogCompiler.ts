@@ -6,11 +6,13 @@ import {
 } from 'vscode-languageserver';
 import { DocumentCompiler } from "./DocumentCompiler";
 import { VerilatorCompiler } from "./VerilatorCompiler";
+import { VCSCompiler } from './VCSCompiler';
 
 
 /* defines supported simulators/compilers */
 export enum compilerType {
-    Verilator = 1
+    Verilator = 1,
+    VCS = 2,
 };
 
 /* 
@@ -41,6 +43,9 @@ export class SystemVerilogCompiler {
     public async validateTextDocument(document: TextDocument, type: compilerType): Promise<Map<string, Diagnostic[]>> {
         if (type == compilerType.Verilator) {
             this.compiler = new VerilatorCompiler(this.connection, this.documents, this.workspaceRootPath, this.configurations, this.compilerConfigurationsKeys);
+        }
+        else if (type == compilerType.VCS) {
+            this.compiler = new VCSCompiler(this.connection, this.documents, this.workspaceRootPath, this.configurations, this.compilerConfigurationsKeys);
         }
         else {
             this.connection.console.log("SystemVerilog: '" + type + "' is an invalid compiler type.");

@@ -8,6 +8,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.8.3] - 2019.08.08
+- Added diagnostic support for `VCS` compiler
+
 ## [0.8.2] - 2019.08.01
 - Keep track of the recently used modules in the indexer
 
