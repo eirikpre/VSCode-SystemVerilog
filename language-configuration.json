@@ -15,7 +15,8 @@
         ["fork", "join_none"],
         ["begin", "end"],
         ["task", "endtask"],
-        ["case", "endcase"],
+        ["randcase", "endcase"], // Randcase before case enables matching from randcase to endcase, but not endcase to randcase #53
+        ["case", "endcase"],     // Case should now work properly
         ["class", "endclass"],
         ["table", "endtable"],
         ["config", "endconfig"],

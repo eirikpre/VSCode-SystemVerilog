@@ -10,13 +10,13 @@ import {
   ExtensionContext,
   InputBoxOptions,
   TextDocument,
-  ProgressLocation
+  ProgressLocation,
 } from 'vscode';
 import {
   LanguageClient,
   ServerOptions,
   TransportKind,
-  LanguageClientOptions
+  LanguageClientOptions,
 } from "vscode-languageclient";
 import * as path from 'path';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
@@ -25,7 +25,7 @@ import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
-import { SystemVerilogIndexerMap } from './indexer_map';
+import { SystemVerilogIndexer } from './indexer';
 
 
 // the LSP's client
@@ -118,7 +118,7 @@ export function activate(context: ExtensionContext) {
 
   // Back-end classes
   const parser = new SystemVerilogParser();
-  const indexer = new SystemVerilogIndexerMap(statusBar, parser, outputChannel);
+  const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
 
   // Providers
   const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
@@ -132,7 +132,7 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
-  const build_handler = () => { indexer.rebuild() };
+  const build_handler = () => { indexer.build_index() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
   context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
@@ -146,21 +146,15 @@ export function activate(context: ExtensionContext) {
   // Built-in DocumentHighlightProvider is better
   // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
-  context.subscriptions.push(workspace.onDidSaveTextDocument((document: TextDocument) => {
-    indexer.onSave(document);
-  }));
-
+  // Background processes
+  context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
+  context.subscriptions.push(window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document) }));
   let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-
-  watcher.onDidCreate((uri) => {
-    indexer.onCreate(uri);
-  });
-
-  watcher.onDidDelete((uri) => {
-    indexer.onDelete(uri);
-  });
-
+  context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
+  context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
+  context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
   context.subscriptions.push(watcher);
+
 
   /**
     Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.
