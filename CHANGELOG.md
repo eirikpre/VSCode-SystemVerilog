@@ -11,6 +11,7 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 
 ## [0.8.4] - 2019.08.15
 - Added diagnostic support for `VCS` compiler
+- Fixed #60
 
 ## [0.8.3] - 2019.08.09
 - Reactive indexation now chooses regexes based on number of files
