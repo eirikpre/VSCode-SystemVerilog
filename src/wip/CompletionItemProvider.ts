@@ -1,5 +1,5 @@
 
-import { SystemVerilogIndexerMap } from '../indexer_map';
+import { SystemVerilogIndexer } from '../indexer';
 import { CompletionItemProvider, CompletionItem, TextDocument, Position, CancellationToken, CompletionContext, commands, SymbolInformation, CompletionItemKind } from 'vscode';
 
 // See test/SymbolKind_icons.png for an overview of the icons
@@ -27,11 +27,11 @@ export function getCompletionItemKind(name: String): CompletionItemKind {
 
 
 export class SystemVerilogCompletionItemProvider implements CompletionItemProvider {
-    private indexer: SystemVerilogIndexerMap;
+    private indexer: SystemVerilogIndexer;
     private globals: CompletionItem[]
     private known_types: CompletionItem[]
 
-    constructor(indexer: SystemVerilogIndexerMap) {
+    constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
 
         // See CompletionItemKind for overview

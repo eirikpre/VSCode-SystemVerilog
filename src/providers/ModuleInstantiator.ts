@@ -1,7 +1,8 @@
-import { workspace } from 'vscode';
+import { workspace, commands, SymbolInformation } from 'vscode';
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
+import { getSymbolKind } from '../parser';
 
-/** 
+/**
  * Processing states:
  * --------------------------------------------
  * INITIAL: before the ports/parameters header.
@@ -17,23 +18,23 @@ enum processingState {
     COMPLETE = 4,
 }
 
-/** 
- * key symbols 
+/**
+ * key symbols
  */
 const ports_key_symbols = ["input", "output", "inout"];
 const parameter_key_symbol = "parameter";
 
-/** 
+/**
  * space padding
  */
 const padding = " ".repeat(workspace.getConfiguration(null, null).get('editor.tabSize'));
 
-/** 
+/**
  * non-breaking white space
  */
 const non_breaking_space = "\xa0";
 
-/**  
+/**
     Checks if symbol is a port.
 
     @param symbol the symbol
@@ -57,7 +58,7 @@ function isPortSymbol(symbol: string): boolean {
     return exists;
 }
 
-/**  
+/**
     Checks if symbol is a parameter.
 
     @param symbol the symbol
@@ -75,7 +76,7 @@ function isParameterSymbol(symbol: string): boolean {
 
 /**
  * Checks if the given key is empty
- * 
+ *
  * @param key the key
  * @return true, if the key is empty
 */
@@ -91,7 +92,7 @@ function isEmptyKey(key: string): boolean {
     return key.length == 0;
 }
 
-/**  
+/**
     Checks if the module is parameterized.
 
     @param symbol the module's symbol
@@ -127,57 +128,56 @@ function moduleIsParameterized(symbol: string, container: string): boolean {
  * Module instantiator class which queries a given module, fetches the relative container, and parses an instance.
 */
 export class SystemVerilogModuleInstantiator {
-    private workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider;
+    constructor() { };
 
-    constructor(workspaceSymbolProvider: SystemVerilogWorkspaceSymbolProvider) {
-        this.workspaceSymbolProvider = workspaceSymbolProvider;
-    }
-
-    /**  
-        Uses the given symbol to query the module's definition, 
+    /**
+        Uses the given symbol to query the module's definition,
         and then return the module's instance.
 
-        @param symbol the module's name
+        @param query the module's name
         @return the module's instance.
     */
-    public auto_instantiate(symbol: string): Thenable<string> {
+    public auto_instantiate(query: string): Thenable<string> {
         return new Promise((resolve, reject) => {
-            let symbolInfo = this.workspaceSymbolProvider.provideWorkspaceModule(symbol);
+            // return this.workspaceSymbolProvider.provideWorkspaceSymbols(query, undefined, true)
+            return commands.executeCommand("vscode.executeWorkspaceSymbolProvider", query, undefined, true)
+                .then( (symbols: SymbolInformation[]) => {
+                    for (let i = 0; i < symbols.length; i++) {
+                        const s = symbols[i];
+                        if (s.kind == getSymbolKind("module")) {
+                            return s;
+                        }
+                    }
+                    reject(query + " module was not found in the workspace.");
+                }).then( s => {
+                    workspace.openTextDocument(s.location.uri).then(doc => {
+                        let container = doc.getText(s.location.range);
 
-            if (!symbolInfo) {
-                reject(symbol + " module was not found in the workspace.");
-            }
+                        if (isEmptyKey(container)) {
+                            reject(query + "'s definition is undefined in the workspace.");
+                        }
 
-            let uri = symbolInfo.location.uri;
-            let range = symbolInfo.location.range;
-            workspace.openTextDocument(uri).then(doc => {
-                let container = doc.getText(range);
+                        let instance = undefined;
 
-                if (isEmptyKey(container)) {
-                    reject(symbol + "'s definition is undefined in the workspace.");
-                }
+                        try {
+                            instance = formatInstance(query, container);
+                        } catch (error) {
+                            console.log(error);
+                            reject("An error occurred when formatting the instance for " + query + ": " + error);
+                        }
 
-                let instance = undefined;
+                        if (instance === undefined) {
+                            reject("An error occurred when formatting the instance for " + query + ".");
+                        }
 
-                try {
-                    instance = formatInstance(symbol, container);
-                } catch (error) {
-                    console.log(error);
-                    reject("An error occurred when formatting the instance for " + symbol + ": " + error);
-                }
-
-                if (instance === undefined) {
-                    reject("An error occurred when formatting the instance for " + symbol + ".");
-                }
-
-                resolve(instance);
-            });
+                        resolve(instance);
+                    });
+                });
         });
     }
-
 }
 
-/**  
+/**
     Uses the given symbol, and given container to format the module's instance.
 
     @param symbol string the module's name
@@ -203,7 +203,7 @@ export function formatInstance(symbol: string, container: string): string {
 
 /**
  * Cleans up the container from extra characters, and surround delimiters with white space.
- * 
+ *
  * @param container the module's container
  * @return cleaned up container.
 */
@@ -242,7 +242,7 @@ function cleanUpContainer(container: string): string {
 
 /**
  * Get the maximum length of the ports and parameters in the module container.
- * 
+ *
  * @param container the module's container
  * @param moduleIsParameterized whether the module has parameters or not
  * @return the maximum length
@@ -341,7 +341,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
 
 /**
  * Parse the container, and create the module's instance.
- * 
+ *
  * @param symbol the module's symbol
  * @param container the module's container
  * @param moduleIsParameterized whether the module has parameters or not
@@ -495,7 +495,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
 
 /**
  * Parses a single comment from the container starting from a given index in keys.
- * 
+ *
  * @param keys the container's keys.
  * @param output the array to add the single comment to
  * @param i the start index
@@ -533,7 +533,7 @@ function getSingleComment(keys: string[], output: string[], i: number): number {
 
 /**
  * Parses a block comment from the container starting from a given index in keys.
- * 
+ *
  * @param keys the container's keys.
  * @param output the array to add the block comment to
  * @param i the start index

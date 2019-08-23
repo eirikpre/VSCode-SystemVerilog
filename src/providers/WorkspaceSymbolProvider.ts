@@ -1,5 +1,6 @@
 import { SymbolInformation, WorkspaceSymbolProvider, CancellationToken } from 'vscode';
 import { SystemVerilogIndexer } from '../indexer';
+import { getSymbolKind } from '../parser';
 
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
@@ -64,7 +65,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             let symbolInfo = undefined;
             this.indexer.symbols.forEach(list => {
                 list.forEach(symbol => {
-                    if (symbol.name == query && symbol.containerName == "module") {
+                    if (symbol.name == query && symbol.kind == getSymbolKind("module")) {
                         symbolInfo = symbol;
                         return false;
                     }

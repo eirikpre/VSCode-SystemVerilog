@@ -125,7 +125,7 @@ export function activate(context: ExtensionContext) {
   const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
   const defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
   const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
-  const moduleInstantiator = new SystemVerilogModuleInstantiator(symProvider);
+  const moduleInstantiator = new SystemVerilogModuleInstantiator();
 
   context.subscriptions.push(statusBar);
   context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
