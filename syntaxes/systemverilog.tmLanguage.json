@@ -423,6 +423,10 @@
                 {
                     "name": "keyword.other.extra.LRM-AnnexB.B-1-6.systemverilog",
                     "match": "\\b(time|timeprecision|timeunit|tran|tranif0|tranif1|tri|tri0|tri1|triand|trior|trireg|type|typedef|union|unique|unique0|unsigned|until|until_with|untyped|use|uwire|var|vectored|virtual|void|wait|wait_order|wand|weak|weak0|weak1|while|wildcard|wire|with|within|wor|xnor|xor)\\b"
+                },
+                {
+                    "name": "keyword.other.extra.custom.systemverilog",
+                    "match": "\\b(mailbox)\\b"
                 }
             ]
         }
