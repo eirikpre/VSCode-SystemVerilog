@@ -21,8 +21,9 @@ let documentCompiler: SystemVerilogCompiler;
 /* `configurations` is used to store the workspace's configs */
 let configurations: Map<string, any> = new Map();
 let compilerConfigurationsKeys: string[] = [
-	"systemverilog.verilator.launchConfiguration",
-	"systemverilog.verilator.compileOnSave"
+	"systemverilog.compilerType",
+	"systemverilog.compileOnSave",
+	"systemverilog.launchConfiguration"
 ];
 
 connection.onInitialize((params: InitializeParams) => {
@@ -89,7 +90,13 @@ async function compile(document: TextDocument): Promise<void> {
 		return;
 	}
 
-	documentCompiler.validateTextDocument(document, compilerType.Verilator).then((diagnosticCollection: Map<string, Diagnostic[]>) => {
+	//remove existing Diagnostics for the targeted document
+	connection.sendDiagnostics({ uri: document.uri, diagnostics: [] });
+
+	//convert string to enum type `compilerType`
+	let type: compilerType = <compilerType>compilerType[<string>configurations.get(compilerConfigurationsKeys[0])];
+
+	documentCompiler.validateTextDocument(document, type).then((diagnosticCollection: Map<string, Diagnostic[]>) => {
 		// Send the computed diagnostics to VSCode for each document
 		for (const [uri, diagnostics] of diagnosticCollection.entries()) {
 			connection.sendDiagnostics({ uri: uri, diagnostics });

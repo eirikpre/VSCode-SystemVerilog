@@ -21,11 +21,11 @@ const file_path_placeholder = "FILEPATH_PLACEHOLDER";
 let diagnosticCollection: Map<string, Diagnostic[]>;
 let documentCompiler = new VerilatorCompiler(undefined, undefined, undefined, undefined, undefined);
 
-suite('DocumentCompiler Tests', () => {
+suite('VerilatorCompiler Tests', () => {
     test('test #1: Diagnostics from %Error', async () => {
         diagnosticCollection = new Map();
 
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/foo.sv`);
+        let filePath = path.join(__dirname, testFolderLocation, `test-files/VerilatorCompiler.test/foo.sv`);
 
         let uriDoc = Uri.file(filePath);
         let documentWorkspace = await workspace.openTextDocument(uriDoc);
@@ -34,12 +34,12 @@ suite('DocumentCompiler Tests', () => {
 
         let compiledFilePath = getPathFromUri(document.uri, __dirname);
 
-        let stderrFile = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/foo.stderr.txt`);
+        let stderrFile = path.join(__dirname, testFolderLocation, `test-files/VerilatorCompiler.test/foo.stderr.txt`);
 
         let stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
 
-        documentCompiler.parseDiagnostics(stderr, document, compiledFilePath, diagnosticCollection);
+        documentCompiler.parseDiagnostics(undefined, undefined, stderr, document, compiledFilePath, diagnosticCollection);
 
         let collection = diagnosticCollection.get(document.uri);
         assert.equal(collection.length, 6);
@@ -57,7 +57,7 @@ suite('DocumentCompiler Tests', () => {
         diagnosticCollection = new Map();
 
 
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/bar.sv`);
+        let filePath = path.join(__dirname, testFolderLocation, `test-files/VerilatorCompiler.test/bar.sv`);
 
         let uriDoc = Uri.file(filePath);
         let documentWorkspace = await workspace.openTextDocument(uriDoc);
@@ -66,12 +66,12 @@ suite('DocumentCompiler Tests', () => {
 
         let compiledFilePath = getPathFromUri(document.uri, __dirname);
 
-        let stderrFile = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/bar.stderr.txt`);
+        let stderrFile = path.join(__dirname, testFolderLocation, `test-files/VerilatorCompiler.test/bar.stderr.txt`);
 
         let stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
 
-        documentCompiler.parseDiagnostics(stderr, document, compiledFilePath, diagnosticCollection);
+        documentCompiler.parseDiagnostics(undefined, undefined, stderr, document, compiledFilePath, diagnosticCollection);
 
         let collection = diagnosticCollection.get(document.uri);
         assert.equal(collection.length, 7);
@@ -88,7 +88,7 @@ suite('DocumentCompiler Tests', () => {
     test('test #3: Diagnostics for empty stderr', async () => {
         diagnosticCollection = new Map();
 
-        let filePath = `test-files/DocumentCompiler.test/baz.sv`;
+        let filePath = `test-files/VerilatorCompiler.test/baz.sv`;
         let uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
 
         let documentWorkspace = await workspace.openTextDocument(uriDoc);
@@ -97,7 +97,7 @@ suite('DocumentCompiler Tests', () => {
 
         let compiledFilePath = getPathFromUri(document.uri, __dirname);
 
-        documentCompiler.parseDiagnostics("", document, compiledFilePath, diagnosticCollection);
+        documentCompiler.parseDiagnostics(undefined, undefined, "", document, compiledFilePath, diagnosticCollection);
 
         let collection = diagnosticCollection.get(document.uri);
 
@@ -108,7 +108,7 @@ suite('DocumentCompiler Tests', () => {
 
     test('test #4: test skipCannotFindModuleTrailingErrors()', async () => {
         //a case where `Cannot find` error is missing from stderr
-        let filePath = `test-files/DocumentCompiler.test/bar.stderr.txt`;
+        let filePath = `test-files/VerilatorCompiler.test/bar.stderr.txt`;
         let stderrFile = path.join(__dirname, testFolderLocation, filePath);
 
         let uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
@@ -127,8 +127,8 @@ suite('DocumentCompiler Tests', () => {
         assert.equal(i, 0);
 
         //a case where `Cannot find` error is in stderr
-        filePath = `test-files/DocumentCompiler.test/qux.sv`;
-        stderrFile = path.join(__dirname, testFolderLocation, `test-files/DocumentCompiler.test/qux.stderr.txt`);
+        filePath = `test-files/VerilatorCompiler.test/qux.sv`;
+        stderrFile = path.join(__dirname, testFolderLocation, `test-files/VerilatorCompiler.test/qux.stderr.txt`);
 
         uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
         document = await workspace.openTextDocument(uriDoc);

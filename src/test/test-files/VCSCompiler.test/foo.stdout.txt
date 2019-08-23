@@ -1,0 +1,47 @@
+Loading tools/cadence/xcelium/18.09.011
+  Loading requirement: tools/cadence/license/2018.12
+Loading tools/realintent/versions/2018.A.p2
+  Loading requirement: tools/realintent/license/2019.01
+Loading tools/mentor/questa/2019.1
+  Loading requirement: tools/mentor/license/2019.01
+                         Chronologic VCS (TM)
+       Version O-2018.09-SP2_Full64 -- Sat Aug  3 17:45:19 2019
+               Copyright (c) 1991-2018 by Synopsys Inc.
+                         ALL RIGHTS RESERVED
+
+This program is proprietary and confidential information of Synopsys Inc.
+and may be used and disclosed only as authorized in a license agreement
+controlling such use and disclosure.
+
+Parsing design file 'FILEPATH_PLACEHOLDER'
+
+Error-[UTOPN] Unknown type or port name
+  The type name 'soc_top_asserts' is unknown, or the identifier 
+  'u_outermodule1' has not been listed as a port, or the declaration might 
+  represent an instance missing parentheses.
+  "FILEPATH_PLACEHOLDER", 13
+  Source info:   soc_top_asserts u_outermodule1;
+
+
+Error-[UTOPN] Unknown type or port name
+  The type name 'soc_top_assertsdd' is unknown, or the identifier 
+  'u_outermsodule1f' has not been listed as a port, or the declaration might 
+  represent an instance missing parentheses.
+  "FILEPATH_PLACEHOLDER", 14
+  Source info:   soc_top_assertsdd u_outermsodule1f;
+
+
+Error-[IND] Identifier not declared
+FILEPATH_PLACEHOLDER, 23
+  Identifier 'en' has not been declared yet. If this error is not expected, 
+  please check if you have set `default_nettype to none.
+  
+
+
+Error-[SE] Syntax error
+  Following verilog source has syntax error :
+  "FILEPATH_PLACEHOLDER", 23: 
+  token is 'endmodule'
+
+4 errors
+CPU time: .692 seconds to compile
