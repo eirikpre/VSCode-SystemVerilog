@@ -136,6 +136,15 @@
         ],
         "description": "Snippet for a for loop"
     },
+    "foreach": {
+        "prefix": "foreach",
+        "body": [
+            "foreach ( ${1:arr}[${2:i}] ) begin",
+            "\t${3:pass}",
+            "end"
+        ],
+        "description": "Snippet for a foreach loop"
+    },
     "function": {
         "prefix": "function",
         "body": [
