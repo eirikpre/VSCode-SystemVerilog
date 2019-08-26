@@ -1,4 +1,4 @@
-import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument } from 'vscode'
+import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position } from 'vscode'
 import { SystemVerilogParser } from '../parser';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
@@ -26,6 +26,40 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
             resolve(this.parser.get_all_recursive(document, "full"));
+            // resolve(show_SymbolKinds(document.uri));
         });
     }
+}
+
+
+// Function to easily show all the SymbolKind icons
+function show_SymbolKinds(uri: Uri): Array<SymbolInformation> {
+    return new Array<SymbolInformation>(
+        new SymbolInformation("File",           SymbolKind.File,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Module",         SymbolKind.Module,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Namespace",      SymbolKind.Namespace,     "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Package",        SymbolKind.Package,       "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Class",          SymbolKind.Class,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Method",         SymbolKind.Method,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Property",       SymbolKind.Property,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Field",          SymbolKind.Field,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constructor",    SymbolKind.Constructor,   "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Enum",           SymbolKind.Enum,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Interface",      SymbolKind.Interface,     "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Function",       SymbolKind.Function,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Variable",       SymbolKind.Variable,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constant",       SymbolKind.Constant,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("String",         SymbolKind.String,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Number",         SymbolKind.Number,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Boolean",        SymbolKind.Boolean,       "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Array",          SymbolKind.Array,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Object",         SymbolKind.Object,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Key",            SymbolKind.Key,           "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Null",           SymbolKind.Null,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("EnumMember",     SymbolKind.EnumMember,    "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Struct",         SymbolKind.Struct,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Event",          SymbolKind.Event,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Operator",       SymbolKind.Operator,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("TypeParameter",  SymbolKind.TypeParameter, "", new Location(uri, new Position(0,0)))
+    );
 }
