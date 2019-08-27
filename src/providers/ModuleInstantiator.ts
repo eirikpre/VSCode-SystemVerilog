@@ -1,4 +1,4 @@
-import { workspace, commands } from 'vscode';
+import { workspace, commands, InputBoxOptions, window } from 'vscode';
 import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
 /**
@@ -174,6 +174,43 @@ export class SystemVerilogModuleInstantiator {
                 });
         });
     }
+
+    /**
+        Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.
+        Looks up the module's definition, and parses it to build the module's instance.
+        @return the module's instance, assigns the default parameter values.
+    */
+    public instantiateModule() {
+        const options: InputBoxOptions = {
+            prompt: "Enter the module name to instantiate",
+            placeHolder: "Enter the module name to instantiate",
+        };
+
+        // request the module's name from the user
+        window.showInputBox(options).then((value) => {
+            if (!value) {
+                return;
+            }
+            // current editor
+            const editor = window.activeTextEditor;
+
+            // check if there is no selection
+            if (editor.selection.isEmpty) {
+                if (editor) {
+                this.auto_instantiate(value).then(
+                    function (v) {
+                    editor.edit((editBuilder) => {
+                        editBuilder.replace(editor.selection, v);
+                    });
+                    },
+                    function (e) {
+                    window.showErrorMessage(e);
+                    });
+                }
+            }
+        });
+    }
+
 }
 
 /**

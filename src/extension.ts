@@ -9,7 +9,6 @@ import {
   DocumentSelector,
   ExtensionContext,
   InputBoxOptions,
-  TextDocument,
   ProgressLocation,
 } from 'vscode';
 import {
@@ -133,8 +132,9 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
   const build_handler = () => { indexer.build_index() };
+  const instantiate_handler = () => { moduleInstantiator.instantiateModule() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
-  context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
+  context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
 
   // WIP
@@ -155,42 +155,6 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
   context.subscriptions.push(watcher);
 
-
-  /**
-    Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.
-    Looks up the module's definition, and parses it to build the module's instance.
-    @return the module's instance, assigns the default parameter values.
-  */
-  function instantiateModule() {
-    const options: InputBoxOptions = {
-      prompt: "Enter the module name to instantiate",
-      placeHolder: "Enter the module name to instantiate",
-    };
-
-    // request the module's name from the user
-    window.showInputBox(options).then((value) => {
-      if (!value) {
-        return;
-      }
-      // current editor
-      const editor = window.activeTextEditor;
-
-      // check if there is no selection
-      if (editor.selection.isEmpty) {
-        if (editor) {
-          moduleInstantiator.auto_instantiate(value).then(
-            function (v) {
-              editor.edit((editBuilder) => {
-                editBuilder.replace(editor.selection, v);
-              });
-            },
-            function (e) {
-              window.showErrorMessage(e);
-            });
-        }
-      }
-    });
-  }
 
   /**
     Sends a notification to the LSP to compile the opened document.
