@@ -1,8 +1,9 @@
-import * as vscode from 'vscode';
+import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace } from 'vscode';
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
+import { SystemVerilogSymbol } from '../symbol';
 
-export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvider {
+export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
     private workspaceSymProvider : SystemVerilogWorkspaceSymbolProvider;
     private docSymProvider       : SystemVerilogDocumentSymbolProvider;
@@ -16,7 +17,7 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
         this.docSymProvider = docSymProvider;
     };
 
-    public provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
+    public provideDefinition(document: TextDocument, position: Position, token: CancellationToken): Promise<Definition> {
         return new Promise ( async (resolve, reject) => {
             let range = document.getWordRangeAtPosition(position);
             let line = document.lineAt(position.line).text;
@@ -59,7 +60,7 @@ export class SystemVerilogDefinitionProvider implements vscode.DefinitionProvide
 }
 
 export function moduleFromPort(document, range): string {
-    let text = document.getText(new vscode.Range(new vscode.Position(0,0), range.end))
+    let text = document.getText(new Range(new Position(0,0), range.end))
     let depthParathesis = 0;
     let i = 0;
 
@@ -81,13 +82,13 @@ export function moduleFromPort(document, range): string {
 }
 
 
-function findPortLocation(symbol: vscode.SymbolInformation, port:string): Thenable<vscode.Location> {
-    return vscode.workspace.openTextDocument(symbol.location.uri).then( doc => {
+function findPortLocation(symbol: SystemVerilogSymbol, port:string): Thenable<Location> {
+    return workspace.openTextDocument(symbol.location.uri).then( doc => {
 
         for (let i = symbol.location.range.start.line; i<doc.lineCount; i++) {
             let line = doc.lineAt(i).text;
             if (line.match("\\bword\\b".replace('word', port))) {
-                return new vscode.Location(symbol.location.uri, new vscode.Position(i, line.indexOf(port)));
+                return new Location(symbol.location.uri, new Position(i, line.indexOf(port)));
             }
         }
     });

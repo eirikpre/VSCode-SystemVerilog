@@ -4,7 +4,6 @@ import {
   window,
   workspace,
   Uri,
-  SymbolInformation,
   StatusBarAlignment,
   SymbolKind,
   Location,
@@ -14,13 +13,14 @@ import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbol
 import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
 import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
+import { SystemVerilogSymbol } from '../symbol';
 
 let docProvider: SystemVerilogDocumentSymbolProvider;
 let symProvider: SystemVerilogWorkspaceSymbolProvider;
 let indexer: SystemVerilogIndexer;
 let parser: SystemVerilogParser;
 
-let symbols: Map<string, Array<SymbolInformation>>;
+let symbols: Map<string, Array<SystemVerilogSymbol>>;
 
 const testFolderLocation = '../../../src/test/';
 
@@ -141,10 +141,10 @@ suite('indexer_map Tests', () => {
     indexer.updateMostRecentSymbols(undefined);
     assert.equal(indexer.mostRecentSymbols.length, 5);
 
-    let recentSymbols = new Array<SymbolInformation>();
-    let symbolInfo_1 = new SymbolInformation("symbolInfo_1", SymbolKind.Variable, "module", undefined);
-    let symbolInfo_2 = new SymbolInformation("symbolInfo_2", SymbolKind.Boolean, "logic", undefined);
-    let symbolInfo_3 = new SymbolInformation("symbolInfo_3", SymbolKind.Function, "function", undefined);
+    let recentSymbols = new Array<SystemVerilogSymbol>();
+    let symbolInfo_1 = new SystemVerilogSymbol("symbolInfo_1", "module", "parent_module", undefined);
+    let symbolInfo_2 = new SystemVerilogSymbol("symbolInfo_2", "logic", "parent_logic", undefined);
+    let symbolInfo_3 = new SystemVerilogSymbol("symbolInfo_3", "function", "parent_function", undefined);
     let symbolInfo_4 = indexer.mostRecentSymbols[0];
     let symbolInfo_5 = indexer.mostRecentSymbols[1];
 
@@ -177,7 +177,7 @@ async function setUp() {
   docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
-  symbols = new Map<string, Array<SymbolInformation>>();
+  symbols = new Map<string, Array<SystemVerilogSymbol>>();
 
   let location = new Location(uri,
     new Range(document.positionAt(0),
@@ -187,12 +187,12 @@ async function setUp() {
   //file_1
   let file_1 = path.join(`${__dirname + testFolderLocation}test-files/file_1.v`);
 
-  let list_1 = new Array<SymbolInformation>();
-  //add symbolInformation objects to list_1
-  let list_1_SymbolInfo_1 = new SymbolInformation("list_1_SymbolInfo_1", SymbolKind.Variable, "module", location);
-  let list_1_SymbolInfo_2 = new SymbolInformation("list_1_SymbolInfo_2", SymbolKind.Boolean, "logic", location);
-  let list_1_SymbolInfo_3 = new SymbolInformation("list_1_SymbolInfo_3", SymbolKind.Function, "function", location);
-  let list_1_SymbolInfo_4 = new SymbolInformation("list_1_SymbolInfo_4", SymbolKind.Interface, "interface", location);
+  let list_1 = new Array<SystemVerilogSymbol>();
+  //add SystemVerilogSymbol objects to list_1
+  let list_1_SymbolInfo_1 = new SystemVerilogSymbol("list_1_SymbolInfo_1", "module", undefined, location);
+  let list_1_SymbolInfo_2 = new SystemVerilogSymbol("list_1_SymbolInfo_2", "logic", undefined, location);
+  let list_1_SymbolInfo_3 = new SystemVerilogSymbol("list_1_SymbolInfo_3", "function", undefined, location);
+  let list_1_SymbolInfo_4 = new SystemVerilogSymbol("list_1_SymbolInfo_4", "interface", undefined, location);
 
   list_1.push(list_1_SymbolInfo_1);
   list_1.push(list_1_SymbolInfo_2);
@@ -202,11 +202,11 @@ async function setUp() {
   //file_2
   let file_2 = path.join(`${__dirname + testFolderLocation}test-files/file_2.v`);
 
-  let list_2 = new Array<SymbolInformation>();
-  //add symbolInformation objects to list_1
-  let list_2_SymbolInfo_1 = new SymbolInformation("list_2_SymbolInfo_1", SymbolKind.Boolean, "logic", location);
-  let list_2_SymbolInfo_2 = new SymbolInformation("list_2_SymbolInfo_2", SymbolKind.Boolean, "logic", location);
-  let list_2_SymbolInfo_3 = new SymbolInformation("list_2_SymbolInfo_3", SymbolKind.Package, "import", location);
+  let list_2 = new Array<SystemVerilogSymbol>();
+  //add SystemVerilogSymbol objects to list_1
+  let list_2_SymbolInfo_1 = new SystemVerilogSymbol("list_2_SymbolInfo_1", "logic", undefined, location);
+  let list_2_SymbolInfo_2 = new SystemVerilogSymbol("list_2_SymbolInfo_2", "logic", undefined, location);
+  let list_2_SymbolInfo_3 = new SystemVerilogSymbol("list_2_SymbolInfo_3", "import", undefined, location);
 
   list_2.push(list_2_SymbolInfo_1);
   list_2.push(list_2_SymbolInfo_2);
@@ -215,14 +215,14 @@ async function setUp() {
   //file_3
   let file_3 = path.join(`${__dirname + testFolderLocation}test-files/file_3.v`);
 
-  let list_3 = new Array<SymbolInformation>();
-  //add symbolInformation objects to list_1
-  let list_3_SymbolInfo_1 = new SymbolInformation("list_3_SymbolInfo_1", SymbolKind.Boolean, "logic", location);
-  let list_3_SymbolInfo_2 = new SymbolInformation("list_3_SymbolInfo_2", SymbolKind.Boolean, "logic", location);
-  let list_3_SymbolInfo_3 = new SymbolInformation("list_3_SymbolInfo_3", SymbolKind.Variable, "module", location);
-  let list_3_SymbolInfo_4 = new SymbolInformation("list_3_SymbolInfo_4", SymbolKind.Variable, "module", location);
-  let list_3_SymbolInfo_5 = new SymbolInformation("list_3_SymbolInfo_5", SymbolKind.Variable, "module", location);
-  let list_3_SymbolInfo_6 = new SymbolInformation("list_3_SymbolInfo_6", SymbolKind.Package, "import", location);
+  let list_3 = new Array<SystemVerilogSymbol>();
+  //add SystemVerilogSymbol objects to list_1
+  let list_3_SymbolInfo_1 = new SystemVerilogSymbol("list_3_SymbolInfo_1", "logic", undefined, location);
+  let list_3_SymbolInfo_2 = new SystemVerilogSymbol("list_3_SymbolInfo_2", "logic", undefined, location);
+  let list_3_SymbolInfo_3 = new SystemVerilogSymbol("list_3_SymbolInfo_3", "module", undefined, location);
+  let list_3_SymbolInfo_4 = new SystemVerilogSymbol("list_3_SymbolInfo_4", "module", undefined, location);
+  let list_3_SymbolInfo_5 = new SystemVerilogSymbol("list_3_SymbolInfo_5", "module", undefined, location);
+  let list_3_SymbolInfo_6 = new SystemVerilogSymbol("list_3_SymbolInfo_6", "import", undefined, location);
 
   list_3.push(list_3_SymbolInfo_1);
   list_3.push(list_3_SymbolInfo_2);
@@ -234,7 +234,7 @@ async function setUp() {
   //file_4
   let file_4 = path.join(`${__dirname + testFolderLocation}test-files/file_4.v`);
 
-  let list_4 = new Array<SymbolInformation>();
+  let list_4 = new Array<SystemVerilogSymbol>();
 
   //map the lists to the files
   symbols.set(file_1, list_1);
@@ -245,7 +245,7 @@ async function setUp() {
 }
 
 /**  
-  Counts `SymbolInformation` objects in the `symbols` map.
+  Counts `SystemVerilogSymbol` objects in the `symbols` map.
 
   @return the symbols count
 */
@@ -277,7 +277,7 @@ function symbolExists(symbolName: string): boolean {
   let exists = false;
 
   symbols.forEach(list => {
-    list.forEach((symbol: SymbolInformation) => {
+    list.forEach((symbol: SystemVerilogSymbol) => {
       if (symbolName === symbol.name) {
         exists = true;
       }

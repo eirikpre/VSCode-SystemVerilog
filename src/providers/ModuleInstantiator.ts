@@ -1,6 +1,5 @@
-import { workspace, commands, SymbolInformation } from 'vscode';
-import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
-import { getSymbolKind } from '../parser';
+import { workspace, commands } from 'vscode';
+import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
 /**
  * Processing states:
@@ -141,7 +140,7 @@ export class SystemVerilogModuleInstantiator {
         return new Promise((resolve, reject) => {
             // return this.workspaceSymbolProvider.provideWorkspaceSymbols(query, undefined, true)
             return commands.executeCommand("vscode.executeWorkspaceSymbolProvider", query, undefined, true)
-                .then( (symbols: SymbolInformation[]) => {
+                .then( (symbols: SystemVerilogSymbol[]) => {
                     for (let i = 0; i < symbols.length; i++) {
                         const s = symbols[i];
                         if (s.kind == getSymbolKind("module")) {

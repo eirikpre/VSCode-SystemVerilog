@@ -1,5 +1,6 @@
 import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position } from 'vscode'
 import { SystemVerilogParser } from '../parser';
+import { SystemVerilogSymbol } from '../symbol';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     private parser: SystemVerilogParser;
@@ -9,16 +10,16 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     }
 
     /**
-        Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
+        Matches the regex pattern with the document's text. If a match is found, it creates a `SystemVerilogSymbol` object.
         If `documentSymbols` is not `undefined`, than the object is added to it, 
         otherwise add the objects to an empty list and return it.
         
         @param document The document in which the command was invoked.
         @param token A cancellation token.
-        @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
+        @return A list of `SystemVerilogSymbol` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<Array<SymbolInformation>> {
+    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
             /* 
             Matches the regex and uses the index from the regex to find the position

@@ -1,44 +1,6 @@
-import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri, Position } from "vscode";
+import { TextDocument, Location, Range } from "vscode";
+import { SystemVerilogSymbol } from "./symbol";
 
-
-// See docs/SymbolKind_icons.png for an overview of the available icons
-// Use show_SymbolKinds to see the latest symbols
-export function getSymbolKind(name: String): SymbolKind {
-    switch (name) {
-        case 'parameter':
-        case 'localparam': return SymbolKind.Constant;
-        case 'package':
-        case 'program':
-        case 'import': return SymbolKind.Package;
-        case 'string': return SymbolKind.String;
-        case 'class': return SymbolKind.Class;
-        case 'task': return SymbolKind.Method;
-        case 'function': return SymbolKind.Function;
-        case 'interface': return SymbolKind.Interface;
-        case 'event': return SymbolKind.Event;
-        case 'struct': return SymbolKind.Struct;
-        case 'typedef': return SymbolKind.TypeParameter;
-        case 'genvar': return SymbolKind.Operator;
-        case 'enum': return SymbolKind.Enum;
-        case 'property': return SymbolKind.Property;
-        case 'wire':
-        case 'reg':
-        case 'bit':
-        case 'logic':
-        case 'int':
-        case 'char':
-        case 'float': return SymbolKind.Variable;
-        case 'module':
-        default: return SymbolKind.Field;
-    }
-    /* Unused/Free SymbolKind icons
-        return SymbolKind.Number;
-        return SymbolKind.Enum;
-        return SymbolKind.EnumMember;
-        return SymbolKind.Operator;
-        return SymbolKind.Array;
-    */
-}
 
 export class SystemVerilogParser {
     private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert)/
@@ -130,18 +92,18 @@ export class SystemVerilogParser {
     ];
 
     /**
-        Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
+        Matches the regex pattern with the document's text. If a match is found, it creates a `SystemVerilogSymbol` object.
         Add the objects to an empty list and return it.
 
         @param document The document in which the command was invoked.
         @param precision How much the parser will look for, must be "full", "declaration" or "fast"
         @param maxDepth How many deep it will traverse the hierarchy
-        @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
+        @return A list of `SystemVerilogSymbol` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
     public get_all_recursive(document: TextDocument, precision: string="full", maxDepth: number=-1,
-                             text?: string, offset: number=0, parent?: string, depth: number=0): Array<SymbolInformation> {
-        let symbols: Array<SymbolInformation> = [];
+                             text?: string, offset: number=0, parent?: string, depth: number=0): Array<SystemVerilogSymbol> {
+        let symbols: Array<SystemVerilogSymbol> = [];
         let sub_blocks: Array<RegExpMatchArray> = [];
 
         if (!text) {
@@ -162,9 +124,9 @@ export class SystemVerilogParser {
                     continue;
                 }
 
-                let symbolInfo = new SymbolInformation(
+                let symbolInfo = new SystemVerilogSymbol(
                     match.groups.name,
-                    getSymbolKind(match.groups.type),
+                    match.groups.type,
                     parent,
                     new Location(document.uri,
                         new Range(document.positionAt(match.index + offset),
@@ -204,7 +166,7 @@ export class SystemVerilogParser {
      * @param document
      * @param module
      */
-    public get_ports(document: TextDocument, module: String): Thenable<Array<SymbolInformation>> {
+    public get_ports(document: TextDocument, module: String): Thenable<Array<SystemVerilogSymbol>> {
 
         return new Promise((resolve) => {
             resolve();

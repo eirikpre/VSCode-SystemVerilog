@@ -1,15 +1,16 @@
-import { SymbolInformation, StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
+import { StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
+import { SystemVerilogSymbol } from './symbol';
 
 export class SystemVerilogIndexer {
     /*
-    * this.symbols: filePath => Array<SymbolInformation>
+    * this.symbols: filePath => Array<SystemVerilogSymbol>
     * each entry's key represents a file path,
     * and the entry's value is a list of the symbols that exist in the file
     */
-    public symbols: Map<string, Array<SymbolInformation>>;
-    public mostRecentSymbols: Array<SymbolInformation>;
+    public symbols: Map<string, Array<SystemVerilogSymbol>>;
+    public mostRecentSymbols: Array<SystemVerilogSymbol>;
     public building: Boolean = false;
     public statusbar: StatusBarItem;
     public parser: SystemVerilogParser;
@@ -27,7 +28,7 @@ export class SystemVerilogIndexer {
         this.statusbar = statusbar;
         this.parser = parser;
         this.outputChannel = channel;
-        this.symbols = new Map<string, Array<SymbolInformation>>()
+        this.symbols = new Map<string, Array<SystemVerilogSymbol>>()
 
         const settings = workspace.getConfiguration();      
         if (settings.get('systemverilog.disableIndexing')) {
@@ -42,7 +43,7 @@ export class SystemVerilogIndexer {
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
         Looks up all the `symbols` that it exist on the queried files,
-        and saves the symbols as `SymbolInformation` objects to `this.symbols`.
+        and saves the symbols as `SystemVerilogSymbol` objects to `this.symbols`.
 
         @return status message when indexing is successful or failed with an error.
     */
@@ -63,7 +64,7 @@ export class SystemVerilogIndexer {
             title: "SystemVerilog Indexing...",
             cancellable: true
         }, async (_progress, token) => {
-            this.symbols = new Map<string, Array<SymbolInformation>>();
+            this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
             let uris = await Promise.resolve(workspace.findFiles(this.globPattern, exclude, undefined, token));
             
             console.time('build_index');
@@ -107,7 +108,7 @@ export class SystemVerilogIndexer {
                     return this.parser.get_all_recursive(doc, "declaration", 1);
                 }
             }))
-        }).then((output: Array<SymbolInformation>) => {
+        }).then((output: Array<SystemVerilogSymbol>) => {
             if (output.length > 0) {
                 if (this.symbols.has(uri.fsPath)) {
                     this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
@@ -188,22 +189,22 @@ export class SystemVerilogIndexer {
         @param symbolsMap the symbols map
         @return number of added files
     */
-    addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, Array<SymbolInformation>>): Thenable<number> {
+    addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, Array<SystemVerilogSymbol>>): Thenable<number> {
         return new Promise(async (resolve) => {
             if (!document || !symbolsMap) {
-                resolve(new Array<SymbolInformation>());
+                resolve(new Array<SystemVerilogSymbol>());
                 return;
             }
 
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
-                resolve(new Array<SymbolInformation>());
+                resolve(new Array<SystemVerilogSymbol>());
                 return;
             }
 
             resolve(workspace.openTextDocument(document.uri).then(doc => {
                 return this.parser.get_all_recursive(doc, "declaration", 1);
             }))
-        }).then((output: Array<SymbolInformation>) => {
+        }).then((output: Array<SystemVerilogSymbol>) => {
             if (output.length > 0) {
                 symbolsMap.set(document.uri.fsPath, output);
             }
@@ -219,7 +220,7 @@ export class SystemVerilogIndexer {
         @param symbolsMap the symbols map
         @return number of deleted files multiplied by -1
     */
-    removeDocumentSymbols(fsPath: string, symbolsMap: Map<string, Array<SymbolInformation>>): number {
+    removeDocumentSymbols(fsPath: string, symbolsMap: Map<string, Array<SystemVerilogSymbol>>): number {
         if (!fsPath || !symbolsMap) {
             return 0;
         }
@@ -241,7 +242,7 @@ export class SystemVerilogIndexer {
         
         @param recentSymbols the recent symbols
     */
-    updateMostRecentSymbols(recentSymbols: Array<SymbolInformation>): void {
+    updateMostRecentSymbols(recentSymbols: Array<SystemVerilogSymbol>): void {
         if (this.mostRecentSymbols) {
             if (!recentSymbols) {
                 return;
@@ -270,7 +271,7 @@ export class SystemVerilogIndexer {
         }
         else {
 
-            let maxSymbols = new Array<SymbolInformation>();
+            let maxSymbols = new Array<SystemVerilogSymbol>();
 
             //collect the top symbols in `this.symbols`
             for (var list of this.symbols.values()) {
