@@ -63,7 +63,7 @@ function buildHover(document: TextDocument, symbol: SystemVerilogSymbol, range?:
         return new Hover([
             {
                 language: 'systemverilog',
-                value: line
+                value: line.trim()
             },
             fileName
         ]);
