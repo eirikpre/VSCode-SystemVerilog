@@ -8,7 +8,7 @@ import { TextDocument } from 'vscode';
     @param document the document to check
     @return true if the document is a SystemVerilog file
 */
-export function isSystemVerilogDocument(document: TextDocument): boolean {
+export function isSystemVerilogDocument(document: TextDocument | undefined): boolean {
     if (!document) {
         return false;
     }

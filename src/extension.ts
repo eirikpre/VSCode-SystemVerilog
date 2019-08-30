@@ -9,14 +9,13 @@ import {
   DocumentSelector,
   ExtensionContext,
   InputBoxOptions,
-  TextDocument,
-  ProgressLocation
+  ProgressLocation,
 } from 'vscode';
 import {
   LanguageClient,
   ServerOptions,
   TransportKind,
-  LanguageClientOptions
+  LanguageClientOptions,
 } from "vscode-languageclient";
 import * as path from 'path';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
@@ -25,7 +24,7 @@ import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
-import { SystemVerilogIndexerMap } from './indexer_map';
+import { SystemVerilogIndexer } from './indexer';
 
 
 // the LSP's client
@@ -118,23 +117,24 @@ export function activate(context: ExtensionContext) {
 
   // Back-end classes
   const parser = new SystemVerilogParser();
-  const indexer = new SystemVerilogIndexerMap(statusBar, parser, outputChannel);
+  const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
 
   // Providers
   const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
   const defProvider = new SystemVerilogDefinitionProvider(symProvider, docProvider);
   const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
-  const moduleInstantiator = new SystemVerilogModuleInstantiator(symProvider);
+  const moduleInstantiator = new SystemVerilogModuleInstantiator();
 
   context.subscriptions.push(statusBar);
   context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
   context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
-  const build_handler = () => { indexer.rebuild() };
+  const build_handler = () => { indexer.build_index() };
+  const instantiate_handler = () => { moduleInstantiator.instantiateModule() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
-  context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateModule));
+  context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
 
   // WIP
@@ -146,57 +146,15 @@ export function activate(context: ExtensionContext) {
   // Built-in DocumentHighlightProvider is better
   // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
-  context.subscriptions.push(workspace.onDidSaveTextDocument((document: TextDocument) => {
-    indexer.onSave(document);
-  }));
-
+  // Background processes
+  context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
+  context.subscriptions.push(window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document) }));
   let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-
-  watcher.onDidCreate((uri) => {
-    indexer.onCreate(uri);
-  });
-
-  watcher.onDidDelete((uri) => {
-    indexer.onDelete(uri);
-  });
-
+  context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
+  context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
+  context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
   context.subscriptions.push(watcher);
 
-  /**
-    Gets module name from the user, and looks up in the workspaceSymbolProvider for a match.
-    Looks up the module's definition, and parses it to build the module's instance.
-    @return the module's instance, assigns the default parameter values.
-  */
-  function instantiateModule() {
-    const options: InputBoxOptions = {
-      prompt: "Enter the module name to instantiate",
-      placeHolder: "Enter the module name to instantiate",
-    };
-
-    // request the module's name from the user
-    window.showInputBox(options).then((value) => {
-      if (!value) {
-        return;
-      }
-      // current editor
-      const editor = window.activeTextEditor;
-
-      // check if there is no selection
-      if (editor.selection.isEmpty) {
-        if (editor) {
-          moduleInstantiator.auto_instantiate(value).then(
-            function (v) {
-              editor.edit((editBuilder) => {
-                editBuilder.replace(editor.selection, v);
-              });
-            },
-            function (e) {
-              window.showErrorMessage(e);
-            });
-        }
-      }
-    });
-  }
 
   /**
     Sends a notification to the LSP to compile the opened document.

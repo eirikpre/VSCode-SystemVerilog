@@ -1,51 +1,14 @@
-import { FastMap } from 'collections/fast-map';
-import { List } from 'collections/list';
-import { SymbolKind, TextDocument, SymbolInformation, Location, Range, Uri } from "vscode";
+import { TextDocument, Location, Range } from "vscode";
+import { SystemVerilogSymbol } from "./symbol";
 
-
-// See test/SymbolKind_icons.png for an overview of the icons
-export function getSymbolKind(name: String): SymbolKind {
-    switch (name) {
-        case 'parameter':
-        case 'localparam': return SymbolKind.Constant;
-        case 'package':
-        case 'program':
-        case 'import': return SymbolKind.Package;
-        case 'wire':
-        case 'reg':
-        case 'logic':
-        case 'int':
-        case 'char':
-        case 'float': return SymbolKind.Field;
-        case 'string': return SymbolKind.String;
-        case 'class': return SymbolKind.Class;
-        case 'task': return SymbolKind.Method;
-        case 'function': return SymbolKind.Function;
-        case 'interface': return SymbolKind.Interface;
-        case 'event': return SymbolKind.Event;
-        case 'struct': return SymbolKind.Struct;
-        case 'typedef': return SymbolKind.TypeParameter;
-        case 'genvar': return SymbolKind.Operator;
-        case 'module':
-        default: return SymbolKind.Variable;
-    }
-    /* Unused/Free SymbolKind icons
-        return SymbolKind.Number;
-        return SymbolKind.Enum;
-        return SymbolKind.EnumMember;
-        return SymbolKind.Operator;
-        return SymbolKind.Property;
-        return SymbolKind.Array;
-    */
-}
 
 export class SystemVerilogParser {
-    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign)/
+    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert)/
     private comment = /(?:\/\/.*$)?/
 
     private r_decl_block: RegExp = new RegExp([
         /(?<=^\s*)/,
-        /(?<type>module|program|interface|package|primitive|config)\s+/,
+        /(?<type>module|program|interface|package|primitive|config|property)\s+/,
         // Mask automatic
         /(?:automatic\s+)?/,
         /(?<name>\w+)/,
@@ -100,12 +63,56 @@ export class SystemVerilogParser {
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
 
-    public get_all_recursive(document: TextDocument, text: string, offset: number=0, parent?: string): SymbolInformation[] {
-        let symbols: SymbolInformation[] = [];
-        let sub_blocks: RegExpMatchArray[] = [];
+    private r_block_fast = new RegExp([
+        , /(?<=^\s*(?:virtual\s+)?)/
+        , /(?<type>module|class|interface|package|program)\s+/
+        , /(?:automatic\s+)?/
+        , /(?<name>\w+)/
+        , /[\w\W.]*?/
+        , /(end\1)/
+    ].map(x => x.source).join(''), 'mg');
+
+    public readonly full_parse = [
+        this.r_decl_block,
+        this.r_decl_class,
+        this.r_decl_method,
+        this.r_typedef,
+        this.r_instantiation
+    ];
+
+    public readonly declaration_parse = [
+        this.r_decl_block,
+        this.r_decl_class,
+        this.r_decl_method,
+        this.r_typedef
+    ];
+
+    public readonly fast_parse = [
+        this.r_block_fast
+    ];
+
+    /**
+        Matches the regex pattern with the document's text. If a match is found, it creates a `SystemVerilogSymbol` object.
+        Add the objects to an empty list and return it.
+
+        @param document The document in which the command was invoked.
+        @param precision How much the parser will look for, must be "full", "declaration" or "fast"
+        @param maxDepth How many deep it will traverse the hierarchy
+        @return A list of `SystemVerilogSymbol` objects or a thenable that resolves to such. The lack of a result can be
+        signaled by returning `undefined`, `null`, or an empty list.
+    */
+    public get_all_recursive(document: TextDocument, precision: string="full", maxDepth: number=-1,
+                             text?: string, offset: number=0, parent?: string, depth: number=0): Array<SystemVerilogSymbol> {
+        let symbols: Array<SystemVerilogSymbol> = [];
+        let sub_blocks: Array<RegExpMatchArray> = [];
+
+        if (!text) {
+            text = document.getText();
+        }
+
+        let regexes = this.translate_precision(precision);
 
         // Find blocks
-        let regexes = [this.r_decl_block, this.r_decl_class, this.r_decl_method, this.r_typedef, this.r_instantiation];
         for (let i = 0; i < regexes.length; i++) {
             while(1) {
                 let match: RegExpMatchArray = regexes[i].exec(text);
@@ -117,9 +124,9 @@ export class SystemVerilogParser {
                     continue;
                 }
 
-                let symbolInfo = new SymbolInformation(
+                let symbolInfo = new SystemVerilogSymbol(
                     match.groups.name,
-                    getSymbolKind(match.groups.type),
+                    match.groups.type,
                     parent,
                     new Location(document.uri,
                         new Range(document.positionAt(match.index + offset),
@@ -127,77 +134,56 @@ export class SystemVerilogParser {
                         )))
                 symbols.push(symbolInfo);
 
+                // TODO: Match parameter/port-lists
+
                 if (match.groups.body) {
                     sub_blocks.push(match);
                 }
 
-                // TODO: Match parameter/port-lists
             }
             
         }
-        for (const i in sub_blocks) {
-            const match = sub_blocks[i];
-            let sub = this.get_all_recursive(
-                document,
-                match.groups.body,
-                match.index + offset + match[0].indexOf(match.groups.body),
-                match.groups.name
-            )
-            symbols = symbols.concat(sub)
+        if (depth != maxDepth) {
+            for (const i in sub_blocks) {
+                const match = sub_blocks[i];
+                let sub = this.get_all_recursive(
+                    document,
+                    precision,
+                    maxDepth,
+                    match.groups.body,
+                    match.index + offset + match[0].indexOf(match.groups.body),
+                    match.groups.name,
+                    depth+1
+                )
+                symbols = symbols.concat(sub)
+            }
         }
-
         return symbols;
     };
-
-
-    /**
-        Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
-        Add the objects to an empty list and return it.
-
-        @param document The document in which the command was invoked.
-        @param regex pattern that maps symbols, group(1) is the type, group(2) is the name
-        @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
-        signaled by returning `undefined`, `null`, or an empty list.
-    */
-    public get_symbols(document: TextDocument, regex: RegExp): Thenable<List<SymbolInformation>> {
-        return new Promise((resolve) => {
-            var symbols: List<SymbolInformation> = new List<SymbolInformation>();
-
-            var match;
-            let text = document.getText();
-
-            /*
-                Matches the regex and uses the index from the regex to find the position
-            */
-            do {
-                match = regex.exec(text);
-                if (match) {
-                    let symbolInfo = new SymbolInformation(
-                        match[2],
-                        getSymbolKind(match[1]),
-                        match[1],
-                        new Location(document.uri,
-                            new Range(document.positionAt(match.index),
-                                document.positionAt(match.index + match[0].length)
-                            )))
-                    symbols.push(symbolInfo);
-                }
-            } while (match != null);
-
-            resolve(symbols);
-        });
-    }
 
     /**
      * TODO
      * @param document
      * @param module
      */
-    public get_ports(document: TextDocument, module: String): Thenable<List<SymbolInformation>> {
+    public get_ports(document: TextDocument, module: String): Thenable<Array<SystemVerilogSymbol>> {
 
         return new Promise((resolve) => {
             resolve();
         });
+    }
+
+    private translate_precision(precision: string): Array<RegExp> {
+        switch (precision) {
+            case "full":
+                return this.full_parse;
+            case "declaration":
+                return this.declaration_parse;
+            case "fast":
+                return this.fast_parse;
+            default:
+                throw "Illegal precision";
+        }
     }
 
 }

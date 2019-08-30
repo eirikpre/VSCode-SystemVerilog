@@ -1,18 +1,18 @@
-import { SymbolInformation, WorkspaceSymbolProvider, CancellationToken } from 'vscode';
-import { SystemVerilogIndexerMap } from '../indexer_map';
-import { List } from 'collections/list';
+import { WorkspaceSymbolProvider, CancellationToken } from 'vscode';
+import { SystemVerilogIndexer } from '../indexer';
+import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
     /* 
-    * this.symbols: filePath => List<SymbolInformation>
+    * this.symbols: filePath => Array<SystemVerilogSymbol>
     * each entry's key represents a file path, 
     * and the entry's value is a list of the symbols that exist in the file
     */
-    public indexer: SystemVerilogIndexerMap;
+    public indexer: SystemVerilogIndexer;
     public NUM_FILES: number = 250;
 
-    constructor(indexer: SystemVerilogIndexerMap) {
+    constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
     };
 
@@ -23,15 +23,15 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         @param query the symbol's name
         @param token the CancellationToken
         @param exactMatch whether to perform an exact or a partial match
-        @return an array of matching SymbolInformation 
+        @return an array of matching SystemVerilogSymbol 
     */
-    public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SymbolInformation>> {
+    public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve, reject) => {
             if (query.length === 0) {
                 resolve(this.indexer.mostRecentSymbols);
             } else {
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
-                let results = new Array<SymbolInformation>();
+                let results = new Array<SystemVerilogSymbol>();
 
                 this.indexer.symbols.forEach(list => {
                     list.forEach(symbol => {
@@ -56,16 +56,16 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         Queries a `module` with a given name from `this.symbols`, performs an exact match if `exactMatch` is set to true,
         and a partial match if it's not passed or set to false.
         @param query the symbol's name
-        @return the module's SymbolInformation
+        @return the module's SystemVerilogSymbol
     */
-    public provideWorkspaceModule(query: string): SymbolInformation {
+    public provideWorkspaceModule(query: string): SystemVerilogSymbol {
         if (query.length === 0) {
             return undefined;
         } else {
             let symbolInfo = undefined;
             this.indexer.symbols.forEach(list => {
                 list.forEach(symbol => {
-                    if (symbol.name == query && symbol.containerName == "module") {
+                    if (symbol.name == query && symbol.kind == getSymbolKind("module")) {
                         symbolInfo = symbol;
                         return false;
                     }

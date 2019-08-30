@@ -1,10 +1,10 @@
-import * as vscode from 'vscode';
+import { HoverProvider, TextDocument, Position, CancellationToken, ProviderResult, Hover, Range, workspace } from 'vscode';
 import { basename } from 'path'
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
-import { List } from 'collections/list';
+import { SystemVerilogSymbol } from '../symbol';
 
-export class SystemVerilogHoverProvider implements vscode.HoverProvider {
+export class SystemVerilogHoverProvider implements HoverProvider {
     private workspaceSymProvider: SystemVerilogWorkspaceSymbolProvider;
     private docSymProvider: SystemVerilogDocumentSymbolProvider;
 
@@ -13,7 +13,7 @@ export class SystemVerilogHoverProvider implements vscode.HoverProvider {
         this.docSymProvider = docSymProvider;
     };
 
-    provideHover(document : vscode.TextDocument, position : vscode.Position, token: vscode.CancellationToken) : vscode.ProviderResult<vscode.Hover> {
+    provideHover(document : TextDocument, position : Position, token: CancellationToken) : ProviderResult<Hover> {
         return new Promise( (resolve, reject) => {
             var lookupRange = document.getWordRangeAtPosition(position);
             
@@ -32,9 +32,9 @@ export class SystemVerilogHoverProvider implements vscode.HoverProvider {
                 });
 
                 // Then, lookup in the workspace if current document failed
-                return this.workspaceSymProvider.provideWorkspaceSymbols(lookupTerm, token, true).then((sym: List<vscode.SymbolInformation>) => {
-                    if(sym.length !== 0) {
-                        resolve(buildHover(document, sym.peek(), lookupRange));
+                return this.workspaceSymProvider.provideWorkspaceSymbols(lookupTerm, token, true).then((res: Array<SystemVerilogSymbol>) => {
+                    if(res.length !== 0) {
+                        resolve(buildHover(document, res[0], lookupRange));
                     } else {
                         resolve(undefined);
                     }
@@ -44,13 +44,13 @@ export class SystemVerilogHoverProvider implements vscode.HoverProvider {
     }
 }
 
-function buildHover(document: vscode.TextDocument, symbol: vscode.SymbolInformation, range?:vscode.Range) : vscode.ProviderResult<vscode.Hover> {
+function buildHover(document: TextDocument, symbol: SystemVerilogSymbol, range?:Range) : ProviderResult<Hover> {
     // Open document containing the symbol
     if (symbol.location.uri === document.uri) {
         // Same document, don't provide a path
         return hoverSymbol(document.lineAt(symbol.location.range.start).text);
     } else {
-        return vscode.workspace.openTextDocument(symbol.location.uri).then (symbol_doc => {
+        return workspace.openTextDocument(symbol.location.uri).then (symbol_doc => {
             return hoverSymbol(
                 symbol_doc.lineAt(symbol.location.range.start).text,
                 basename(symbol_doc.uri.path)
@@ -60,10 +60,10 @@ function buildHover(document: vscode.TextDocument, symbol: vscode.SymbolInformat
 
     function hoverSymbol (line: string, fileName?:string) {
         // Return the line where the symbol is declared, highlighted as SV
-        return new vscode.Hover([
+        return new Hover([
             {
                 language: 'systemverilog',
-                value: line
+                value: line.trim()
             },
             fileName
         ]);

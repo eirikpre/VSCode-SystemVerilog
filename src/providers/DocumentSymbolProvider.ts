@@ -1,128 +1,66 @@
-import {
-    DocumentSymbolProvider,
-    SymbolInformation,
-    CancellationToken,
-    TextDocument,
-    Location,
-    SymbolKind,
-    Range
-} from 'vscode'
-import { List } from 'collections/list';
+import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position } from 'vscode'
 import { SystemVerilogParser } from '../parser';
-
-// See test/SymbolKind_icons.png for an overview of the icons
-export function getSymbolKind(name: String): SymbolKind {
-    switch (name) {
-        case 'parameter':
-        case 'localparam': return SymbolKind.Constant;
-        case 'package':
-        case 'import': return SymbolKind.Package;
-        case 'wire':
-        case 'reg':
-        case 'logic': return SymbolKind.Boolean;
-        case 'string': return SymbolKind.String;
-        case 'class': return SymbolKind.Class;
-        case 'task': return SymbolKind.Method;
-        case 'function': return SymbolKind.Function;
-        case 'interface': return SymbolKind.Interface;
-        case 'event': return SymbolKind.Event;
-        case 'struct': return SymbolKind.Struct;
-        case 'program': return SymbolKind.Module;
-        case 'module':
-        default: return SymbolKind.Variable;
-    }
-    /* Unused/Free SymbolKind icons
-        return SymbolKind.Number;
-        return SymbolKind.Enum;
-        return SymbolKind.EnumMember;
-        return SymbolKind.Operator;
-        return SymbolKind.TypeParameter;
-        return SymbolKind.Property;
-        return SymbolKind.Array; 
-    */
-}
+import { SystemVerilogSymbol } from '../symbol';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     private parser: SystemVerilogParser;
-    // XXX: Does not match input/output/inout ports, eg input logic din, ..
-    private illegalTypes = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate)/
-
-    private comment = /(?:\/\/.*$)?/
-
-    public regex: RegExp = new RegExp([
-        // Potential identifier
-        , /(?<=^\s*(?:(?:virtual|static|automatic|rand|randc|pure virtual)\s+)?)/
-        // Illegal Symbol types
-        , this.illegalTypes
-        // Symbol type
-        , /\b([:\w]+)\s+/
-        // (modifier? returnType [.*]?      | parameterlist)?
-        , /(?:(?:\w*\s+)?\w+(?:\s*\[.*?\])?\s*|\s*#\s*\([\s\S]*?\)\s*)?/
-        // Symbol name, ignore multiple defines FIXME
-        , this.comment, this.illegalTypes
-        , /(?<!\w)(\w+)(?:\s*,\s*\w+)*?/
-        , this.comment
-        // Port-list | class suffix
-        , /(?:\s*\([\s\S]*?\)|(?:\s+(?:extends|implements)\s+\w+)+)?/
-        // End of definition
-        , /\s*/
-    ].map(x => x.source).join(''), 'mg');
 
     constructor(parser) {
         this.parser = parser;
     }
 
     /**
-        Matches the regex pattern with the document's text. If a match is found, it creates a `SymbolInformation` object.
+        Matches the regex pattern with the document's text. If a match is found, it creates a `SystemVerilogSymbol` object.
         If `documentSymbols` is not `undefined`, than the object is added to it, 
         otherwise add the objects to an empty list and return it.
         
         @param document The document in which the command was invoked.
         @param token A cancellation token.
-        @param regex the pattern to match symbols with
-        @param documentSymbols the list to add the objects to
-        @return A list of `SymbolInformation` objects or a thenable that resolves to such. The lack of a result can be
+        @return A list of `SystemVerilogSymbol` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken, regex?: RegExp, documentSymbols?: List<SymbolInformation>): Thenable<Array<SymbolInformation>> {
+    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
-            let uri = document.uri;
-            var symbols;
-
-            if (documentSymbols) {
-                //pass the reference of the symbols list to add the objects to
-                symbols = documentSymbols;
-            }
-            else {
-                symbols = new Array<SymbolInformation>();
-            }
-
-            var match;
-            let text = document.getText();
-
-            if (regex == undefined) {
-                regex = this.regex;
-            }
             /* 
             Matches the regex and uses the index from the regex to find the position
+            TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
+                  Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
-            resolve(this.parser.get_all_recursive(document, text));
-            // do {
-            //     match = regex.exec(text);
-            //     if (match) {
-            //         let symbolInfo = new SymbolInformation(
-            //             match[2],
-            //             getSymbolKind(match[1]),
-            //             match[1],
-            //             new Location(document.uri,
-            //                 new Range(document.positionAt(match.index),
-            //                     document.positionAt(match.index + match[0].length)
-            //                 )))
-            //         symbols.push(symbolInfo);
-            //     }
-            // } while (match != null);
-
-            // resolve(symbols);
+            resolve(this.parser.get_all_recursive(document, "full"));
+            // resolve(show_SymbolKinds(document.uri));
         });
     }
+}
+
+
+// Function to easily show all the SymbolKind icons
+function show_SymbolKinds(uri: Uri): Array<SymbolInformation> {
+    return new Array<SymbolInformation>(
+        new SymbolInformation("File",           SymbolKind.File,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Module",         SymbolKind.Module,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Namespace",      SymbolKind.Namespace,     "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Package",        SymbolKind.Package,       "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Class",          SymbolKind.Class,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Method",         SymbolKind.Method,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Property",       SymbolKind.Property,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Field",          SymbolKind.Field,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constructor",    SymbolKind.Constructor,   "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Enum",           SymbolKind.Enum,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Interface",      SymbolKind.Interface,     "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Function",       SymbolKind.Function,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Variable",       SymbolKind.Variable,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constant",       SymbolKind.Constant,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("String",         SymbolKind.String,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Number",         SymbolKind.Number,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Boolean",        SymbolKind.Boolean,       "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Array",          SymbolKind.Array,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Object",         SymbolKind.Object,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Key",            SymbolKind.Key,           "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Null",           SymbolKind.Null,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("EnumMember",     SymbolKind.EnumMember,    "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Struct",         SymbolKind.Struct,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Event",          SymbolKind.Event,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Operator",       SymbolKind.Operator,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("TypeParameter",  SymbolKind.TypeParameter, "", new Location(uri, new Position(0,0)))
+    );
 }

@@ -2,10 +2,15 @@
     "folders": [
         {
             "path": ".."
+        },
+        {
+            "path": "C:\\Users\\eipr\\Desktop\\SystemVerilog.wiki"
         }
     ],
     "settings": {
         "typescript.tsc.autoDetect": "off",
-        "typescript.tsdk": "node_modules\\typescript\\lib"
+        "typescript.tsdk": "node_modules\\typescript\\lib",
+        "terminal.integrated.shell.windows": null,
+        "terminal.integrated.shellArgs.windows": [""]
     }
 }
