@@ -93,7 +93,7 @@ export function activate(context: ExtensionContext) {
   client.start();
 
   client.onReady().then(() => {
-    client.sendNotification("workspaceRootPath", workspace.rootPath);
+    client.sendNotification("workspaceRootPath", workspace.workspaceFolders[0]);
 
     /* Update `closeWindowProgress` to true when the client is notified by the server. */
     client.onNotification("closeWindowProgress", function () {

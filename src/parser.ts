@@ -62,6 +62,14 @@ export class SystemVerilogParser {
         /(?<ports>\([\w\W]*?\))?\s*/,
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
+    
+    private r_define: RegExp = new RegExp([
+        /(?<=^\s*)/,
+        /`(?<type>define)\s+/,
+        /(?<name>\w+)/,
+        /((?<ports>\([\w,\s`]*\))|\s+)/,
+        /(?<body>[\w\W]+?)([^\\]$)/
+    ].map(x => x.source).join(''), 'mg');
 
     private r_block_fast = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
@@ -77,6 +85,7 @@ export class SystemVerilogParser {
         this.r_decl_class,
         this.r_decl_method,
         this.r_typedef,
+        this.r_define,
         this.r_instantiation
     ];
 
@@ -84,7 +93,8 @@ export class SystemVerilogParser {
         this.r_decl_block,
         this.r_decl_class,
         this.r_decl_method,
-        this.r_typedef
+        this.r_typedef,
+        this.r_define
     ];
 
     public readonly fast_parse = [

@@ -36,6 +36,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'typedef': return SymbolKind.TypeParameter;
         case 'genvar': return SymbolKind.Operator;
         case 'enum': return SymbolKind.Enum;
+        case 'define':
         case 'property': return SymbolKind.Property;
         case 'wire':
         case 'reg':
