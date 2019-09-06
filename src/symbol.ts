@@ -26,6 +26,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'package':
         case 'program':
         case 'import': return SymbolKind.Package;
+        case 'begin': // Labels
         case 'string': return SymbolKind.String;
         case 'class': return SymbolKind.Class;
         case 'task': return SymbolKind.Method;

@@ -30,7 +30,7 @@ export class SystemVerilogIndexer {
         this.outputChannel = channel;
         this.symbols = new Map<string, Array<SystemVerilogSymbol>>()
 
-        const settings = workspace.getConfiguration();      
+        const settings = workspace.getConfiguration();
         if (settings.get('systemverilog.disableIndexing')) {
             this.statusbar.text = "SystemVerilog: Indexing disabled on boot"
         } else {
@@ -66,7 +66,7 @@ export class SystemVerilogIndexer {
         }, async (_progress, token) => {
             this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
             let uris = await Promise.resolve(workspace.findFiles(this.globPattern, exclude, undefined, token));
-            
+
             console.time('build_index');
             for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                 let subset = uris.slice(filenr, filenr + this.parallelProcessing)
@@ -239,7 +239,7 @@ export class SystemVerilogIndexer {
         Updates `mostRecentSymbols` with the most recently used symbols
         When `mostRecentSymbols` is undefined, add the top `this.NUM_FILES` symbol from `this.symbols`
         When `mostRecentSymbols` is defined, add the symbols in `recentSymbols` one by one to the top of the array
-        
+
         @param recentSymbols the recent symbols
     */
     updateMostRecentSymbols(recentSymbols: Array<SystemVerilogSymbol>): void {
