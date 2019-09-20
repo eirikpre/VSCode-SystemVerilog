@@ -8,7 +8,6 @@ import {
   StatusBarAlignment,
   DocumentSelector,
   ExtensionContext,
-  InputBoxOptions,
   ProgressLocation,
 } from 'vscode';
 import {
@@ -93,7 +92,7 @@ export function activate(context: ExtensionContext) {
   client.start();
 
   client.onReady().then(() => {
-    client.sendNotification("workspaceRootPath", workspace.workspaceFolders[0].uri.toString());
+    client.sendNotification("workspaceRootPath", workspace.workspaceFolders[0].uri.fsPath);
 
     /* Update `closeWindowProgress` to true when the client is notified by the server. */
     client.onNotification("closeWindowProgress", function () {
