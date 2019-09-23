@@ -62,6 +62,25 @@ export class SystemVerilogParser {
         /(?<ports>\([\w\W]*?\))?\s*/,
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
+    
+    private r_define: RegExp = new RegExp([
+        /(?<=^\s*)/,
+        /`(?<type>define)\s+/,
+        /(?<name>\w+)\b/,
+        /((?<ports>\([^\n]*\))|\s*?)/,
+        /(?<body>([^\n]*\\\n)*([^\n]*))/,
+        /(?<!\\)(?=\n)/
+    ].map(x => x.source).join(''), 'mg');
+
+    private r_label: RegExp = new RegExp([
+        /\b(?<type>begin)\b/,
+        /\s*:\s*/,
+        /(?<name>\w+)\s*(?:\/\/.*)?$/,
+        // Matches up to 5 nested begin/ends
+        // This is the only way to do it with RegExp without balancing groups
+        /(?<body>(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b[\w\W]+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?)/,
+        /\bend\b(\s*:\s*\1)?/
+    ].map(x => x.source).join(''), 'mg');
 
     private r_block_fast = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
@@ -77,6 +96,8 @@ export class SystemVerilogParser {
         this.r_decl_class,
         this.r_decl_method,
         this.r_typedef,
+        this.r_define,
+        this.r_label,
         this.r_instantiation
     ];
 
@@ -84,7 +105,8 @@ export class SystemVerilogParser {
         this.r_decl_block,
         this.r_decl_class,
         this.r_decl_method,
-        this.r_typedef
+        this.r_typedef,
+        this.r_define
     ];
 
     public readonly fast_parse = [

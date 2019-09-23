@@ -3,11 +3,15 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 
 
 ## [Unreleased]
-- Tree view of module hierarchy
+- Tree view of module hierarchy, given a top module
 - IntelliSense support
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+
+## [0.8.5] - 2019.09.06
+- Added parsing and indexation of macros in smaller workspaces
+- Added parsing of labels, so they show in the outline
 
 ## [0.8.4] - 2019.08.15
 - Added diagnostic support for `VCS` compiler
