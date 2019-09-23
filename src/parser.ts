@@ -67,9 +67,9 @@ export class SystemVerilogParser {
         /(?<=^\s*)/,
         /`(?<type>define)\s+/,
         /(?<name>\w+)\b/,
-        /((?<ports>\([\w,\s`]*\))|\s*?)/,
-        /(?<body>([^\n]*\\\n)*)/,
-        /(?<!\\)(?=$)/
+        /((?<ports>\([^\n]*\))|\s*?)/,
+        /(?<body>([^\n]*\\\n)*([^\n]*))/,
+        /(?<!\\)(?=\n)/
     ].map(x => x.source).join(''), 'mg');
 
     private r_label: RegExp = new RegExp([
