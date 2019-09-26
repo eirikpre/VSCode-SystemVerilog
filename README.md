@@ -24,6 +24,10 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 - Linter capabilites with simulators ( [More info on the wiki](https://github.com/eirikpre/VSCode-SystemVerilog/wiki) )
 
+## Recommendations
+- If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
+- Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
+
 ## Settings
 - Disable indexing
 - Exclude files from indexing
@@ -35,10 +39,6 @@ This package adds language support for Verilog/SystemVerilog. It supports System
   * Default: *true*
 - `systemverilog.compilerType`: _String_, drop down list to select a compiler type.
   * Default: *Verilator*
-
-## Recommendations
-- If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
-- Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
 
 ## Known Issues
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing

@@ -26,6 +26,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'package':
         case 'program':
         case 'import': return SymbolKind.Package;
+        case 'begin': // Labels
         case 'string': return SymbolKind.String;
         case 'class': return SymbolKind.Class;
         case 'task': return SymbolKind.Method;
@@ -36,6 +37,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'typedef': return SymbolKind.TypeParameter;
         case 'genvar': return SymbolKind.Operator;
         case 'enum': return SymbolKind.Enum;
+        case 'define':
         case 'property': return SymbolKind.Property;
         case 'wire':
         case 'reg':
