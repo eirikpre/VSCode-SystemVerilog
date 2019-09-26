@@ -1,4 +1,4 @@
-﻿grammar Comments;
+grammar Comments;
 import Identifiers;
 
 comment : one_line_comment | block_comment ;

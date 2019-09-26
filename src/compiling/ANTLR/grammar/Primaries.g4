@@ -1,4 +1,4 @@
-﻿grammar Primaries;
+grammar Primaries;
 import ExpressionLeftsideValues;
 
 constant_primary : primary_literal

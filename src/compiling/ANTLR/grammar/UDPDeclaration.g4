@@ -1,4 +1,4 @@
-﻿grammar UDPDeclaration;
+grammar UDPDeclaration;
 import UDPPorts;
 
 udp_nonansi_declaration : ( attribute_instance )* 'primitive' udp_identifier '(' udp_port_list ')'

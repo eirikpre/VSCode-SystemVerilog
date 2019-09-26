@@ -1,4 +1,4 @@
-﻿grammar PrimitiveTerminals;
+grammar PrimitiveTerminals;
 import PrimitiveGateAndSwitchTypes;
 
 enable_terminal : expression ;

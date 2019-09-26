@@ -1,4 +1,4 @@
-﻿grammar ParallelAndSequentialBlocks;
+grammar ParallelAndSequentialBlocks;
 import Statements;
 
 action_block : statement_or_null | ( statement )? 'else' statement_or_null ;

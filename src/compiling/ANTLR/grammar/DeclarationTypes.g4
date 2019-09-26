@@ -1,4 +1,4 @@
-﻿grammar DeclarationTypes;
+grammar DeclarationTypes;
 import DeclarationDataTypes;
 
 local_parameter_declaration : 'localparam' data_type_or_implicit list_of_param_assignments

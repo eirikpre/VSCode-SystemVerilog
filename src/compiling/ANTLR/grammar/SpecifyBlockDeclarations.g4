@@ -1,4 +1,4 @@
-﻿grammar SpecifyBlockDeclarations
+grammar SpecifyBlockDeclarations
 import SpecifyPathDeclarations;
 
 specify_block : 'specify' ( specify_item )* 'endspecify' ;

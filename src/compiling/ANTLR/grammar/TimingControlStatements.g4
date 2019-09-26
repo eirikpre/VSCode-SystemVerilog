@@ -1,4 +1,4 @@
-﻿grammar TimingControlStatements;
+grammar TimingControlStatements;
 import ConditionalStatements;
 
 procedural_timing_control_statement : procedural_timing_control statement_or_null ;

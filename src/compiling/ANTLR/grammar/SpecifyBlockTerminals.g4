@@ -1,4 +1,4 @@
-﻿grammar SpecifyBlockTerminals;
+grammar SpecifyBlockTerminals;
 import SpecifyPathDelays;
 
 specify_input_terminal_descriptor : input_identifier ( '[' constant_range_expression ']' )? ;

@@ -1,4 +1,4 @@
-﻿grammar ClockingBlock;
+grammar ClockingBlock;
 import Randsequence;
 
 clocking_declaration : ( 'default' )? 'clocking' ( clocking_identifier )? clocking_event ';'

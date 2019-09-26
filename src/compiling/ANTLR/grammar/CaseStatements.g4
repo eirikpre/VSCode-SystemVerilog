@@ -1,4 +1,4 @@
-﻿grammar CaseStatements;
+grammar CaseStatements;
 import LoopingStatements;
 
 case_statement : ( unique_priority )? case_keyword '(' case_expression ')' case_item ( case_item )*

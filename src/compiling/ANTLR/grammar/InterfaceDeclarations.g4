@@ -1,4 +1,4 @@
-﻿grammar InterfaceDeclarations;
+grammar InterfaceDeclarations;
 import AssertionDeclarations;
 
 modport_declaration : 'modport' modport_item ( ',' modport_item )* ';' ;

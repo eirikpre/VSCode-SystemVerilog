@@ -1,4 +1,4 @@
-﻿grammar SystemTimingChecks;
+grammar SystemTimingChecks;
 import Concatenations;
 
 system_timing_check : $setup_timing_check

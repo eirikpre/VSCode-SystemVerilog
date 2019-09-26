@@ -1,4 +1,4 @@
-﻿grammar Operators;
+grammar Operators;
 import Numbers;
 
 unary_operator : '+' | '-' | '!' | '~' | '&' | '~&' | '|' | '~|' | '^' | '~^' | '^~' ;

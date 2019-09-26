@@ -1,4 +1,4 @@
-﻿grammar DeclarationLists;
+grammar DeclarationLists;
 import DeclarationAssignments;
 
 list_of_defparam_assignments : defparam_assignment ( ',' defparam_assignment )* ;

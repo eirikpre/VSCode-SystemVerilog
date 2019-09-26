@@ -1,4 +1,4 @@
-﻿grammar Constraints;
+grammar Constraints;
 import PackageItems;
 
 constraint_declaration : ( 'static' )? 'constraint' constraint_identifier constraint_block ;

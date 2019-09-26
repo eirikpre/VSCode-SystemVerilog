@@ -1,4 +1,4 @@
-﻿grammar	ModuleItems;
+grammar	ModuleItems;
 import ConfigurationSourceText;
 
 elaboration_system_task : '$fatal' ( '(' finish_number ( ',' list_of_arguments )? ')' )? ';'

@@ -1,4 +1,4 @@
-﻿grammar TaskDeclarations;
+grammar TaskDeclarations;
 import BlockItemDeclarations;
 
 task_declaration : 'task' ( lifetime )? task_body_declaration ;

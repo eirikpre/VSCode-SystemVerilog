@@ -1,4 +1,4 @@
-﻿grammar CheckerItems;
+grammar CheckerItems;
 import ClassItems;
 
 checker_port_list : checker_port_item ( ',' checker_port_item )* ;

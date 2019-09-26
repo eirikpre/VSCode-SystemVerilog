@@ -1,4 +1,4 @@
-﻿grammar	InterfaceItems;
+grammar	InterfaceItems;
 import ProgramItems;
 
 interface_or_generate_item : ( attribute_instance )* module_common_item

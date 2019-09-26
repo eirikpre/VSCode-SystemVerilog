@@ -1,4 +1,4 @@
-﻿grammar UDPBody;
+grammar UDPBody;
 import UDPInstantiation;
 
 udp_body : combinational_body | sequential_body ;

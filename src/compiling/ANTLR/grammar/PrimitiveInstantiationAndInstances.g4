@@ -1,4 +1,4 @@
-﻿grammar PrimitiveInstantiationAndInstances;
+grammar PrimitiveInstantiationAndInstances;
 import PrimitiveStrengths;
 
 gate_instantiation : cmos_switchtype ( delay3 )? cmos_switch_instance ( ',' cmos_switch_instance )* ';'

@@ -1,4 +1,4 @@
-﻿grammar SubroutineCalls;
+grammar SubroutineCalls;
 import Expressions;
 
 constant_function_call : function_subroutine_call ;

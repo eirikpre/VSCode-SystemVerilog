@@ -1,4 +1,4 @@
-﻿grammar DeclarationRanges;
+grammar DeclarationRanges;
 import FunctionDeclarations;
 
 unpacked_dimension : '[' constant_range ']'

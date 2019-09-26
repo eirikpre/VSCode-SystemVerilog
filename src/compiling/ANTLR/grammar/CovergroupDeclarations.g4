@@ -1,4 +1,4 @@
-﻿grammar CovergroupDeclarations;
+grammar CovergroupDeclarations;
 import LetDeclarations;
 
 covergroup_declaration : 'covergroup' covergroup_identifier ( '(' ( tf_port_list )? ')' )?

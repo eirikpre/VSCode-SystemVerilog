@@ -1,4 +1,4 @@
-﻿grammar Instantiation;
+grammar Instantiation;
 import GeneratedInstantiation;
 
 module_instantiation : module_identifier ( parameter_value_assignment )? hierarchical_instance
