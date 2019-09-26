@@ -45,7 +45,7 @@ property_expr : sequence_expr
   | sequence_expr '#-#' property_expr
   | sequence_expr '#=#' property_expr
   | 'nexttime' property_expr
-  | 'nexttime' '[' constant _expression ']' property_expr
+  | 'nexttime' '[' constant_expression ']' property_expr
   | 's_nexttime' property_expr
   | 's_nexttime' '[' constant_expression ']' property_expr
   | 'always' property_expr
