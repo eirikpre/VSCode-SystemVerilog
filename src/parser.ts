@@ -43,8 +43,8 @@ export class SystemVerilogParser {
     private r_typedef: RegExp = new RegExp([
         /(?<=^\s*)/,
         /(?<type>typedef)\s+/,
-        /(?<body>\w+(\s+|\s*{[\W\w]*?}\s*|))/,
-        /(?<name>\w+)/,
+        /(?<body>[^;]*?)/,
+        /(?<name>\b\w+)/,
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
 
