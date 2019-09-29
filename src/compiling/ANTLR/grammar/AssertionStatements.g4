@@ -20,6 +20,6 @@ deferred_immediate_assertion_statement : deferred_immediate_assert_statement
 deferred_immediate_assert_statement : 'assert' '#0' '(' expression ')' action_block
   | 'assert' 'final' '(' expression ')' action_block ;
 deferred_immediate_assume_statement : 'assume' '#0' '(' expression ')' action_block
-  | 'assume' 'final' '(' expression ') action_block ;
+  | 'assume' 'final' '(' expression ')' action_block ;
 deferred_immediate_cover_statement : 'cover' '#0' '(' expression ')' statement_or_null
   | 'cover' 'final' '(' expression ')' statement_or_null ;

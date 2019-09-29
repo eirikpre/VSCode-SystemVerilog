@@ -29,8 +29,8 @@ txz_path_delay_expression : path_delay_expression ;
 tzx_path_delay_expression : path_delay_expression ;
 path_delay_expression : constant_mintypmax_expression ;
 edge_sensitive_path_declaration : parallel_edge_sensitive_path_description '=' path_delay_value
-  | full_edge_sensitive_path_description '=' ;
-path_delay_value parallel_edge_sensitive_path_description :
+  | full_edge_sensitive_path_description '=' path_delay_value ;
+parallel_edge_sensitive_path_description :
     '(' ( edge_identifier )? specify_input_terminal_descriptor ( polarity_operator )? '=>'
     '(' specify_output_terminal_descriptor ( polarity_operator )? ':' data_source_expression ')' ')' ;
 full_edge_sensitive_path_description : '(' ( edge_identifier )? list_of_path_inputs

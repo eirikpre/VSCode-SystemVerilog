@@ -4,7 +4,7 @@ import WhiteSpace;
 array_identifier : identifier ;
 block_identifier : identifier ;
 bin_identifier : identifier ;
-C_IDENTIFIER : [ a-zA-Z_ ] ( [ a-zA-Z0-9_ ] )* ;
+C_IDENTIFIER : [a-zA-Z_] ( [a-zA-Z0-9_] )* ;
 cell_identifier : identifier ;
 checker_identifier : identifier ;
 class_identifier : identifier ;
@@ -76,9 +76,9 @@ ps_parameter_identifier : ( package_scope | class_scope )? parameter_identifier
 ps_type_identifier : ( 'local' '::' | package_scope | class_scope )? type_identifier ;
 sequence_identifier : identifier ;
 signal_identifier : identifier ;
-SIMPLE_IDENTIFIER : [ a-zA-Z_ ] ( [ a-zA-Z0-9_$ ] )* ;
+SIMPLE_IDENTIFIER : [a-zA-Z_] ( [a-zA-Z0-9_$] )* ;
 specparam_identifier : identifier ;
-SYSTEM_TF_IDENTIFIER : '$' [ a-zA-Z0-9_$ ] ( [ a-zA-Z0-9_$ ] )* ;
+SYSTEM_TF_IDENTIFIER : '$' [a-zA-Z0-9_$] ( [a-zA-Z0-9_$] )* ;
 task_identifier : identifier ;
 tf_identifier : identifier ;
 terminal_identifier : identifier ;
@@ -86,3 +86,5 @@ topmodule_identifier : identifier ;
 type_identifier : identifier ;
 udp_identifier : identifier ;
 variable_identifier : identifier ;
+
+ANY_PRINTABLE_ASCII_CHARACTER_EXCEPT_WHITE_SPACE : [\u0021-\u007E] ;

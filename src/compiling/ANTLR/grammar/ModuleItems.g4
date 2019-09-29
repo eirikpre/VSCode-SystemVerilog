@@ -39,7 +39,7 @@ non_port_module_item : generate_region
   | module_declaration
   | interface_declaration
   | timeunits_declaration ;
-parameter_override : defparam list_of_defparam_assignments ';' ;
+parameter_override : 'defparam' list_of_defparam_assignments ';' ;
 bind_directive : 'bind' bind_target_scope ( ':' bind_target_instance_list )? bind_instantiation ';'
   | 'bind' bind_target_instance bind_instantiation ';' ;
 bind_target_scope : module_identifier

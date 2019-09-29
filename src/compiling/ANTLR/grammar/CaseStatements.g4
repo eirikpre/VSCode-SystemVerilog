@@ -12,7 +12,7 @@ case_expression : expression ;
 case_item : case_item_expression ( ',' case_item_expression )* ':' statement_or_null
   | 'default' ( ':' )? statement_or_null ;
 case_pattern_item : pattern ( '&&&' expression )? ':' statement_or_null
-  | default ( ':' )? statement_or_null ;
+  | 'default' ( ':' )? statement_or_null ;
 case_inside_item : open_range_list ':' statement_or_null | 'default' ( ':' )? statement_or_null ;
 case_item_expression : expression ;
 randcase_statement : 'randcase' randcase_item ( randcase_item )* 'endcase' ;
@@ -26,7 +26,7 @@ pattern : '.' variable_identifier
   | '\'' '{' pattern ( ',' pattern )* '}'
   | '\'' '{' member_identifier ':' pattern ( ',' member_identifier ':' pattern )* '}' ;
 assignment_pattern : '\'' '{' expression ( ',' expression )* '}'
-  | '\'' '{' structure_pattern_key ':' expression ( ',' structure_pattern_key : expression )* '}'
+  | '\'' '{' structure_pattern_key ':' expression ( ',' structure_pattern_key ':' expression )* '}'
   | '\'' '{' array_pattern_key ':' expression ( ',' array_pattern_key ':' expression )* '}'
   | '\'' '{' constant_expression '{' expression ( ',' expression )* '}' '}' ;
 structure_pattern_key : member_identifier | assignment_pattern_key ;

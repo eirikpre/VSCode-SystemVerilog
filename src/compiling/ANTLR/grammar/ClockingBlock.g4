@@ -21,4 +21,5 @@ clocking_decl_assign : signal_identifier ( '=' expression )? ;
 clocking_skew : edge_identifier ( delay_control )? | delay_control ;
 clocking_drive : clockvar_expression '<=' ( cycle_delay )? expression ;
 cycle_delay : '##' integral_number | '##' identifier | '##' '(' expression ')' ;
-clockvar : hierarchical_identifier clockvar_expression : clockvar select ;
+clockvar : hierarchical_identifier ;
+clockvar_expression : clockvar select ;

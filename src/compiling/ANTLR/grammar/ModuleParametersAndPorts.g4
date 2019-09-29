@@ -22,8 +22,8 @@ port_expression : port_reference
   | '{' port_reference ( ',' port_reference )* '}' ;
 port_reference : port_identifier constant_select ;
 port_direction : 'input' | 'output' | 'inout' | 'ref' ;
-net_port_header : ( port_direction )? Net_port_type ;
-variable_port_header : ( port_direction )? Variable_port_type ;
+net_port_header : ( port_direction )? net_port_type ;
+variable_port_header : ( port_direction )? variable_port_type ;
 interface_port_header : interface_identifier ( '.' modport_identifier )?
   | 'interface' ( '.' modport_identifier )? ;
 ansi_port_declaration : ( net_port_header | interface_port_header )? port_identifier ( unpacked_dimension )*

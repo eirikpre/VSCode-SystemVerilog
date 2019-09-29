@@ -1,44 +1,44 @@
 grammar SystemTimingChecks;
 import Concatenations;
 
-system_timing_check : $setup_timing_check
-  | $hold_timing_check
-  | $setuphold_timing_check
-  | $recovery_timing_check
-  | $removal_timing_check
-  | $recrem_timing_check
-  | $skew_timing_check
-  | $timeskew_timing_check
-  | $fullskew_timing_check
-  | $period_timing_check
-  | $width_timing_check
-  | $nochange_timing_check ;
-$setup_timing_check : '$setup' '(' data_event ',' reference_event ',' timing_check_limit ( ','
+system_timing_check : setup_timing_check
+  | hold_timing_check
+  | setuphold_timing_check
+  | recovery_timing_check
+  | removal_timing_check
+  | recrem_timing_check
+  | skew_timing_check
+  | timeskew_timing_check
+  | fullskew_timing_check
+  | period_timing_check
+  | width_timing_check
+  | nochange_timing_check ;
+setup_timing_check : '$setup' '(' data_event ',' reference_event ',' timing_check_limit ( ','
     ( notifier )? )? ')' ';' ;
-$hold_timing_check : '$hold' '(' reference_event ',' data_event ',' timing_check_limit ( ','
+hold_timing_check : '$hold' '(' reference_event ',' data_event ',' timing_check_limit ( ','
     ( notifier )? )? ')' ';' ;
-$setuphold_timing_check : '$setuphold' '(' reference_event ',' data_event ',' timing_check_limit ','
+setuphold_timing_check : '$setuphold' '(' reference_event ',' data_event ',' timing_check_limit ','
     timing_check_limit ( ',' ( notifier )? ( ',' ( timestamp_condition )? ( ',' ( timecheck_condition )?
     ( ',' ( delayed_reference )? ( ',' ( delayed_data )? )? )? )? )? )? ')' ';' ;
-$recovery_timing_check : '$recovery' '(' reference_event ',' data_event ',' timing_check_limit
+recovery_timing_check : '$recovery' '(' reference_event ',' data_event ',' timing_check_limit
     ( ',' ( notifier )? )? ')' ';' ;
-$removal_timing_check : '$removal' '(' reference_event ',' data_event ',' timing_check_limit
+removal_timing_check : '$removal' '(' reference_event ',' data_event ',' timing_check_limit
     ( ',' ( notifier )? )? ')' ';' ;
-$recrem_timing_check : '$recrem' '(' reference_event ',' data_event ',' timing_check_limit ','
+recrem_timing_check : '$recrem' '(' reference_event ',' data_event ',' timing_check_limit ','
     timing_check_limit ( ',' ( notifier )? ( ',' ( timestamp_condition )? ( ',' ( timecheck_condition )?
     ( ',' ( delayed_reference )? ( ',' ( delayed_data )? )? )? )? )? )? ')' ';' ;
-$skew_timing_check : '$skew' '(' reference_event ',' data_event ',' timing_check_limit
+skew_timing_check : '$skew' '(' reference_event ',' data_event ',' timing_check_limit
     ( ',' ( notifier )? )? ')' ';' ;
-$timeskew_timing_check : '$timeskew' '(' reference_event ',' data_event ',' timing_check_limit
+timeskew_timing_check : '$timeskew' '(' reference_event ',' data_event ',' timing_check_limit
     ( ',' ( notifier )? ( ',' ( event_based_flag )? ( ',' ( remain_active_flag )? )? )? )? ')' ';' ;
-$fullskew_timing_check : '$fullskew' '(' reference_event ',' data_event ',' timing_check_limit ','
+fullskew_timing_check : '$fullskew' '(' reference_event ',' data_event ',' timing_check_limit ','
     timing_check_limit ( ',' ( notifier )? ( ',' ( event_based_flag )? ( ',' ( remain_active_flag )? )? )? )? ')'
     ';' ;
-$period_timing_check : '$period' '(' controlled_reference_event ',' timing_check_limit ( ','
+period_timing_check : '$period' '(' controlled_reference_event ',' timing_check_limit ( ','
     ( notifier )? )? ')' ';' ;
-$width_timing_check : '$width' '(' controlled_reference_event ',' timing_check_limit ',' threshold
+width_timing_check : '$width' '(' controlled_reference_event ',' timing_check_limit ',' threshold
     ( ',' ( notifier )? )? ')' ';' ;
-$nochange_timing_check : '$nochange' '(' reference_event ',' data_event ',' start_edge_offset ','
+nochange_timing_check : '$nochange' '(' reference_event ',' data_event ',' start_edge_offset ','
     end_edge_offset ( ',' ( notifier )? )? ')' ';' ;
 timecheck_condition : mintypmax_expression ;
 controlled_reference_event : controlled_timing_check_event ;

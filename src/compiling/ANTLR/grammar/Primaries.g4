@@ -37,7 +37,7 @@ primary : primary_literal
   | 'this'
   | '$'
   | 'null' ;
-class_qualifier := ( 'local' '::' )? ( implicit_class_handle '.' | class_scope )? ;
+class_qualifier : ( 'local' '::' )? ( implicit_class_handle '.' | class_scope )? ;
 range_expression : expression | part_select_range ;
 primary_literal : number | time_literal | unbased_unsized_literal | string_literal ;
 time_literal : unsigned_number time_unit | fixed_point_number time_unit ;

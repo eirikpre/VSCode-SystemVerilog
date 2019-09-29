@@ -15,7 +15,7 @@ event_expression : ( edge_identifier )? expression ( 'iff' expression )?
   | event_expression ',' event_expression
   | '(' event_expression ')' ;
 procedural_timing_control : delay_control | event_control | cycle_delay ;
-jump_statement : return ( expression )? ';'
+jump_statement : 'return' ( expression )? ';'
   | 'break' ';'
   | 'continue' ';' ;
 wait_statement : 'wait' '(' expression ')' statement_or_null

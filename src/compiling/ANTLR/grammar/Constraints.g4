@@ -23,5 +23,5 @@ constraint_prototype : ( constraint_prototype_qualifier )? ( 'static' )? 'constr
     constraint_identifier ';' ;
 constraint_prototype_qualifier : 'extern' | 'pure' ;
 extern_constraint_declaration : ( 'static' )? 'constraint' class_scope constraint_identifier
-    Constraint_block ;
+    constraint_block ;
 identifier_list : identifier ( ',' identifier )* ;

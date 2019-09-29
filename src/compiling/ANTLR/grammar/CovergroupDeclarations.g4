@@ -42,13 +42,13 @@ trans_range_list : trans_item
 trans_item : covergroup_range_list ;
 repeat_range : covergroup_expression | covergroup_expression ':' covergroup_expression ;
 cover_cross : ( cross_identifier ':' )? 'cross' list_of_cross_items ( 'iff' '(' expression ')' )?
-    Cross_body ;
+    cross_body ;
 list_of_cross_items : cross_item ',' cross_item ( ',' cross_item )* ;
 cross_item : cover_point_identifier | variable_identifier ;
 cross_body : '{' ( cross_body_item ';' )* '}' | ';' ;
-cross_body_item : function_declaraton | bins_selection_or_option ';' ;
+cross_body_item : function_declaration | bins_selection_or_option ';' ;
 bins_selection_or_option : ( attribute_instance )* coverage_option | ( attribute_instance )*
-    Bins_selection ;
+    bins_selection ;
 bins_selection : bins_keyword bin_identifier '=' select_expression ( 'iff' '(' expression ')' )? ;
 select_expression : select_condition
   | '!' select_condition

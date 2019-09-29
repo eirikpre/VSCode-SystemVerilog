@@ -10,8 +10,8 @@ gate_instantiation : cmos_switchtype ( delay3 )? cmos_switch_instance ( ',' cmos
     ( ',' n_output_gate_instance )* ';'
   | pass_en_switchtype ( delay2 )? pass_enable_switch_instance ( ',' pass_enable_switch_instance )* ';'
   | pass_switchtype pass_switch_instance ( ',' pass_switch_instance )* ';'
-  | pulldown ( pulldown_strength )? pull_gate_instance ( ',' pull_gate_instance )* ';'
-  | pullup ( pullup_strength )? pull_gate_instance ( ',' pull_gate_instance )* ';' ;
+  | 'pulldown' ( pulldown_strength )? pull_gate_instance ( ',' pull_gate_instance )* ';'
+  | 'pullup' ( pullup_strength )? pull_gate_instance ( ',' pull_gate_instance )* ';' ;
 cmos_switch_instance : ( name_of_instance )?
     '(' output_terminal ',' input_terminal ',' ncontrol_terminal ',' pcontrol_terminal ')' ;
 enable_gate_instance : ( name_of_instance )?
