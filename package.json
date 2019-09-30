@@ -60,7 +60,7 @@
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
                         "default": false,
-                        "description": "Force indexation to use fast regex parsing"
+                        "description": "Force indexing to use fast regex parsing"
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
