@@ -55,7 +55,7 @@ export class SystemVerilogIndexer {
         const settings = workspace.getConfiguration();
         this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
         let exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
-        if (exclude = "insert globPattern here") {
+        if (exclude == "insert globPattern here") {
             exclude = undefined;
         }
 

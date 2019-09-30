@@ -8,5 +8,6 @@ src/**/*
 .gitignore
 tsconfig.json
 tslint.json
+*.vsix
 verilog-examples/**
 vsc-extension-quickstart.md
