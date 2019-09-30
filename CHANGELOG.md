@@ -8,6 +8,11 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.8.10]
+- Added setting to force the fast indexing algorithm
+
+## [0.8.6 - 0.8.9]
+- Bugfixes
 
 ## [0.8.5] - 2019.09.06
 - Added parsing and indexation of macros in smaller workspaces

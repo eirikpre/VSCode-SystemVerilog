@@ -57,6 +57,11 @@
                         "default": "insert globPattern here",
                         "description": "Exclude files from indexing by a globPattern"
                     },
+                    "systemverilog.forceFastIndexing": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Force indexation to use fast regex parsing"
+                    },
                     "systemverilog.compilerType": {
                         "type": "string",
                         "enum": [
