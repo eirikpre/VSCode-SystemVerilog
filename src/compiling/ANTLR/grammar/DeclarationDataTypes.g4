@@ -1,7 +1,6 @@
 grammar DeclarationDataTypes;
 import DeclarationLists;
 
-casting_type : simple_type | constant_primary | signing | 'string' | 'const' ;
 data_type : integer_vector_type ( signing )? ( packed_dimension )*
   | integer_atom_type ( signing )?
   | non_integer_type

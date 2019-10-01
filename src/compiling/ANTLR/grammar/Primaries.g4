@@ -9,19 +9,14 @@ constant_primary : primary_literal
   | ( package_scope | class_scope )? enum_identifier
   | constant_concatenation ( '[' constant_range_expression ']' )?
   | constant_multiple_concatenation ( '[' constant_range_expression ']' )?
-  | constant_function_call
+  | subroutine_call
   | constant_let_expression
   | '(' constant_mintypmax_expression ')'
-  | constant_cast
+  | ( simple_type | signing | 'string' | 'const' ) '\'' '(' constant_expression ')'
+  | constant_primary '\'' '(' constant_expression ')'
   | constant_assignment_pattern_expression
   | type_reference
   | 'null' ;
-module_path_primary : number
-  | identifier
-  | module_path_concatenation
-  | module_path_multiple_concatenation
-  | function_subroutine_call
-  | '(' module_path_mintypmax_expression ')' ;
 primary : primary_literal
   | ( class_qualifier | package_scope )? hierarchical_identifier select
   | empty_unpacked_array_concatenation
@@ -30,13 +25,19 @@ primary : primary_literal
   | function_subroutine_call
   | let_expression
   | '(' mintypmax_expression ')'
-  | cast
+  | ( simple_type | constant_primary | signing | 'string' | 'const' ) '\'' '(' expression ')'
   | assignment_pattern_expression
   | streaming_concatenation
   | sequence_method_call
   | 'this'
   | '$'
   | 'null' ;
+module_path_primary : number
+  | identifier
+  | module_path_concatenation
+  | module_path_multiple_concatenation
+  | function_subroutine_call
+  | '(' module_path_mintypmax_expression ')' ;
 class_qualifier : ( 'local' '::' )? ( implicit_class_handle '.' | class_scope )? ;
 range_expression : expression | part_select_range ;
 primary_literal : number | time_literal | unbased_unsized_literal | string_literal ;
@@ -50,6 +51,4 @@ nonrange_select : ( ( '.' member_identifier bit_select )* '.' member_identifier 
 constant_bit_select : ( '[' constant_expression ']' )* ;
 constant_select : ( ( '.' member_identifier constant_bit_select )* '.' member_identifier )?
     constant_bit_select ( '[' constant_part_select_range ']' )? ;
-constant_cast : casting_type '\'' '(' constant_expression ')' ;
 constant_let_expression : let_expression ;
-cast : casting_type '\'' '(' expression ')' ;

@@ -1,16 +1,57 @@
 grammar SubroutineCalls;
 import Expressions;
 
-constant_function_call : function_subroutine_call ;
 tf_call : ps_or_hierarchical_tf_identifier ( attribute_instance )* ( '(' list_of_arguments ')' )? ;
 system_tf_call : SYSTEM_TF_IDENTIFIER ( '(' list_of_arguments ')' )?
   | SYSTEM_TF_IDENTIFIER '(' data_type ( ',' expression )? ')'
   | SYSTEM_TF_IDENTIFIER '(' expression ( ',' ( expression )? )* ( ',' ( clocking_event )? )? ')' ;
-subroutine_call : tf_call | system_tf_call | method_call | ( 'std' '::' )? randomize_call ;
+subroutine_call : tf_call | system_tf_call | ( ( primary_literal
+  | ( class_qualifier | package_scope )? hierarchical_identifier select
+  | empty_unpacked_array_concatenation
+  | concatenation ( '[' range_expression ']' )?
+  | multiple_concatenation ( '[' range_expression ']' )?
+  | let_expression
+  | '(' mintypmax_expression ')'
+  | ( ( simple_type | signing | 'string' | 'const' ) '\'' '(' expression ')' )
+  | ( primary_literal
+    | ps_parameter_identifier constant_select
+    | specparam_identifier ( '[' constant_range_expression ']' )?
+    | genvar_identifier
+    | formal_port_identifier constant_select
+    | ( package_scope | class_scope )? enum_identifier
+    | constant_concatenation ( '[' constant_range_expression ']' )?
+    | constant_multiple_concatenation ( '[' constant_range_expression ']' )?
+    | constant_let_expression
+    | '(' constant_mintypmax_expression ')'
+    | ( ( simple_type | signing | 'string' | 'const' ) '\'' '(' constant_expression ')' )
+    | ( primary_literal
+      | ps_parameter_identifier constant_select
+      | specparam_identifier ( '[' constant_range_expression ']' )?
+      | genvar_identifier
+      | formal_port_identifier constant_select
+      | ( package_scope | class_scope )? enum_identifier
+      | constant_concatenation ( '[' constant_range_expression ']' )?
+      | constant_multiple_concatenation ( '[' constant_range_expression ']' )?
+      | constant_let_expression
+      | '(' constant_mintypmax_expression ')'
+      | constant_assignment_pattern_expression
+      | type_reference
+      | 'null' ) '\'' '(' constant_expression ')'
+    | constant_assignment_pattern_expression
+    | type_reference
+    | 'null' ) '\'' '(' expression ')'
+  | assignment_pattern_expression
+  | streaming_concatenation
+  | sequence_method_call
+  | 'this'
+  | '$'
+  | 'null'
+  | implicit_class_handle ) '.' method_call_body )
+  | subroutine_call ( ( '\'' '(' constant_expression ')' )? '\'' '(' expression ')' )? '.' method_call_body
+  | ( 'std' '::' )? randomize_call ;
 function_subroutine_call : subroutine_call ;
 list_of_arguments : ( expression )? ( ',' ( expression )? )* ( ',' '.' identifier '(' ( expression )? ')' )*
   | '.' identifier '(' ( expression )? ')' ( ',' '.' identifier '(' ( expression )? ')' )* ;
-method_call : method_call_root '.' method_call_body ;
 method_call_body : method_identifier ( attribute_instance )* ( '(' list_of_arguments ')' )?
   | built_in_method_call ;
 built_in_method_call : array_manipulation_call | randomize_call ;
@@ -18,5 +59,4 @@ array_manipulation_call : array_method_name ( attribute_instance )* ( '(' list_o
     ( 'with' '(' expression ')' )? ;
 randomize_call : 'randomize' ( attribute_instance )* ( '(' ( variable_identifier_list | 'null' )? ')' )?
     ( 'with' ( '(' ( identifier_list )? ')' )? constraint_block )? ;
-method_call_root : primary | implicit_class_handle ;
 array_method_name : method_identifier | 'unique' | 'and' | 'or' | 'xor' ;
