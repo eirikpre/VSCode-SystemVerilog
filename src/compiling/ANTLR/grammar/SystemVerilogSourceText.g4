@@ -1,7 +1,7 @@
 grammar SystemVerilogSourceText;
 import ModuleParametersAndPorts;
 
-source_text : ( timeunits_declaration )? ( description )* ;
+source_text : ( timeunits_declaration )? ( description )* EOF ;
 description : module_declaration
              | udp_declaration
              | interface_declaration
@@ -10,10 +10,10 @@ description : module_declaration
              | ( attribute_instance )* package_item
              | ( attribute_instance )* bind_directive
              | config_declaration ;
-module_nonansi_header : ( attribute_instance )* module_keyword
-    ( lifetime )? module_identifier ( package_import_declaration )*
-    ( parameter_port_list )? list_of_ports ';' ;
-module_ansi_header : ( attribute_instance )* module_keyword
+module_nonansi_header :  ( attribute_instance )*  module_keyword
+     ( lifetime )?  module_identifier  ( package_import_declaration )*
+     ( parameter_port_list )?  list_of_ports  ';'  ;
+module_ansi_header :  ( attribute_instance )* module_keyword
     ( lifetime )? module_identifier ( package_import_declaration )*
     ( parameter_port_list )? ( list_of_port_declarations )? ';' ;
 module_declaration : module_nonansi_header ( timeunits_declaration )?
@@ -25,7 +25,7 @@ module_declaration : module_nonansi_header ( timeunits_declaration )?
     ( module_item )* 'endmodule' ( ':' module_identifier )?
   | 'extern' module_nonansi_header
   | 'extern' module_ansi_header ;
-module_keyword : 'module' | 'macromodule' ;
+module_keyword : (MODULE | MACROMODULE)  ;
 interface_declaration : interface_nonansi_header ( timeunits_declaration )? ( interface_item )*
     'endinterface' ( ':' interface_identifier )?
   | interface_ansi_header ( timeunits_declaration )? ( non_port_interface_item )* 'endinterface'
@@ -73,3 +73,6 @@ timeunits_declaration : 'timeunit' time_literal ( '/' time_literal )? ';'
   | 'timeprecision' time_literal ';'
   | 'timeunit' time_literal ';' 'timeprecision' time_literal ';'
   | 'timeprecision time_literal' ';' 'timeunit' time_literal ';' ;
+
+MODULE : 'module';
+MACROMODULE : 'macromodule' ;

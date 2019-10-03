@@ -1,10 +1,10 @@
 grammar Identifiers;
-import WhiteSpace;
+import LexRules;
 
 array_identifier : identifier ;
 block_identifier : identifier ;
 bin_identifier : identifier ;
-C_IDENTIFIER : [a-zA-Z_] ( [a-zA-Z0-9_] )* ;
+c_identifier : C_IDENTIFIER | LOWER_S | LOWER_MS | LOWER_US | LOWER_NS | LOWER_PS | LOWER_FS | B | F | R | P | N | HEX_DIGIT | X_DIGIT | Z_DIGIT | UNDERSCORE ;
 cell_identifier : identifier ;
 checker_identifier : identifier ;
 class_identifier : identifier ;
@@ -19,7 +19,6 @@ cover_point_identifier : identifier ;
 cross_identifier : identifier ;
 dynamic_array_variable_identifier : variable_identifier ;
 enum_identifier : identifier ;
-escaped_identifier : '\\' ( ANY_PRINTABLE_ASCII_CHARACTER_EXCEPT_WHITE_SPACE )* white_space ;
 formal_identifier : identifier ;
 formal_port_identifier : identifier ;
 function_identifier : identifier ;
@@ -36,7 +35,7 @@ hierarchical_sequence_identifier : hierarchical_identifier ;
 hierarchical_task_identifier : hierarchical_identifier ;
 hierarchical_tf_identifier : hierarchical_identifier ;
 hierarchical_variable_identifier : hierarchical_identifier ;
-identifier : SIMPLE_IDENTIFIER | escaped_identifier ;
+identifier : simple_identifier | ESCAPED_IDENTIFIER ;
 index_variable_identifier : identifier ;
 interface_identifier : identifier ;
 interface_instance_identifier : identifier ;
@@ -76,9 +75,8 @@ ps_parameter_identifier : ( package_scope | class_scope )? parameter_identifier
 ps_type_identifier : ( 'local' '::' | package_scope | class_scope )? type_identifier ;
 sequence_identifier : identifier ;
 signal_identifier : identifier ;
-SIMPLE_IDENTIFIER : [a-zA-Z_] ( [a-zA-Z0-9_$] )* ;
+simple_identifier : SIMPLE_IDENTIFIER | c_identifier ;
 specparam_identifier : identifier ;
-SYSTEM_TF_IDENTIFIER : '$' [a-zA-Z0-9_$] ( [a-zA-Z0-9_$] )* ;
 task_identifier : identifier ;
 tf_identifier : identifier ;
 terminal_identifier : identifier ;
@@ -86,5 +84,3 @@ topmodule_identifier : identifier ;
 type_identifier : identifier ;
 udp_identifier : identifier ;
 variable_identifier : identifier ;
-
-ANY_PRINTABLE_ASCII_CHARACTER_EXCEPT_WHITE_SPACE : [\u0021-\u007E] ;

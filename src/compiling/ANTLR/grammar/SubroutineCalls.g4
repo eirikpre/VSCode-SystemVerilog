@@ -12,7 +12,7 @@ subroutine_call : tf_call | system_tf_call | ( ( primary_literal
   | multiple_concatenation ( '[' range_expression ']' )?
   | let_expression
   | '(' mintypmax_expression ')'
-  | ( ( simple_type | signing | 'string' | 'const' ) '\'' '(' expression ')' )
+  | ( ( simple_type | signing | 'string' | 'const' ) APOSTROPHE '(' expression ')' )
   | ( primary_literal
     | ps_parameter_identifier constant_select
     | specparam_identifier ( '[' constant_range_expression ']' )?
@@ -23,7 +23,7 @@ subroutine_call : tf_call | system_tf_call | ( ( primary_literal
     | constant_multiple_concatenation ( '[' constant_range_expression ']' )?
     | constant_let_expression
     | '(' constant_mintypmax_expression ')'
-    | ( ( simple_type | signing | 'string' | 'const' ) '\'' '(' constant_expression ')' )
+    | ( ( simple_type | signing | 'string' | 'const' ) APOSTROPHE '(' constant_expression ')' )
     | ( primary_literal
       | ps_parameter_identifier constant_select
       | specparam_identifier ( '[' constant_range_expression ']' )?
@@ -36,10 +36,10 @@ subroutine_call : tf_call | system_tf_call | ( ( primary_literal
       | '(' constant_mintypmax_expression ')'
       | constant_assignment_pattern_expression
       | type_reference
-      | 'null' ) '\'' '(' constant_expression ')'
+      | 'null' ) APOSTROPHE '(' constant_expression ')'
     | constant_assignment_pattern_expression
     | type_reference
-    | 'null' ) '\'' '(' expression ')'
+    | 'null' ) APOSTROPHE '(' expression ')'
   | assignment_pattern_expression
   | streaming_concatenation
   | sequence_method_call
@@ -47,7 +47,7 @@ subroutine_call : tf_call | system_tf_call | ( ( primary_literal
   | '$'
   | 'null'
   | implicit_class_handle ) '.' method_call_body )
-  | subroutine_call ( ( '\'' '(' constant_expression ')' )? '\'' '(' expression ')' )? '.' method_call_body
+  | subroutine_call ( ( APOSTROPHE '(' constant_expression ')' )? APOSTROPHE '(' expression ')' )? '.' method_call_body
   | ( 'std' '::' )? randomize_call ;
 function_subroutine_call : subroutine_call ;
 list_of_arguments : ( expression )? ( ',' ( expression )? )* ( ',' '.' identifier '(' ( expression )? ')' )*

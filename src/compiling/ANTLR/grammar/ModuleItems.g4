@@ -5,7 +5,7 @@ elaboration_system_task : '$fatal' ( '(' finish_number ( ',' list_of_arguments )
   | '$error' ( '(' ( list_of_arguments )? ')' )? ';'
   | '$warning' ( '(' ( list_of_arguments )? ')' )? ';'
   | '$info' ( '(' ( list_of_arguments )? ')' )? ';' ;
-finish_number : '0' | '1' | '2' ;
+finish_number : ZERO | ONE | TWO ;
 module_common_item : module_or_generate_item_declaration
   | interface_instantiation
   | program_instantiation

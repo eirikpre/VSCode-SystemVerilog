@@ -12,8 +12,8 @@ constant_primary : primary_literal
   | subroutine_call
   | constant_let_expression
   | '(' constant_mintypmax_expression ')'
-  | ( simple_type | signing | 'string' | 'const' ) '\'' '(' constant_expression ')'
-  | constant_primary '\'' '(' constant_expression ')'
+  | ( simple_type | signing | 'string' | 'const' ) APOSTROPHE '(' constant_expression ')'
+  | constant_primary APOSTROPHE '(' constant_expression ')'
   | constant_assignment_pattern_expression
   | type_reference
   | 'null' ;
@@ -25,7 +25,7 @@ primary : primary_literal
   | function_subroutine_call
   | let_expression
   | '(' mintypmax_expression ')'
-  | ( simple_type | constant_primary | signing | 'string' | 'const' ) '\'' '(' expression ')'
+  | ( simple_type | constant_primary | signing | 'string' | 'const' ) APOSTROPHE '(' expression ')'
   | assignment_pattern_expression
   | streaming_concatenation
   | sequence_method_call
@@ -42,7 +42,7 @@ class_qualifier : ( 'local' '::' )? ( implicit_class_handle '.' | class_scope )?
 range_expression : expression | part_select_range ;
 primary_literal : number | time_literal | unbased_unsized_literal | string_literal ;
 time_literal : unsigned_number time_unit | fixed_point_number time_unit ;
-time_unit : 's' | 'ms' | 'us' | 'ns' | 'ps' | 'fs' ;
+time_unit : LOWER_S | LOWER_MS | LOWER_US | LOWER_NS | LOWER_PS | LOWER_FS ;
 implicit_class_handle : 'this' | 'super' | 'this' '.' 'super' ;
 bit_select : ( '[' expression ']' )* ;
 select : ( ( '.' member_identifier bit_select )* '.' member_identifier )? bit_select

@@ -15,11 +15,11 @@ function_body_declaration : function_data_type_or_implicit
     ( function_statement_or_null )*
     'endfunction' ( ':' function_identifier )? ;
 function_prototype : 'function' data_type_or_void function_identifier ( '(' ( tf_port_list )? ')' )? ;
-dpi_import_export : 'import' dpi_spec_string ( dpi_function_import_property )? ( C_IDENTIFIER '=' )?
+dpi_import_export : 'import' dpi_spec_string ( dpi_function_import_property )? ( c_identifier '=' )?
     dpi_function_proto ';'
-  | 'import' dpi_spec_string ( dpi_task_import_property )? ( C_IDENTIFIER '=' )? dpi_task_proto ';'
-  | 'export' dpi_spec_string ( C_IDENTIFIER '=' )? 'function' function_identifier ';'
-  | 'export' dpi_spec_string ( C_IDENTIFIER '=' )? 'task' task_identifier ';' ;
+  | 'import' dpi_spec_string ( dpi_task_import_property )? ( c_identifier '=' )? dpi_task_proto ';'
+  | 'export' dpi_spec_string ( c_identifier '=' )? 'function' function_identifier ';'
+  | 'export' dpi_spec_string ( c_identifier '=' )? 'task' task_identifier ';' ;
 dpi_spec_string : '"DPI-C"' | '"DPI"' ;
 dpi_function_import_property : 'context' | 'pure' ;
 dpi_task_import_property : 'context' ;

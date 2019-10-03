@@ -61,9 +61,9 @@ controlled_timing_check_event : timing_check_event_control specify_terminal_desc
 timing_check_event_control : 'posedge' | 'negedge' | 'edge' | edge_control_specifier ;
 specify_terminal_descriptor : specify_input_terminal_descriptor | specify_output_terminal_descriptor ;
 edge_control_specifier : 'edge' '[' edge_descriptor ( ',' edge_descriptor )* ']' ;
-edge_descriptor : '01' | '10' | z_or_x zero_or_one | zero_or_one z_or_x ;
-zero_or_one : '0' | '1' ;
-z_or_x : 'x' | 'X' | 'z' | 'Z' ;
+edge_descriptor : ZERO ONE | ONE ZERO | z_or_x zero_or_one | zero_or_one z_or_x ;
+zero_or_one : ZERO | ONE ;
+z_or_x : X_DIGIT | Z_DIGIT ;
 timing_check_condition : scalar_timing_check_condition | '(' scalar_timing_check_condition ')' ;
 scalar_timing_check_condition : expression
   | '~' expression
@@ -71,4 +71,4 @@ scalar_timing_check_condition : expression
   | expression '===' scalar_constant
   | expression '!=' scalar_constant
   | expression '!==' scalar_constant ;
-scalar_constant : '1\'b0' | '1\'b1' | '1\'B0' | '1\'B1' | '\'b0' | '\'b1' | '\'B0' | '\'B1' | '1' | '0' ;
+scalar_constant : ONE? APOSTROPHE B ( ZERO | ONE ) | ONE | ZERO ;

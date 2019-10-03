@@ -23,12 +23,12 @@ pattern : '.' variable_identifier
   | '.*'
   | constant_expression
   | 'tagged' member_identifier ( pattern )?
-  | '\'' '{' pattern ( ',' pattern )* '}'
-  | '\'' '{' member_identifier ':' pattern ( ',' member_identifier ':' pattern )* '}' ;
-assignment_pattern : '\'' '{' expression ( ',' expression )* '}'
-  | '\'' '{' structure_pattern_key ':' expression ( ',' structure_pattern_key ':' expression )* '}'
-  | '\'' '{' array_pattern_key ':' expression ( ',' array_pattern_key ':' expression )* '}'
-  | '\'' '{' constant_expression '{' expression ( ',' expression )* '}' '}' ;
+  | APOSTROPHE '{' pattern ( ',' pattern )* '}'
+  | APOSTROPHE '{' member_identifier ':' pattern ( ',' member_identifier ':' pattern )* '}' ;
+assignment_pattern : APOSTROPHE '{' expression ( ',' expression )* '}'
+  | APOSTROPHE '{' structure_pattern_key ':' expression ( ',' structure_pattern_key ':' expression )* '}'
+  | APOSTROPHE '{' array_pattern_key ':' expression ( ',' array_pattern_key ':' expression )* '}'
+  | APOSTROPHE '{' constant_expression '{' expression ( ',' expression )* '}' '}' ;
 structure_pattern_key : member_identifier | assignment_pattern_key ;
 array_pattern_key : constant_expression | assignment_pattern_key ;
 assignment_pattern_key : simple_type | 'default' ;
@@ -38,4 +38,4 @@ assignment_pattern_expression_type : ps_type_identifier
   | integer_atom_type
   | type_reference ;
 constant_assignment_pattern_expression : assignment_pattern_expression ;
-assignment_pattern_net_lvalue : '\'' '{' net_lvalue ( ',' net_lvalue )* '}' ; assignment_pattern_variable_lvalue : '\'' '{' variable_lvalue ( ',' variable_lvalue )* '}' ;
+assignment_pattern_net_lvalue : APOSTROPHE '{' net_lvalue ( ',' net_lvalue )* '}' ; assignment_pattern_variable_lvalue : APOSTROPHE '{' variable_lvalue ( ',' variable_lvalue )* '}' ;
