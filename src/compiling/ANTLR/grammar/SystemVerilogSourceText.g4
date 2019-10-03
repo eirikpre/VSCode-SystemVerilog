@@ -1,7 +1,7 @@
 grammar SystemVerilogSourceText;
 import ModuleParametersAndPorts;
 
-source_text : ( timeunits_declaration )? ( description )* EOF ;
+source_text : ( timeunits_declaration )? ( description )* ;
 description : module_declaration
              | udp_declaration
              | interface_declaration
