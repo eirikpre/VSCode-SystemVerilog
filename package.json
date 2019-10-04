@@ -60,6 +60,7 @@
                     "systemverilog.compilerType": {
                         "type": "string",
                         "enum": [
+                            "ANTLR",
                             "Verilator",
                             "VCS"
                         ],
@@ -161,6 +162,7 @@
         "vscode": "^1.1.36"
     },
     "dependencies": {
+        "antlr4": "^4.7.2",
         "antlr4ts": "^0.5.0-alpha.3",
         "child_process": "^1.0.2",
         "uri-js": "^4.2.2",
