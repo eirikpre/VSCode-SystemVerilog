@@ -3,7 +3,7 @@ module segdetect( CLOCK, RESET, C, Z );
   input CLOCK, RESET, C;
   output Z;
   reg Z;
-  reg [2:0] Sreg, Snext        // State register and next state
+  reg [2:0] Sreg, Snext;        // State register and next state
   parameter [2:0] S0 = 3'b000,  // Define the states
                   S1  = 3'b001,
                   S2  = 3'b010,
@@ -41,7 +41,7 @@ module segdetect( CLOCK, RESET, C, Z );
       S5:     if (C==0) Z = 1;
                   else Z=0;
       default       Z = 0;
-    //endcase
+    endcase
 endmodule
 
 module correct(my_input, my_output);
