@@ -10,13 +10,22 @@ import { ANTLRInputStream, CommonTokenStream, ConsoleErrorListener} from 'antlr4
 import {SystemVerilogLexer} from './ANTLR/grammar/build/SystemVerilogLexer'
 import {SystemVerilogParser} from './ANTLR/grammar/build/SystemVerilogParser'
 import {SyntaxErrorListener} from './ANTLR/SyntaxErrorListener'
+import { isSystemVerilogDocument, isVerilogDocument } from '../utils/server';
 
 export class ANTLRCompiler extends DocumentCompiler {
 
     public getTextDocumentDiagnostics(document: TextDocument): Thenable<Map<string, Diagnostic[]>> {
-        
-
         return new Promise((resolve, reject) => {
+            if (!document) {
+                reject("SystemVerilog: Invalid document.");
+                return;
+            }
+
+            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
+                reject("The document is not a SystemVerilog/Verilog file.");
+                return;
+            }
+
             let visitedDocuments = new Map<string, boolean>();
             let diagnosticCollection: Map<string, Diagnostic[]> = new Map();
 
