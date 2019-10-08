@@ -48,7 +48,8 @@ export class ANTLRCompiler extends DocumentCompiler {
                 diagnosticData.filePath = document.uri;
                 diagnosticData.line = syntaxError.error_list[i].line;
                 diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
-                diagnosticData.problem = syntaxError.error_list[i].msg;
+                //diagnosticData.problem = syntaxError.error_list[i].msg;
+                diagnosticData.problem = this.getImprovedMessage(syntaxError.error_list[i]);
 
                 //push Diagnostic
                 if (!isDiagnosticDataUndefined(diagnosticData)) {
@@ -86,6 +87,18 @@ export class ANTLRCompiler extends DocumentCompiler {
         documentFilePath: string, 
         collection: Map<string, Diagnostic[]>): void {
             throw new Error("ANTLRCompiler.parseDiagnostics should never be called.");
+    }
+
+    /**
+        Function for getting a more helpful error message than the one included
+        in the parser error msg property.
+
+        @param parser_error The error object given by the parser
+        @returns The appropriate user facing error message
+    */
+    public getImprovedMessage(parser_error: any): string {
+        let out: string = parser_error.msg;
+        return out;
     }
 
 };
