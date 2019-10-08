@@ -33,7 +33,7 @@ export class SystemVerilogParser {
         /(?<=^\s*(virtual|local|extern|pure\s+virtual)?\s*)/,
         /(?<type>(function|task))\s+/,
         /(?<return>[\w:\[\]\s*]+\s*)?/,
-        /\b(?<name>\w+)/,
+        /\b(?<name>[\w\.]+)/,
         /(?<ports>\s*\([\W\w]*?\))?/,
         /\s*;/,
         /(?<body>[\w\W]*?)/,
