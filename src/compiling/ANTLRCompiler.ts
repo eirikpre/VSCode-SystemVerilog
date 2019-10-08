@@ -49,7 +49,7 @@ export class ANTLRCompiler extends DocumentCompiler {
                 diagnosticData.line = syntaxError.error_list[i].line;
                 diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
                 //diagnosticData.problem = syntaxError.error_list[i].msg;
-                diagnosticData.problem = this.getImprovedMessage(syntaxError.error_list[i]);
+                diagnosticData.problem = this.getImprovedMessage(syntaxError.error_list[i],document.uri);
 
                 //push Diagnostic
                 if (!isDiagnosticDataUndefined(diagnosticData)) {
@@ -96,7 +96,7 @@ export class ANTLRCompiler extends DocumentCompiler {
         @param parser_error The error object given by the parser
         @returns The appropriate user facing error message
     */
-    public getImprovedMessage(parser_error: any): string {
+    public getImprovedMessage(parser_error: any, uri: string): string {
         let out: string = parser_error.msg;
         return out;
     }
