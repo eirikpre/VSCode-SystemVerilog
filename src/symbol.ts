@@ -44,6 +44,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'bit':
         case 'logic':
         case 'int':
+        case 'integer':
         case 'char':
         case 'float': return SymbolKind.Variable;
         case 'module':
