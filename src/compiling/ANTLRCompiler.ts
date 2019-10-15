@@ -8,7 +8,7 @@ import {
 import { DocumentCompiler, DiagnosticData, isDiagnosticDataUndefined } from './DocumentCompiler';
 import { ANTLRInputStream, CommonTokenStream, ConsoleErrorListener} from 'antlr4ts';
 import {SystemVerilogLexer} from './ANTLR/grammar/build/SystemVerilogLexer'
-import {SystemVerilogParser} from './ANTLR/grammar/build/SystemVerilogParser'
+import {SystemVerilogParser, Anonymous_programContext} from './ANTLR/grammar/build/SystemVerilogParser'
 import {SyntaxErrorListener} from './ANTLR/SyntaxErrorListener'
 import { isSystemVerilogDocument, isVerilogDocument } from '../utils/server';
 
@@ -98,6 +98,10 @@ export class ANTLRCompiler extends DocumentCompiler {
     */
     public getImprovedMessage(parser_error: any, uri: string): string {
         let out: string = parser_error.msg;
+        let msglist = []
+        if (parser_error.msg.startsWith("extraneous input")) {
+            out = "extraneous input \"" + parser_error.offendingSymbol.text + "\"";
+        }
         return out;
     }
 
