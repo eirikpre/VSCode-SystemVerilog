@@ -48,9 +48,9 @@ export class ANTLRCompiler extends DocumentCompiler {
                 diagnosticData.filePath = document.uri;
                 diagnosticData.line = syntaxError.error_list[i].line;
                 diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
-                //diagnosticData.problem = syntaxError.error_list[i].msg;
                 diagnosticData.problem = this.getImprovedMessage(syntaxError.error_list[i],document.uri);
-
+                diagnosticData.offendingSymbol = syntaxError.error_list[i].offendingSymbol.text;
+                diagnosticData.charPosition = syntaxError.error_list[i].charPositionInLine;
                 //push Diagnostic
                 if (!isDiagnosticDataUndefined(diagnosticData)) {
 
@@ -104,5 +104,4 @@ export class ANTLRCompiler extends DocumentCompiler {
         }
         return out;
     }
-
 };
