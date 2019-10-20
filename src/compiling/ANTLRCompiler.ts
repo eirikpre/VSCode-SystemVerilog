@@ -98,7 +98,6 @@ export class ANTLRCompiler extends DocumentCompiler {
     */
     public getImprovedMessage(parser_error: any, uri: string): string {
         let out: string = parser_error.msg;
-        let msglist = []
         if (parser_error.msg.startsWith("extraneous input")) {
             out = "extraneous input \"" + parser_error.offendingSymbol.text + "\"";
         }
