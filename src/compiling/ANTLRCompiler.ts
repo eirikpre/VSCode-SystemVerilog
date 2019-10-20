@@ -8,7 +8,7 @@ import {
 import { DocumentCompiler, DiagnosticData, isDiagnosticDataUndefined } from './DocumentCompiler';
 import { ANTLRInputStream, CommonTokenStream, ConsoleErrorListener} from 'antlr4ts';
 import {SystemVerilogLexer} from './ANTLR/grammar/build/SystemVerilogLexer'
-import {SystemVerilogParser, Anonymous_programContext} from './ANTLR/grammar/build/SystemVerilogParser'
+import {SystemVerilogParser} from './ANTLR/grammar/build/SystemVerilogParser'
 import {SyntaxErrorListener} from './ANTLR/SyntaxErrorListener'
 import { isSystemVerilogDocument, isVerilogDocument } from '../utils/server';
 
