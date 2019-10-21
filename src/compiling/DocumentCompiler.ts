@@ -18,6 +18,8 @@ export class DiagnosticData {
     problem: string;
     diagnosticSeverity: DiagnosticSeverity;
     filePath: string;
+    offendingSymbol: string;
+    charPosition: number;
 }
 
 /** 
@@ -122,8 +124,8 @@ export abstract class DocumentCompiler {
         @param line the line number
         @return the line's range
     */
-    getLineRange(line: number): Range {
-        return Range.create(Position.create(line, 0), Position.create(line, Number.MAX_VALUE));
+    getLineRange(line: number, offendingSymbol: string, charPosition: number): Range {
+        return Range.create(Position.create(line, charPosition), Position.create(line, (charPosition + offendingSymbol.length)));
     }
 
     /**
@@ -142,7 +144,7 @@ export abstract class DocumentCompiler {
 
         if (diagnosticData.filePath.localeCompare(getPathFromUri(compiledDocument.uri, this.workspaceRootPath)) === 0) {
             //set `diagnostic`'s range
-            let range: Range = this.getLineRange(diagnosticData.line);
+            let range: Range = this.getLineRange(diagnosticData.line, diagnosticData.offendingSymbol, diagnosticData.charPosition);
 
             diagnostic = {
                 severity: diagnosticData.diagnosticSeverity,
@@ -168,7 +170,7 @@ export abstract class DocumentCompiler {
 
                 let document: TextDocument = this.documents.get(uri);
 
-                let range: Range = this.getLineRange(diagnosticData.line);
+                let range: Range = this.getLineRange(diagnosticData.line, diagnosticData.offendingSymbol, diagnosticData.charPosition);
                 diagnostic = {
                     severity: diagnosticData.diagnosticSeverity,
                     range: range,

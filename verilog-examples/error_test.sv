@@ -4,7 +4,7 @@ module segdetect( CLOCK, RESET, C, Z );
   output Z;
   reg Z;
   reg [2:0] Sreg, Snext         // State register and next state
-  parameter [2:0] S0 = 3'b000,  // Define the states
+  parameter [2:0] S0 = 3'b000,  // Define the states 
                   S1  = 3'b001,
                   S2  = 3'b010,
                   S3  = 3'b011,
