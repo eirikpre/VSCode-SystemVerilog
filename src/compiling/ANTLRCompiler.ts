@@ -99,7 +99,7 @@ export class ANTLRCompiler extends DocumentCompiler {
     public getImprovedMessage(parser_error: any, uri: string): string {
         let out: string = parser_error.msg;
         if (parser_error.msg.startsWith("extraneous input")) {
-            out = "extraneous input \"" + parser_error.offendingSymbol.text + "\"";
+            out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
         return out;
     }
