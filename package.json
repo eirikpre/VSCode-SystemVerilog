@@ -40,7 +40,7 @@
     "contributes": {
         "configuration": [
             {
-                "title": "SystemVerilog",
+                "title": "System Verilog Language Server",
                 "properties": {
                     "systemverilog.disableIndexing": {
                         "type": "boolean",
@@ -76,6 +76,15 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Compile SystemVerilog/Verilog files when saved."
+                    },
+                    "systemverilog.trace.server": {
+                        "type": "string",
+                        "enum": [
+                            "verbose",
+                            "none"
+                        ],
+                        "default": "verbose",
+                        "description": "Output debugging information to console"
                     }
                 }
             }
