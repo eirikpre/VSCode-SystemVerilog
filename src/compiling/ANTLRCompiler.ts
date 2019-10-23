@@ -101,6 +101,9 @@ export class ANTLRCompiler extends DocumentCompiler {
         if (parser_error.msg.startsWith("extraneous input")) {
             out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
+        if (parser_error.msg.startsWith("mismatched input")) {
+            out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
+        }
         return out;
     }
 };
