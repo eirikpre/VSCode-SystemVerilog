@@ -161,7 +161,7 @@ suite('ANTLRCompiler Tests', () => {
         await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection,undefined);
+                assert.equal(collection.length,0);
             },
             function(error) {
                 assert.fail();
@@ -187,7 +187,7 @@ suite('ANTLRCompiler Tests', () => {
         await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection,undefined);
+                assert.equal(collection.length,0);
             },
             function(error) {
                 assert.fail();

@@ -13,8 +13,7 @@ import { isSystemVerilogDocument, isVerilogDocument, getLineRange } from '../uti
 import { DiagnosticData, isDiagnosticDataUndefined } from "./DiagnosticData";
 
 export class ANTLRBackend{
-
-    public getDiagnostics(document: TextDocument): Thenable<Map<string, Diagnostic[]>> {
+    public async getDiagnostics(document: TextDocument): Promise<Map<string, Diagnostic[]>> {
         return new Promise((resolve, reject) => {
             if (!document) {
                 reject("SystemVerilog: Invalid document.");
@@ -52,7 +51,7 @@ export class ANTLRBackend{
                 let diagnostic = {
                     severity: DiagnosticSeverity.Error,
                     range: range,
-                    message: this.getImprovedMessage(syntaxError.error_list[i],document.uri),
+                    message: this.getImprovedMessage(syntaxError.error_list[i],document.uri,syntaxError.error_list.length),
                     source: 'systemverilog'
                 };
 
@@ -72,13 +71,17 @@ export class ANTLRBackend{
         @param parser_error The error object given by the parser
         @returns The appropriate user facing error message
     */
-    public getImprovedMessage(parser_error: any, uri: string): string {
+    public getImprovedMessage(parser_error: any, uri: string, error_count: Number): string {
         let out: string = parser_error.msg;
         if (parser_error.msg.startsWith("extraneous input")) {
             out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
         if (parser_error.msg.startsWith("mismatched input")) {
-            out = ""; //filter out all errors for mismatched input
+            if (error_count > 1)
+                out = ""; //filter out all errors for mismatched input
+            else
+                out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
+
         }
         return out;
     }
