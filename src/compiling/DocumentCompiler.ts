@@ -125,7 +125,14 @@ export abstract class DocumentCompiler {
         @return the line's range
     */
     getLineRange(line: number, offendingSymbol: string, charPosition: number): Range {
-        return Range.create(Position.create(line, charPosition), Position.create(line, (charPosition + offendingSymbol.length)));
+        let position: number;
+        if (charPosition == null && offendingSymbol == null) {
+            charPosition = 0;
+            position = Number.MAX_VALUE;
+        } else {
+            position = charPosition + offendingSymbol.length;
+        }
+        return Range.create(Position.create(line, charPosition), Position.create(line, (position)));
     }
 
     /**
