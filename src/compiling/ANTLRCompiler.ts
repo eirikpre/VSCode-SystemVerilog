@@ -56,7 +56,8 @@ export class ANTLRBackend{
                     source: 'systemverilog'
                 };
 
-                diagnosticList.push(diagnostic);
+                if (diagnostic.message != "")
+                    diagnosticList.push(diagnostic);
             }
             diagnosticCollection.set(document.uri,diagnosticList);
 
@@ -77,7 +78,7 @@ export class ANTLRBackend{
             out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
         if (parser_error.msg.startsWith("mismatched input")) {
-            out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
+            out = ""; //filter out all errors for mismatched input
         }
         return out;
     }
