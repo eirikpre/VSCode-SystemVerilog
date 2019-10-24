@@ -60,7 +60,6 @@
                     "systemverilog.compilerType": {
                         "type": "string",
                         "enum": [
-                            "ANTLR",
                             "Verilator",
                             "VCS"
                         ],
@@ -85,6 +84,11 @@
                         ],
                         "default": "verbose",
                         "description": "Output debugging information to console"
+                    },
+                    "systemverilog.antlrVerification": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Use ANTLR parser to verify text documents when edited."
                     }
                 }
             }

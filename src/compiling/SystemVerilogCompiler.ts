@@ -7,12 +7,9 @@ import {
 import { DocumentCompiler } from "./DocumentCompiler";
 import { VerilatorCompiler } from "./VerilatorCompiler";
 import { VCSCompiler } from './VCSCompiler';
-import { ANTLRCompiler } from './ANTLRCompiler'
-
 
 /* defines supported simulators/compilers */
 export enum compilerType {
-    ANTLR = 0,
     Verilator = 1,
     VCS = 2,
 };
@@ -43,10 +40,7 @@ export class SystemVerilogCompiler {
         @returns a `Promise` of a map of entries mapping each uri to a `Diagnostic` array
     */
     public async validateTextDocument(document: TextDocument, type: compilerType): Promise<Map<string, Diagnostic[]>> {
-        if (type == compilerType.ANTLR) {
-            this.compiler = new ANTLRCompiler(this.connection, this.documents, this.workspaceRootPath, this.configurations, this.compilerConfigurationsKeys);
-        }
-        else if (type == compilerType.Verilator) {
+        if (type == compilerType.Verilator) {
             this.compiler = new VerilatorCompiler(this.connection, this.documents, this.workspaceRootPath, this.configurations, this.compilerConfigurationsKeys);
         }
         else if (type == compilerType.VCS) {

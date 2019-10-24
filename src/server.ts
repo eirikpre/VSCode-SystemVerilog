@@ -7,9 +7,12 @@ import {
 	InitializeParams,
 	TextDocumentPositionParams,
 	CompletionItem,
-	CompletionItemKind
+	CompletionItemKind,
+	DidChangeTextDocumentParams,
+	DidSaveTextDocumentParams
 } from 'vscode-languageserver';
 import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
+import { ANTLRBackend } from './compiling/ANTLRBackend';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -26,8 +29,11 @@ let configurations: Map<string, any> = new Map();
 let compilerConfigurationsKeys: string[] = [
 	"systemverilog.compilerType",
 	"systemverilog.compileOnSave",
-	"systemverilog.launchConfiguration"
+	"systemverilog.launchConfiguration",
+	"systemverilog.antlrVerification"
 ];
+
+let backend: ANTLRBackend = new ANTLRBackend();
 
 connection.onInitialize((params: InitializeParams) => {
 	return {
@@ -110,6 +116,30 @@ documents.onDidSave(saveEvent => {
 			connection.window.showErrorMessage(error);
 		});
 	}
+});
+
+function verifyDocument(uri: string){
+	if (configurations.get(compilerConfigurationsKeys[3])) { //Check for ANTLR verification being enabled
+		backend.getDiagnostics(documents.get(uri)).then((diagnosticCollection: Map<string, Diagnostic[]>) => {
+			// Send the computed diagnostics to VSCode for each document
+			for (const [uri, diagnostics] of diagnosticCollection.entries()) {
+				connection.sendDiagnostics({ uri: uri, diagnostics });
+			}
+		}).catch((error) => {
+			connection.window.showErrorMessage(error);
+		});
+	}
+}
+
+
+documents.onDidOpen(async openEvent => {
+	//Delay to allow configs to be initialized
+	await new Promise( resolve => setTimeout(resolve, 200) )
+	verifyDocument(openEvent.document.uri);
+});
+
+documents.onDidChangeContent(async changeEvent => {
+	verifyDocument(changeEvent.document.uri);
 });
 
 connection.onNotification("compileOpenedDocument", (uri: string) => {
