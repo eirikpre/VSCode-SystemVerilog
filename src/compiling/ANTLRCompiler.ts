@@ -5,16 +5,16 @@ import {
     Diagnostic,
     TextDocument
 } from "vscode-languageserver";
-import { DocumentCompiler, DiagnosticData, isDiagnosticDataUndefined } from './DocumentCompiler';
 import { ANTLRInputStream, CommonTokenStream, ConsoleErrorListener} from 'antlr4ts';
 import {SystemVerilogLexer} from './ANTLR/grammar/build/SystemVerilogLexer'
 import {SystemVerilogParser} from './ANTLR/grammar/build/SystemVerilogParser'
 import {SyntaxErrorListener} from './ANTLR/SyntaxErrorListener'
-import { isSystemVerilogDocument, isVerilogDocument } from '../utils/server';
+import { isSystemVerilogDocument, isVerilogDocument, getLineRange } from '../utils/server';
+import { DiagnosticData, isDiagnosticDataUndefined } from "./DiagnosticData";
 
-export class ANTLRCompiler extends DocumentCompiler {
+export class ANTLRBackend{
 
-    public getTextDocumentDiagnostics(document: TextDocument): Thenable<Map<string, Diagnostic[]>> {
+    public getDiagnostics(document: TextDocument): Thenable<Map<string, Diagnostic[]>> {
         return new Promise((resolve, reject) => {
             if (!document) {
                 reject("SystemVerilog: Invalid document.");
@@ -42,51 +42,26 @@ export class ANTLRCompiler extends DocumentCompiler {
             // Parse the input, where `compilationUnit` is whatever entry point you defined
             let tree = parser.system_verilog_text();
 
+            let diagnosticList = new Array<Diagnostic>();
             for (let i = 0; i < syntaxError.error_list.length; i++) {
-                let diagnosticData: DiagnosticData = new DiagnosticData();
+                let range: Range = getLineRange(
+                    syntaxError.error_list[i].line, 
+                    syntaxError.error_list[i].offendingSymbol.text, 
+                    syntaxError.error_list[i].charPositionInLine);
 
-                diagnosticData.filePath = document.uri;
-                diagnosticData.line = syntaxError.error_list[i].line;
-                diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
-                diagnosticData.problem = this.getImprovedMessage(syntaxError.error_list[i],document.uri);
-                diagnosticData.offendingSymbol = syntaxError.error_list[i].offendingSymbol.text;
-                diagnosticData.charPosition = syntaxError.error_list[i].charPositionInLine;
-                //push Diagnostic
-                if (!isDiagnosticDataUndefined(diagnosticData)) {
+                let diagnostic = {
+                    severity: DiagnosticSeverity.Error,
+                    range: range,
+                    message: this.getImprovedMessage(syntaxError.error_list[i],document.uri),
+                    source: 'systemverilog'
+                };
 
-                    if (visitedDocuments.has(diagnosticData.filePath)) {
-                        this.publishDiagnosticForDocument(document, false, diagnosticData, diagnosticCollection);
-                    }
-                    else {
-                        this.publishDiagnosticForDocument(document, true, diagnosticData, diagnosticCollection);
-                        visitedDocuments.set(diagnosticData.filePath, true);
-                    }
-                }
+                diagnosticList.push(diagnostic);
             }
+            diagnosticCollection.set(document.uri,diagnosticList);
+
             resolve(diagnosticCollection);
         });
-    }
-
-    /**
-        Dummy function in order to satisfy the interface. It is only 
-        called from getTextDocumentDiagnostics in the original code
-
-        @param error the process's error
-        @param stdout the process's stdout
-        @param stderr the process's stderr
-        @param compiledDocument the document been compiled
-        @param documentFilePath the `document`'s file path
-        @param collection the collection to add the Diagnostics to
-        @returns a message if an error occurred.
-    */
-    public parseDiagnostics(
-        error, 
-        stdout: string, 
-        stderr: string, 
-        compiledDocument: TextDocument, 
-        documentFilePath: string, 
-        collection: Map<string, Diagnostic[]>): void {
-            throw new Error("ANTLRCompiler.parseDiagnostics should never be called.");
     }
 
     /**

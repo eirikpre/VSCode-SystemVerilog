@@ -7,7 +7,9 @@ import {
 	InitializeParams,
 	TextDocumentPositionParams,
 	CompletionItem,
-	CompletionItemKind
+	CompletionItemKind,
+	DidChangeTextDocumentParams,
+	DidSaveTextDocumentParams
 } from 'vscode-languageserver';
 import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
 
@@ -26,7 +28,8 @@ let configurations: Map<string, any> = new Map();
 let compilerConfigurationsKeys: string[] = [
 	"systemverilog.compilerType",
 	"systemverilog.compileOnSave",
-	"systemverilog.launchConfiguration"
+	"systemverilog.launchConfiguration",
+	"systemverilog.antlrVerification"
 ];
 
 connection.onInitialize((params: InitializeParams) => {
@@ -79,6 +82,12 @@ connection.onCompletionResolve(
 		return item;
 	}
 );
+
+connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
+	if (configurations.get(compilerConfigurationsKeys[3])) { //Check for ANTLR verification being enabled
+
+	}
+});
 
 connection.onNotification("workspaceRootPath", (rootPath: string) => {
 	documentCompiler = new SystemVerilogCompiler(connection, documents, rootPath, configurations, compilerConfigurationsKeys);
