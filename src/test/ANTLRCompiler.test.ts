@@ -128,7 +128,7 @@ suite('ANTLRCompiler Tests', () => {
         await documentCompiler.getTextDocumentDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
+                assert.equal(collection.length, 3);
 
                 //check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
@@ -161,14 +161,7 @@ suite('ANTLRCompiler Tests', () => {
         await documentCompiler.getTextDocumentDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
-
-                //check that every diagnostic is an Error
-                collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
-                        assert.fail();
-                    }
-                });
+                assert.equal(collection,undefined);
             },
             function(error) {
                 assert.fail();
@@ -194,14 +187,7 @@ suite('ANTLRCompiler Tests', () => {
         await documentCompiler.getTextDocumentDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
-
-                //check that every diagnostic is an Error
-                collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
-                        assert.fail();
-                    }
-                });
+                assert.equal(collection,undefined);
             },
             function(error) {
                 assert.fail();
@@ -260,7 +246,7 @@ suite('ANTLRCompiler Tests', () => {
         await documentCompiler.getTextDocumentDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
+                assert.equal(collection.length, 1);
 
                 //check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {

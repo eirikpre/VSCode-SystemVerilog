@@ -52,7 +52,7 @@ export class ANTLRCompiler extends DocumentCompiler {
                 diagnosticData.offendingSymbol = syntaxError.error_list[i].offendingSymbol.text;
                 diagnosticData.charPosition = syntaxError.error_list[i].charPositionInLine;
                 //push Diagnostic
-                if (!isDiagnosticDataUndefined(diagnosticData)) {
+                if (!isDiagnosticDataUndefined(diagnosticData) && diagnosticData.problem != "") {
 
                     if (visitedDocuments.has(diagnosticData.filePath)) {
                         this.publishDiagnosticForDocument(document, false, diagnosticData, diagnosticCollection);
@@ -102,7 +102,7 @@ export class ANTLRCompiler extends DocumentCompiler {
             out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
         if (parser_error.msg.startsWith("mismatched input")) {
-            out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
+            out = ""; //filter out all errors for mismatched input
         }
         return out;
     }
