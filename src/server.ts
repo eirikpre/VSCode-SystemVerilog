@@ -12,7 +12,7 @@ import {
 	DidSaveTextDocumentParams
 } from 'vscode-languageserver';
 import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
-import { ANTLRBackend } from './compiling/ANTLRCompiler';
+import { ANTLRBackend } from './compiling/ANTLRBackend';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
