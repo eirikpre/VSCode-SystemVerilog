@@ -10,22 +10,6 @@
 // to report the results back to the caller. When the tests are finished, return
 // a possible error to the callback or null if none.
 
-// import * as testRunner from 'vscode/lib/testrunner';
-// import * as path from 'path';
-
-// // You can directly control Mocha options by configuring the test runner below
-// // See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options
-// // for more info
-// testRunner.configure({
-//     ui: "tdd",
-//     reporter: "xunit",
-//     reporterOptions: {
-//         output: path.join(__dirname, "results.xml"),
-//     }  
-// });
-
-// module.exports = testRunner;
-
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
@@ -34,10 +18,6 @@ export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     ui: 'tdd',
-    //reporter: "xunit",
-    // reporterOptions: {
-    //     output: path.join(__dirname, "results.xml"),    
-    // }
   })
   mocha.useColors(true);
 
