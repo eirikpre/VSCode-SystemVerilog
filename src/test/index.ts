@@ -18,6 +18,13 @@ export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     ui: 'tdd',
+    reporter: "mocha-multi-reporters",
+    reporterOptions: {
+      reporterEnabled: "spec, xunit",
+      xunitReporterOptions: {
+        output: path.join(__dirname, "..", "..", "results.xml")
+      }
+    }
   })
   mocha.useColors(true);
 
