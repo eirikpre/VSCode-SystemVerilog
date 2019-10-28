@@ -23,22 +23,25 @@ This package adds language support for Verilog/SystemVerilog. It supports System
     ![moduleInit_example](docs/moduleInit_demo.gif)
 
 - Linter capabilites with simulators ( [More info on the wiki](https://github.com/eirikpre/VSCode-SystemVerilog/wiki) )
+- Fast real-time error identification through an integrated SystemVerilog parser and IntelliSense ( Fully accurate to IEEE Standard 1800-2017 )
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
 - Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
 
 ## Settings
-- Disable indexing
-- Exclude files from indexing
-- Number of files to process in parallel during indexing
-- Verilator Launch Configuration
+- `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
+- `systemverilog.disableIndexing`: _Boolean_, Disable indexing
+- `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on glob
+- `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
+- `systemverilog.launchConfiguration`: _String_, the command to run when launching verilator
   * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
   * If not in path, replace _verilator_ with the appropriate command
 - `systemverilog.compileOnSave`: _Boolean_, compile files when saved.
   * Default: *true*
 - `systemverilog.compilerType`: _String_, drop down list to select a compiler type.
   * Default: *Verilator*
+- `systemverilog.trace.server`: _String_, drop down to select verbosity of LSP message tracing
 
 ## Known Issues
 - Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
