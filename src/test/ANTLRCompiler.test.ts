@@ -28,6 +28,9 @@ import { Select_expressionContext } from '../compiling/ANTLR/grammar/build/Syste
 import { TransportKind, TextDocumentIdentifier } from 'vscode-languageclient';
 import { Duplex } from 'stream';
 
+//This file contains code for testing the antlr backend
+//Mocks the document open notification to test full results including call from server
+
 const testFolderLocation = '../../src/test/';
 const file_path_placeholder = "FILEPATH_PLACEHOLDER";
 const TEST_LANGUAGE_ID = 'typescript';
@@ -70,7 +73,7 @@ let root = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.te
 
 let documents: TextDocuments;
 
-suite('ANTLRCompiler Tests', () => {
+suite('ANTLRBackend Tests', () => {
 
     beforeEach(function() {
         documents = new TextDocuments();

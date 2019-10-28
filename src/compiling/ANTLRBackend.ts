@@ -13,6 +13,13 @@ import { isSystemVerilogDocument, isVerilogDocument, getLineRange } from '../uti
 import { DiagnosticData, isDiagnosticDataUndefined } from "./DiagnosticData";
 
 export class ANTLRBackend{
+
+    /**
+     * Parse a document with the ANTLR parser and return any diagnostic errors
+     * 
+     * @param document the document to parse
+     * @returns a dictionary of arrays of errors with uri as keys
+     */
     public async getDiagnostics(document: TextDocument): Promise<Map<string, Diagnostic[]>> {
         return new Promise((resolve, reject) => {
             if (!document) {
@@ -35,12 +42,14 @@ export class ANTLRBackend{
             let tokenStream = new CommonTokenStream(lexer);
             let parser = new SystemVerilogParser(tokenStream);
 
+            //Use syntaxError to collect a list of errors found by the parser
             let syntaxError = new SyntaxErrorListener();
             parser.addErrorListener(syntaxError);
 
-            // Parse the input, where `compilationUnit` is whatever entry point you defined
+            // Parse the input
             let tree = parser.system_verilog_text();
 
+            //place errors in the diagnostic list
             let diagnosticList = new Array<Diagnostic>();
             for (let i = 0; i < syntaxError.error_list.length; i++) {
                 let range: Range = getLineRange(
@@ -55,7 +64,7 @@ export class ANTLRBackend{
                     source: 'systemverilog'
                 };
 
-                if (diagnostic.message != "")
+                if (diagnostic.message != "") //If message is blank, ignore it
                     diagnosticList.push(diagnostic);
             }
             diagnosticCollection.set(document.uri,diagnosticList);
@@ -69,6 +78,8 @@ export class ANTLRBackend{
         in the parser error msg property.
 
         @param parser_error The error object given by the parser
+        @param uri The document the error is in
+        @param error_count The number of errors found in the file, used to filter out some messages
         @returns The appropriate user facing error message
     */
     public getImprovedMessage(parser_error: any, uri: string, error_count: Number): string {

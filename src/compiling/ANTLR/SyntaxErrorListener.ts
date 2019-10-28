@@ -2,6 +2,9 @@
 import {SystemVerilogListener} from './grammar/build/SystemVerilogListener';
 import {Recognizer, RecognitionException, ANTLRErrorListener} from 'antlr4ts'
 
+/**
+ * Stores errors in ANTLR parsing in a list for later access
+ */
 export class SyntaxErrorListener implements ANTLRErrorListener<any> {
   error_list = []
     public syntaxError<T>(

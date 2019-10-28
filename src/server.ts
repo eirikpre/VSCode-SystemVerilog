@@ -50,7 +50,11 @@ connection.onInitialized(async () => {
 	await updateConfigurationsSettings();
 });
 
-// This handler provides the initial list of the completion items.
+/**
+ * This handler provides the initial list of the completion items.
+ * 
+ * @param _textDocumentPosition Describes the location in the text document and the text document
+ */
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		// The pass parameter contains the position of the text document in
@@ -71,8 +75,12 @@ connection.onCompletion(
 	}
 );
 
-// This handler resolves additional information for the item selected in
-// the completion list.
+/**
+ * This handler resolves additional information for the item selected in
+ * the completion list.
+ * 
+ * @param item contains an item returned from onCompletion
+ */ 
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		/*if (item.data === 1) {
@@ -95,7 +103,7 @@ connection.onNotification("onDidChangeConfiguration", async () => {
 });
 
 /**
-	Updates `configurations` map with the most recent value of the settings,
+ * Updates `configurations` map with the most recent value of the settings
  */
 function updateConfigurationsSettings(): Promise<any> {
 	return Promise.all(compilerConfigurationsKeys.map(async (configuration: string) => {
@@ -108,7 +116,9 @@ function updateConfigurationsSettings(): Promise<any> {
 }
 
 /**
-	If `compileOnSave` is set to true, the server will compile the document.
+ *	If `compileOnSave` is set to true, the server will compile the document.
+ *
+ *  @param saveEvent An object containing information about the saved file
  */
 documents.onDidSave(saveEvent => {
 	if (configurations.get(compilerConfigurationsKeys[1])) {
@@ -118,6 +128,11 @@ documents.onDidSave(saveEvent => {
 	}
 });
 
+/**
+ * Check whether a file is valid SystemVerilog based on the backend syntax parser
+ * 
+ * @param uri The universal resource indicator for the document to verify
+ */
 function verifyDocument(uri: string){
 	if (configurations.get(compilerConfigurationsKeys[3])) { //Check for ANTLR verification being enabled
 		backend.getDiagnostics(documents.get(uri)).then((diagnosticCollection: Map<string, Diagnostic[]>) => {
@@ -131,13 +146,22 @@ function verifyDocument(uri: string){
 	}
 }
 
-
+/**
+ * Called when a file is open. Is called by vs code for all files in the workspace
+ * 
+ * @param openEvent An object containing information about the opened file
+ */
 documents.onDidOpen(async openEvent => {
 	//Delay to allow configs to be initialized
 	await new Promise( resolve => setTimeout(resolve, 200) )
 	verifyDocument(openEvent.document.uri);
 });
 
+/**
+ * called on edit
+ * 
+ * @param changeEvent An object containing information about the changed file
+ */
 documents.onDidChangeContent(async changeEvent => {
 	verifyDocument(changeEvent.document.uri);
 });
