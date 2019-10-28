@@ -60,10 +60,11 @@ export class SystemVerilogParser {
         // Symbol name, ignore unpacked array
         this.illegalMatches,
         /\b(?<name>\w+)(?:\s*\[.*?\])*?\s*/,
-        /(?<ports>\([\w\W]*?\))?\s*/,
+        // Ports
+        /(?:\([\w\W]*?\))?\s*/,
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
-    
+
     private r_define: RegExp = new RegExp([
         /(?<=^\s*)/,
         /`(?<type>define)\s+/,
@@ -82,6 +83,19 @@ export class SystemVerilogParser {
         /(?<body>(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b[\w\W]+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?)/,
         /\bend\b(\s*:\s*\1)?/
     ].map(x => x.source).join(''), 'mg');
+
+    private r_ports: RegExp = new RegExp([
+        /(?<!^(?:\/\/|`|\n).*?)/,
+        "(?<=",
+        /(?:\b(?:input|output|inout)\b)\s*/,
+        /(?<type>(?:`?\w+)?\s*(\[.*?\])*?)?\s*/,
+        // Allow multiple declaration
+        /(\b\w+\s*,\s*)*?/,
+        ")",
+        /(?<name>\b\w+\b)/,
+        // Has to be followed by , or )
+        /(?=\s*((\[.*?\]\s*)*?|\/\/[^\n]*\s*)(?:,|\)))/
+    ].map(x => (typeof x === 'string') ?  x : x.source ).join(''), 'mg');
 
     private r_block_fast = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
@@ -157,15 +171,22 @@ export class SystemVerilogParser {
                         )))
                 symbols.push(symbolInfo);
 
-                // TODO: Match parameter/port-lists
+                if (match.groups.ports && precision == 'full') {
+                    this.get_ports(
+                        document,
+                        match.groups.ports,
+                        offset + match.index + match[0].indexOf(match.groups.ports),
+                        match.groups.name
+                    ).then( out => symbols.push.apply(symbols, out) );
+                }
 
                 if (match.groups.body) {
                     sub_blocks.push(match);
                 }
-
             }
-            
         }
+
+        // Recursively expand the sub-blocks
         if (depth != maxDepth) {
             for (const i in sub_blocks) {
                 const match = sub_blocks[i];
@@ -184,15 +205,26 @@ export class SystemVerilogParser {
         return symbols;
     };
 
-    /**
-     * TODO
-     * @param document
-     * @param module
-     */
-    public get_ports(document: TextDocument, module: String): Thenable<Array<SystemVerilogSymbol>> {
 
+    private get_ports(document: TextDocument, text: string, offset, parent): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
-            resolve();
+            let symbols: Array<SystemVerilogSymbol> = [];
+            while(1) {
+                let match_ports: RegExpMatchArray = this.r_ports.exec(text)
+                if (match_ports == null) {
+                    break;
+                }
+                let symbolInfo = new SystemVerilogSymbol(
+                    match_ports.groups.name,
+                    match_ports.groups.type,
+                    parent,
+                    new Location(document.uri,
+                        new Range(document.positionAt(match_ports.index + offset),
+                            document.positionAt(match_ports.index + match_ports[0].length + offset)
+                        )))
+                symbols.push(symbolInfo);
+            }
+            resolve(symbols);
         });
     }
 
