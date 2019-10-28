@@ -18,7 +18,11 @@ module_common_item : module_or_generate_item_declaration
   | always_construct
   | loop_generate_construct
   | conditional_generate_construct
-  | elaboration_system_task ;
+  | elaboration_system_task
+  | simulation_control_task ;
+simulation_control_task : '$stop' ( '(' finish_number ')' )? ';'
+  | '$finish' ( '(' finish_number ')' )? ';'
+  | '$exit' ( '(' finish_number ')' )? ';' ;
 module_item : port_declaration ';'
   | non_port_module_item ;
 module_or_generate_item : ( attribute_instance )* parameter_override

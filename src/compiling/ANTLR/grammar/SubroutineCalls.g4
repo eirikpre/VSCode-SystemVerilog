@@ -56,7 +56,9 @@ method_call_body : method_identifier ( attribute_instance )* ( '(' list_of_argum
   | built_in_method_call ;
 built_in_method_call : array_manipulation_call | randomize_call ;
 array_manipulation_call : array_method_name ( attribute_instance )* ( '(' list_of_arguments ')' )?
-    ( 'with' '(' expression ')' )? ;
+    ( 'with' '(' expression ')' )?
+  | array_method_call ;
+array_method_call : expression '.' array_method_name ( attribute_instance )* ( ( '(' iterator_argument ')' )? 'with' '(' expression ')' )? ;
 randomize_call : 'randomize' ( attribute_instance )* ( '(' ( variable_identifier_list | 'null' )? ')' )?
     ( 'with' ( '(' ( identifier_list )? ')' )? constraint_block )? ;
 array_method_name : method_identifier | 'unique' | 'and' | 'or' | 'xor' ;

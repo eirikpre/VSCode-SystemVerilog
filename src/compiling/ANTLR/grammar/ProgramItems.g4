@@ -13,4 +13,5 @@ non_port_program_item : ( attribute_instance )* continuous_assign
 program_generate_item : loop_generate_construct
   | conditional_generate_construct
   | generate_region
-  | elaboration_system_task ;
+  | elaboration_system_task
+  | simulation_control_task ;
