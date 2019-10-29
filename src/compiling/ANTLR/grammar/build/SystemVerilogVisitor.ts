@@ -571,6 +571,7 @@ import { System_tf_callContext } from "./SystemVerilogParser";
 import { Subroutine_callContext } from "./SystemVerilogParser";
 import { Function_subroutine_callContext } from "./SystemVerilogParser";
 import { List_of_argumentsContext } from "./SystemVerilogParser";
+import { List_of_arguments_with_stringsContext } from "./SystemVerilogParser";
 import { Method_call_bodyContext } from "./SystemVerilogParser";
 import { Built_in_method_callContext } from "./SystemVerilogParser";
 import { Array_manipulation_callContext } from "./SystemVerilogParser";
@@ -587,6 +588,7 @@ import { Constant_range_expressionContext } from "./SystemVerilogParser";
 import { Constant_part_select_rangeContext } from "./SystemVerilogParser";
 import { Constant_rangeContext } from "./SystemVerilogParser";
 import { Constant_indexed_rangeContext } from "./SystemVerilogParser";
+import { String_or_expressionContext } from "./SystemVerilogParser";
 import { ExpressionContext } from "./SystemVerilogParser";
 import { Tagged_union_expressionContext } from "./SystemVerilogParser";
 import { Value_rangeContext } from "./SystemVerilogParser";
@@ -4717,6 +4719,13 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitList_of_arguments?: (ctx: List_of_argumentsContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `SystemVerilogParser.list_of_arguments_with_strings`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitList_of_arguments_with_strings?: (ctx: List_of_arguments_with_stringsContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.method_call_body`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -4827,6 +4836,13 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitConstant_indexed_range?: (ctx: Constant_indexed_rangeContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `SystemVerilogParser.string_or_expression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitString_or_expression?: (ctx: String_or_expressionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.expression`.

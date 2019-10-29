@@ -52,6 +52,8 @@ subroutine_call : tf_call | system_tf_call | ( ( primary_literal
 function_subroutine_call : subroutine_call ;
 list_of_arguments : ( expression )? ( ',' ( expression )? )* ( ',' '.' identifier '(' ( expression )? ')' )*
   | '.' identifier '(' ( expression )? ')' ( ',' '.' identifier '(' ( expression )? ')' )* ;
+list_of_arguments_with_strings : ( string_or_expression )? ( ',' ( string_or_expression )? )* ( ',' '.' identifier '(' ( expression )? ')' )*
+  | '.' identifier '(' ( expression )? ')' ( ',' '.' identifier '(' ( expression )? ')' )* ;
 method_call_body : method_identifier ( attribute_instance )* ( '(' list_of_arguments ')' )?
   | built_in_method_call ;
 built_in_method_call : array_manipulation_call | randomize_call ;

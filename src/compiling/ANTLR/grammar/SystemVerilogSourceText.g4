@@ -77,7 +77,7 @@ timeunits_declaration : 'timeunit' time_literal ( '/' time_literal )? ';'
   | 'timeprecision time_literal' ';' 'timeunit' time_literal ';' ;
 timescale_compiler_directive : '`timescale' time_literal '/' time_precision ;
 time_precision : time_literal ;
-include_compiler_directive : '`include' '"' FILENAME '"' | '`include' '<' FILENAME '>' ;
+include_compiler_directive : '`include' FILENAME ;
 
 MODULE : 'module';
 MACROMODULE : 'macromodule' ;
