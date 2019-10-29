@@ -1,5 +1,4 @@
 grammar LexRules;
-import Preprocessor;
 
 MACROMODULE : 'macromodule' ;
 MODULE : 'module' ;
@@ -67,4 +66,4 @@ ANY_ASCII_CHARACTER : [\u0000-\u007F] ;
 ONE_LINE_COMMENT : '//' (~[\n])* '\n' -> skip ;
 BLOCK_COMMENT : '/*' .*? '*/' -> skip ;
 
-FILENAME : [a-zA-z0-9_./\\\-]+
+FILENAME : [a-zA-Z0-9_./\\\-]+ ;

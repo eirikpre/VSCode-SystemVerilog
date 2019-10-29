@@ -59,6 +59,7 @@ array_manipulation_call : array_method_name ( attribute_instance )* ( '(' list_o
     ( 'with' '(' expression ')' )?
   | array_method_call ;
 array_method_call : expression '.' array_method_name ( attribute_instance )* ( ( '(' iterator_argument ')' )? 'with' '(' expression ')' )? ;
+iterator_argument : identifier ;
 randomize_call : 'randomize' ( attribute_instance )* ( '(' ( variable_identifier_list | 'null' )? ')' )?
     ( 'with' ( '(' ( identifier_list )? ')' )? constraint_block )? ;
 array_method_name : method_identifier | 'unique' | 'and' | 'or' | 'xor' ;
