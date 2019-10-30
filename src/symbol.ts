@@ -37,11 +37,13 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'task': return SymbolKind.Method;
         case 'function': return SymbolKind.Function;
         case 'interface': return SymbolKind.Interface;
+        case 'assert':
         case 'event': return SymbolKind.Event;
         case 'struct': return SymbolKind.Struct;
         case 'typedef': return SymbolKind.TypeParameter;
         case 'genvar': return SymbolKind.Operator;
         case 'enum': return SymbolKind.Enum;
+        case 'modport': return SymbolKind.Null;
         case 'define':
         case 'property': return SymbolKind.Property;
         case 'wire':

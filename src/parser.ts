@@ -50,20 +50,28 @@ export class SystemVerilogParser {
     ].map(x => x.source).join(''), 'mg');
 
     private r_instantiation: RegExp = new RegExp([
-        /(?<=^\s*)/,
+        "(?<=^\\s*",
         /(?:(?<modifier>virtual|static|automatic|rand|randc|pure virtual)\s+)?/,
         // Symbol type, ignore packed array
         this.illegalMatches,
-        /\b(?<type>[:\w]+)(?:\s*\[.*?\])?\s*/,
+        /\b(?<type>[:\w]+(?:\s*\[[^\]]*?\])*?)\s*/,
         this.comment,
         /(?<params>#\s*\([\w\W]*?\))?\s*/,
-        // Symbol name, ignore unpacked array
+        // Allow multiple declaration
+        /(\b\w+\s*,\s*)*?/,
+        ")",
         this.illegalMatches,
-        /\b(?<name>\w+)(?:\s*\[.*?\])*?\s*/,
-        // Ports
-        /(?:\([\w\W]*?\))?\s*/,
-        /\s*(?<end>;)/
-    ].map(x => x.source).join(''), 'mg');
+        // Symbol name
+        /\b(?<name>\w+)\s*/,
+        // Unpacked array | Ports
+        /(?:(\[[^\]]*?\]\s*)*?|(\([\w\W]*?\))?)\s*/,
+        /\s*(?<end>;|,|=)/
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
+    
+    private r_assert: RegExp = new RegExp([
+        /(?<=^\s*(?<name>\w+)\s*:\s*)/,
+        /(?<type>assert\b)/
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_define: RegExp = new RegExp([
         /(?<=^\s*)/,
@@ -95,7 +103,7 @@ export class SystemVerilogParser {
         /(?<name>\b\w+\b)/,
         // Has to be followed by , or )
         /(?=\s*((\[.*?\]\s*)*?|\/\/[^\n]*\s*)(?:,|\)))/
-    ].map(x => (typeof x === 'string') ?  x : x.source ).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_block_fast = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
@@ -113,7 +121,8 @@ export class SystemVerilogParser {
         this.r_typedef,
         this.r_define,
         this.r_label,
-        this.r_instantiation
+        this.r_instantiation,
+        this.r_assert
     ];
 
     public readonly declaration_parse = [
