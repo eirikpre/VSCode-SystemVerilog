@@ -26,7 +26,8 @@ statement_item : blocking_assignment ';'
   | display_tasks
   | monitor_tasks
   | timescale_compiler_directive
-  | include_compiler_directive ;
+  | include_compiler_directive
+  | simulation_control_task ;
 display_tasks : display_task_name ( '(' list_of_arguments_with_strings ')' )? ';' ;
 display_task_name : '$display' | '$displayb' | '$displayo' | '$displayh'
   | '$write' | '$writeb' | '$writeo' | '$writeh' ;
