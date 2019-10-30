@@ -40,7 +40,7 @@
     "contributes": {
         "configuration": [
             {
-                "title": "SystemVerilog",
+                "title": "System Verilog Language Server",
                 "properties": {
                     "systemverilog.disableIndexing": {
                         "type": "boolean",
@@ -60,7 +60,6 @@
                     "systemverilog.compilerType": {
                         "type": "string",
                         "enum": [
-                            "ANTLR",
                             "Verilator",
                             "VCS"
                         ],
@@ -76,6 +75,20 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Compile SystemVerilog/Verilog files when saved."
+                    },
+                    "systemverilog.trace.server": {
+                        "type": "string",
+                        "enum": [
+                            "verbose",
+                            "none"
+                        ],
+                        "default": "verbose",
+                        "description": "Output debugging information to console"
+                    },
+                    "systemverilog.antlrVerification": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Use ANTLR parser to verify text documents when edited."
                     }
                 }
             }
@@ -149,22 +162,28 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "test": "npm run compile && node ./out/test/runTest.js",
+        "coverage": "nyc npm test",
         "antlr4ts_compile": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build"
     },
     "devDependencies": {
+        "@types/glob": "^7.1.1",
         "@types/mocha": "^5.2.7",
         "@types/node": "^12.7.0",
+        "@types/vscode": "^1.31.0",
         "antlr4ts-cli": "^0.5.0-alpha.3",
+        "glob": "^7.1.4",
         "languages": "0.1.3",
+        "nyc": "^14.1.1",
         "typescript": "^3.5.3",
-        "vscode": "^1.1.36"
+        "mocha-multi-reporters": "^1.1.7",
+        "vscode-test": "^1.0.0"
     },
     "dependencies": {
         "antlr4": "^4.7.2",
         "antlr4ts": "^0.5.0-alpha.3",
         "child_process": "^1.0.2",
+        "mocha": "^6.2.2",
         "uri-js": "^4.2.2",
         "vscode-languageclient": "^5.2.1",
         "vscode-languageserver": "^5.2.1"

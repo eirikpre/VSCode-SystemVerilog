@@ -5,7 +5,8 @@ import {
     Diagnostic,
     TextDocument
 } from "vscode-languageserver";
-import { DocumentCompiler, DiagnosticData, isDiagnosticDataUndefined } from './DocumentCompiler';
+import { DocumentCompiler } from './DocumentCompiler';
+import { DiagnosticData, isDiagnosticDataUndefined } from "./DiagnosticData";
 import * as child from 'child_process';
 
 /** 

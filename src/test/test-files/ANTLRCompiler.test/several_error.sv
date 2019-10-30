@@ -1,4 +1,4 @@
-module foo baz (
+module baz (
   clk
 ); 
     input logic clk;
@@ -10,7 +10,7 @@ module foo baz (
   always @( posedge clk ) 
   begin   
       A_out <= A_in;   
-      B_out <= B_in;   
+      B_out <= B_in
       C_out <= C_in;
   end
-endmodle
+endmodul

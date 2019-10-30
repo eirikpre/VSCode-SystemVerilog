@@ -21,12 +21,15 @@ import {
 import * as path from 'path';
 import * as fs from 'fs';
 import * as assert from 'assert';
-import { ANTLRCompiler } from '../compiling/ANTLRCompiler';
+import { ANTLRBackend } from '../compiling/ANTLRBackend';
 import { getPathFromUri } from '../utils/common';
 import { beforeEach } from 'mocha'
 import { Select_expressionContext } from '../compiling/ANTLR/grammar/build/SystemVerilogParser';
 import { TransportKind, TextDocumentIdentifier } from 'vscode-languageclient';
 import { Duplex } from 'stream';
+
+//This file contains code for testing the antlr backend
+//Mocks the document open notification to test full results including call from server
 
 const testFolderLocation = '../../src/test/';
 const file_path_placeholder = "FILEPATH_PLACEHOLDER";
@@ -70,7 +73,7 @@ let root = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.te
 
 let documents: TextDocuments;
 
-suite('ANTLRCompiler Tests', () => {
+suite('ANTLRBackend Tests', () => {
 
     beforeEach(function() {
         documents = new TextDocuments();
@@ -90,9 +93,9 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
                 assert.equal(collection.length, 1);
@@ -123,12 +126,12 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
+                assert.equal(collection.length, 3);
 
                 //check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
@@ -156,19 +159,12 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
-
-                //check that every diagnostic is an Error
-                collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
-                        assert.fail();
-                    }
-                });
+                assert.equal(collection.length,0);
             },
             function(error) {
                 assert.fail();
@@ -189,19 +185,12 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
-
-                //check that every diagnostic is an Error
-                collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
-                        assert.fail();
-                    }
-                });
+                assert.equal(collection.length,0);
             },
             function(error) {
                 assert.fail();
@@ -222,9 +211,9 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
                 assert.equal(collection.length, 2);
@@ -255,12 +244,12 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
+                assert.equal(collection.length, 1);
 
                 //check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
@@ -288,9 +277,9 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(document).then(
+        await documentCompiler.getDiagnostics(document).then(
             function(result) {
                 assert.fail();
             },
@@ -313,9 +302,9 @@ suite('ANTLRCompiler Tests', () => {
         while (documents.keys().length == 0)
             await sleep(10);
 
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(undefined).then(
+        await documentCompiler.getDiagnostics(undefined).then(
             function(result) {
                 assert.fail();
             },
@@ -326,9 +315,9 @@ suite('ANTLRCompiler Tests', () => {
     }).timeout(10000);
 
     test('test #9: Diagnostics for invalid document without open document', async () => {
-        let documentCompiler = new ANTLRCompiler(undefined, documents, root, undefined, undefined);
+        let documentCompiler = new ANTLRBackend();
 
-        await documentCompiler.getTextDocumentDiagnostics(undefined).then(
+        await documentCompiler.getDiagnostics(undefined).then(
             function(result) {
                 assert.fail();
             },
