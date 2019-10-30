@@ -114,11 +114,11 @@ export class ANTLRCompiler extends DocumentCompiler {
         @returns The text with macro definitions removed and their uses replaced with the text they represent
     */
     public macroReplace(text: string): string {
-        let defines_with_text: [[string, string][], string] = this.extract_defines(text.replace('\r', ''));
+        let defines_with_text: [[string, string][], string] = this.extract_defines(text.replace(/\r\n/g, '\n'));
         let defines: [string, string][] = defines_with_text[0];
         let new_text: string = defines_with_text[1];
 
-        return this.replace_defines(new_text, defines).replace('\r','');
+        return this.replace_defines(new_text, defines);
     }
 
     /**
@@ -160,7 +160,9 @@ export class ANTLRCompiler extends DocumentCompiler {
     private replace_defines(text: string, defines: [string, string][]): string {
         let new_text: string = text;
         defines.forEach(function (define) {
-            new_text = new_text.replace('`' + define[0], define[1]);
+            while (new_text.indexOf('`'+define[0]) != -1) {
+                new_text = new_text.replace('`' + define[0], define[1]);
+            }
         });
         return new_text;
     }
