@@ -89,6 +89,11 @@
                         "type": "boolean",
                         "default": true,
                         "description": "Use ANTLR parser to verify text documents when edited."
+                    },
+                    "systemverilog.verifyOnOpen": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Run ANTLR verification on all files when opened."
                     }
                 }
             }
