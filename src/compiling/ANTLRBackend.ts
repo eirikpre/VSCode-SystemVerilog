@@ -90,12 +90,12 @@ export class ANTLRBackend{
         if (parser_error.msg.startsWith("extraneous input")) {
             out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
-        // if (parser_error.msg.startsWith("mismatched input")) {
-        //     if (error_count > 1)
-        //         out = ""; //filter out all errors for mismatched input
-        //     else
-        //         out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
-        // }
+        if (parser_error.msg.startsWith("mismatched input")) {
+            if (error_count > 1)
+                out = ""; //filter out all errors for mismatched input
+            else
+                out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
+        }
         return out;
     }
     /**
