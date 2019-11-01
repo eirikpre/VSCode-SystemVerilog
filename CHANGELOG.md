@@ -8,6 +8,12 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.9.0]
+- Reworked parsing of variables
+- And added appropriate types to them
+- Added parsing of ports
+- Added parsing of assertions
+
 ## [0.8.10]
 - Added setting to force the fast indexing algorithm
 
