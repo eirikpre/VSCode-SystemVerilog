@@ -136,7 +136,7 @@ export class ANTLRBackend{
             new_text = text.slice(0, current_index);
         }
         while (current_index != -1) {
-            let label: string = text.split(" ", 2)[1];
+            let label: string = text.slice(current_index).split(" ", 2)[1];
             let temp_index: number = text.indexOf('\n', current_index);
             while (temp_index != -1 && text.charAt(temp_index - 1) == '\\') {
                 temp_index = text.indexOf('\n', temp_index + 1);
