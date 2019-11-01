@@ -30,7 +30,8 @@ let compilerConfigurationsKeys: string[] = [
 	"systemverilog.compilerType",
 	"systemverilog.compileOnSave",
 	"systemverilog.launchConfiguration",
-	"systemverilog.antlrVerification"
+	"systemverilog.antlrVerification",
+	"systemverilog.verifyOnOpen"
 ];
 
 let backend: ANTLRBackend = new ANTLRBackend();
@@ -154,7 +155,9 @@ function verifyDocument(uri: string){
 documents.onDidOpen(async openEvent => {
 	//Delay to allow configs to be initialized
 	await new Promise( resolve => setTimeout(resolve, 200) )
-	verifyDocument(openEvent.document.uri);
+	if (configurations.get(compilerConfigurationsKeys[4])) { //Check for verifyOnOpen being true
+		verifyDocument(openEvent.document.uri);
+	}
 });
 
 /**
