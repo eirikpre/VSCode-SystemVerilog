@@ -16,7 +16,6 @@ constant_part_select_range : constant_range | constant_indexed_range ;
 constant_range : constant_expression ':' constant_expression ;
 constant_indexed_range : constant_expression '+:' constant_expression
   | constant_expression '-:' constant_expression ;
-string_or_expression : string_literal | expression ;
 expression : primary
   | unary_operator ( attribute_instance )* primary
   | inc_or_dec_expression

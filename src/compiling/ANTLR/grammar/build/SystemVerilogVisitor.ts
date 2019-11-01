@@ -24,9 +24,6 @@ import { Interface_class_itemContext } from "./SystemVerilogParser";
 import { Interface_class_methodContext } from "./SystemVerilogParser";
 import { Package_declarationContext } from "./SystemVerilogParser";
 import { Timeunits_declarationContext } from "./SystemVerilogParser";
-import { Timescale_compiler_directiveContext } from "./SystemVerilogParser";
-import { Time_precisionContext } from "./SystemVerilogParser";
-import { Include_compiler_directiveContext } from "./SystemVerilogParser";
 import { Parameter_port_listContext } from "./SystemVerilogParser";
 import { Parameter_port_declarationContext } from "./SystemVerilogParser";
 import { List_of_portsContext } from "./SystemVerilogParser";
@@ -43,7 +40,6 @@ import { Ansi_port_declarationContext } from "./SystemVerilogParser";
 import { Elaboration_system_taskContext } from "./SystemVerilogParser";
 import { Finish_numberContext } from "./SystemVerilogParser";
 import { Module_common_itemContext } from "./SystemVerilogParser";
-import { Simulation_control_taskContext } from "./SystemVerilogParser";
 import { Module_itemContext } from "./SystemVerilogParser";
 import { Module_or_generate_itemContext } from "./SystemVerilogParser";
 import { Module_or_generate_item_declarationContext } from "./SystemVerilogParser";
@@ -391,10 +387,6 @@ import { Join_keywordContext } from "./SystemVerilogParser";
 import { Statement_or_nullContext } from "./SystemVerilogParser";
 import { StatementContext } from "./SystemVerilogParser";
 import { Statement_itemContext } from "./SystemVerilogParser";
-import { Display_tasksContext } from "./SystemVerilogParser";
-import { Display_task_nameContext } from "./SystemVerilogParser";
-import { Monitor_tasksContext } from "./SystemVerilogParser";
-import { Monitor_task_nameContext } from "./SystemVerilogParser";
 import { Function_statementContext } from "./SystemVerilogParser";
 import { Function_statement_or_nullContext } from "./SystemVerilogParser";
 import { Variable_identifier_listContext } from "./SystemVerilogParser";
@@ -571,12 +563,9 @@ import { System_tf_callContext } from "./SystemVerilogParser";
 import { Subroutine_callContext } from "./SystemVerilogParser";
 import { Function_subroutine_callContext } from "./SystemVerilogParser";
 import { List_of_argumentsContext } from "./SystemVerilogParser";
-import { List_of_arguments_with_stringsContext } from "./SystemVerilogParser";
 import { Method_call_bodyContext } from "./SystemVerilogParser";
 import { Built_in_method_callContext } from "./SystemVerilogParser";
 import { Array_manipulation_callContext } from "./SystemVerilogParser";
-import { Array_method_callContext } from "./SystemVerilogParser";
-import { Iterator_argumentContext } from "./SystemVerilogParser";
 import { Randomize_callContext } from "./SystemVerilogParser";
 import { Array_method_nameContext } from "./SystemVerilogParser";
 import { Inc_or_dec_expressionContext } from "./SystemVerilogParser";
@@ -588,7 +577,6 @@ import { Constant_range_expressionContext } from "./SystemVerilogParser";
 import { Constant_part_select_rangeContext } from "./SystemVerilogParser";
 import { Constant_rangeContext } from "./SystemVerilogParser";
 import { Constant_indexed_rangeContext } from "./SystemVerilogParser";
-import { String_or_expressionContext } from "./SystemVerilogParser";
 import { ExpressionContext } from "./SystemVerilogParser";
 import { Tagged_union_expressionContext } from "./SystemVerilogParser";
 import { Value_rangeContext } from "./SystemVerilogParser";
@@ -890,27 +878,6 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitTimeunits_declaration?: (ctx: Timeunits_declarationContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.timescale_compiler_directive`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTimescale_compiler_directive?: (ctx: Timescale_compiler_directiveContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.time_precision`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTime_precision?: (ctx: Time_precisionContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.include_compiler_directive`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitInclude_compiler_directive?: (ctx: Include_compiler_directiveContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.parameter_port_list`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -1021,13 +988,6 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitModule_common_item?: (ctx: Module_common_itemContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.simulation_control_task`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitSimulation_control_task?: (ctx: Simulation_control_taskContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.module_item`.
@@ -3459,34 +3419,6 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitStatement_item?: (ctx: Statement_itemContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.display_tasks`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitDisplay_tasks?: (ctx: Display_tasksContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.display_task_name`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitDisplay_task_name?: (ctx: Display_task_nameContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.monitor_tasks`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitMonitor_tasks?: (ctx: Monitor_tasksContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.monitor_task_name`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitMonitor_task_name?: (ctx: Monitor_task_nameContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.function_statement`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -4719,13 +4651,6 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitList_of_arguments?: (ctx: List_of_argumentsContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.list_of_arguments_with_strings`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitList_of_arguments_with_strings?: (ctx: List_of_arguments_with_stringsContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.method_call_body`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -4745,20 +4670,6 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitArray_manipulation_call?: (ctx: Array_manipulation_callContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.array_method_call`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArray_method_call?: (ctx: Array_method_callContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.iterator_argument`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitIterator_argument?: (ctx: Iterator_argumentContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.randomize_call`.
@@ -4836,13 +4747,6 @@ export interface SystemVerilogVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitConstant_indexed_range?: (ctx: Constant_indexed_rangeContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `SystemVerilogParser.string_or_expression`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitString_or_expression?: (ctx: String_or_expressionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `SystemVerilogParser.expression`.

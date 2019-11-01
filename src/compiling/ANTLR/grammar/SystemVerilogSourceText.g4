@@ -9,9 +9,7 @@ description : module_declaration
              | package_declaration
              | ( attribute_instance )* package_item
              | ( attribute_instance )* bind_directive
-             | config_declaration
-             | timescale_compiler_directive
-             | include_compiler_directive ;
+             | config_declaration ;
 module_nonansi_header :  ( attribute_instance )*  module_keyword
      ( lifetime )?  module_identifier  ( package_import_declaration )*
      ( parameter_port_list )?  list_of_ports  ';'  ;
@@ -75,9 +73,6 @@ timeunits_declaration : 'timeunit' time_literal ( '/' time_literal )? ';'
   | 'timeprecision' time_literal ';'
   | 'timeunit' time_literal ';' 'timeprecision' time_literal ';'
   | 'timeprecision time_literal' ';' 'timeunit' time_literal ';' ;
-timescale_compiler_directive : '`timescale' time_literal '/' time_precision ;
-time_precision : time_literal ;
-include_compiler_directive : '`include' FILENAME ;
 
 MODULE : 'module';
 MACROMODULE : 'macromodule' ;
