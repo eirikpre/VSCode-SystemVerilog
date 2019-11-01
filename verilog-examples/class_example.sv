@@ -25,7 +25,7 @@ module tb;
  
   	initial begin
       if (pkt == null)
-        $display ("Packet handle 'pkt' is null");
+        $display("Packet handle 'pkt' is null");
  
       // Display the class member using the "handle"
       // Expect a run-time error because pkt is not an object

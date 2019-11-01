@@ -52,11 +52,16 @@ subroutine_call : tf_call | system_tf_call | ( ( primary_literal
 function_subroutine_call : subroutine_call ;
 list_of_arguments : ( expression )? ( ',' ( expression )? )* ( ',' '.' identifier '(' ( expression )? ')' )*
   | '.' identifier '(' ( expression )? ')' ( ',' '.' identifier '(' ( expression )? ')' )* ;
+list_of_arguments_with_strings : ( string_or_expression )? ( ',' ( string_or_expression )? )* ( ',' '.' identifier '(' ( expression )? ')' )*
+  | '.' identifier '(' ( expression )? ')' ( ',' '.' identifier '(' ( expression )? ')' )* ;
 method_call_body : method_identifier ( attribute_instance )* ( '(' list_of_arguments ')' )?
   | built_in_method_call ;
 built_in_method_call : array_manipulation_call | randomize_call ;
 array_manipulation_call : array_method_name ( attribute_instance )* ( '(' list_of_arguments ')' )?
-    ( 'with' '(' expression ')' )? ;
+    ( 'with' '(' expression ')' )?
+  | array_method_call ;
+array_method_call : expression '.' array_method_name ( attribute_instance )* ( ( '(' iterator_argument ')' )? 'with' '(' expression ')' )? ;
+iterator_argument : identifier ;
 randomize_call : 'randomize' ( attribute_instance )* ( '(' ( variable_identifier_list | 'null' )? ')' )?
     ( 'with' ( '(' ( identifier_list )? ')' )? constraint_block )? ;
 array_method_name : method_identifier | 'unique' | 'and' | 'or' | 'xor' ;
