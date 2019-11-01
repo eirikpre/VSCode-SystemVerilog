@@ -1,4 +1,4 @@
 grammar Strings;
 import Attributes;
 
-string_literal : '"' ( ANY_ASCII_CHARACTER )* '"' ;
+string_literal : STRING_LITERAL ;
