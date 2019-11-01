@@ -7,38 +7,41 @@ export class SystemVerilogParser {
     private comment = /(?:\/\/.*$)?/
 
     private r_decl_block: RegExp = new RegExp([
-        /(?<=^\s*)/,
+        "(?<=^\\s*",
         /(?<type>module|program|interface|package|primitive|config|property)\s+/,
         // Mask automatic
         /(?:automatic\s+)?/,
+        ")",
         /(?<name>\w+)/,
         /(?<params>\s*#\s*\([\w\W]*?\))?/,
         /(?<ports>\s*\([\W\w]*?\))?/,
         /\s*;/,
         /(?<body>[\W\w]*?)/,
         /(?<end>end\1)/,
-    ].map(x => x.source).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_decl_class: RegExp = new RegExp([
-        /(?<=^\s*(virtual)?\s*)/,
+        "(?<=^\\s*(virtual\\s+)?",
         /(?<type>class)\s+/,
+        ")",
         /(?<name>\w+)/,
         /(\s+(extends|implements)\s+[\w\W]+?|\s*#\s*\([\w\W]+?\))*?/,
         /\s*;/,
         /(?<body>[\w\W]*?)/,
         /(?<end>endclass)/
-    ].map(x => x.source).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_decl_method: RegExp = new RegExp([
-        /(?<=^\s*(virtual|local|extern|pure\s+virtual)?\s*)/,
+        "(?<=^\\s*(virtual|local|extern|pure\\s+virtual)?\\s*",
         /(?<type>(function|task))\s+/,
         /(?<return>[\w:\[\]\s*]+\s*)?/,
-        /\b(?<name>[\w\.]+)/,
-        /(?<ports>\s*\([\W\w]*?\))?/,
+        ")",
+        /\b(?<name>[\w\.]+)\b\s*/,
+        /(?<ports>\([\W\w]*?\))?/,
         /\s*;/,
         /(?<body>[\w\W]*?)/,
         /(?<end>end(function|task))/
-    ].map(x => x.source).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_typedef: RegExp = new RegExp([
         /(?<=^\s*)/,
