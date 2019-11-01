@@ -19,12 +19,14 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             let line = document.lineAt(position.line).text;
             let word = document.getText(range);
 
+            // Check for port
+            let match_port = line.match(this.regex_port.replace('word', word))
+
             if (!range) {
                 reject();
             }
 
-            // Check for port
-            else if (line.match(this.regex_port.replace('word', word))) {
+            else if (match_port && match_port.index === range.start.character-1) {
                 let container = moduleFromPort(document, range)
 
                 resolve(Promise.resolve(this.workspaceSymProvider.provideWorkspaceSymbols(container, token, true).then( res => {
@@ -40,15 +42,16 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 .then( (symbols : DocumentSymbol[]) => {
                     let results: Location[] = [];
                     getDocumentSymbols(results, symbols, word, document.uri);
-                    resolve(results);
+                    if (results.length !== 0) {
+                        resolve(results);
+                    }
                 });
 
                 await this.workspaceSymProvider.provideWorkspaceSymbols(word, token, true)
                 .then( res => {
-                    if (res.length == 0) {
-                        reject();
+                    if (res.length !== 0) {
+                        resolve(res.map( x => x.location ));
                     }
-                    resolve(res.map( x => x.location ));
                 });
             }
         });
