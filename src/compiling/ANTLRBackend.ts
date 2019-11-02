@@ -96,8 +96,9 @@ export class ANTLRBackend{
             else
                 out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
         }
-        return out;
+        return out
     }
+
     /**
         Function for replacing macro uses with their appropriate text
         @param text The text to identify macro definitions and replace macro uses within
