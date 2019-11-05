@@ -96,7 +96,7 @@ export class ANTLRBackend{
             else
                 out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
         }
-        return out
+        return out;
     }
 
     /**
