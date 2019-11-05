@@ -90,14 +90,15 @@ export class ANTLRBackend{
         if (parser_error.msg.startsWith("extraneous input")) {
             out = 'extraneous input "' + parser_error.offendingSymbol.text + '"';
         }
-        // if (parser_error.msg.startsWith("mismatched input")) {
-        //     if (error_count > 1)
-        //         out = ""; //filter out all errors for mismatched input
-        //     else
-        //         out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
-        // }
+        if (parser_error.msg.startsWith("mismatched input")) {
+            if (error_count > 1)
+                out = ""; //filter out all errors for mismatched input
+            else
+                out = 'mismatched input "' + parser_error.offendingSymbol.text + '"';
+        }
         return out;
     }
+
     /**
         Function for replacing macro uses with their appropriate text
         @param text The text to identify macro definitions and replace macro uses within
@@ -136,7 +137,7 @@ export class ANTLRBackend{
             new_text = text.slice(0, current_index);
         }
         while (current_index != -1) {
-            let label: string = text.split(" ", 2)[1];
+            let label: string = text.slice(current_index).split(" ", 2)[1];
             let temp_index: number = text.indexOf('\n', current_index);
             while (temp_index != -1 && text.charAt(temp_index - 1) == '\\') {
                 temp_index = text.indexOf('\n', temp_index + 1);
