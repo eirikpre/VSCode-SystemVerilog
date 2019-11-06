@@ -5,6 +5,7 @@
 This package adds language support for Verilog/SystemVerilog. It supports SystemVerilog syntax, with planned support for signal intelliSense.
 
 - If you find a bug, or would like a feature; Add it as an [Issue](https://github.com/eirikpre/VSCode-SystemVerilog/issues) or a [Pull-Request](https://github.com/eirikpre/VSCode-SystemVerilog/pulls)
+- You must use run `npm ci` or `npm install` followed by `npm run compile` to build the extension
 
 ## Features
 - Elaborate Syntax Highlighting
