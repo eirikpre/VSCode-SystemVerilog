@@ -158,9 +158,9 @@
     },
     "devDependencies": {
         "@types/mocha": "^5.2.7",
-        "@types/node": "^12.7.0",
+        "@types/node": "^12.12.7",
         "languages": "0.1.3",
-        "typescript": "^3.5.3",
+        "typescript": "^3.7.2",
         "vscode": "^1.1.36"
     },
     "dependencies": {
