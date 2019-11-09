@@ -8,7 +8,6 @@ import { DocumentCompiler } from "./DocumentCompiler";
 import { VerilatorCompiler } from "./VerilatorCompiler";
 import { VCSCompiler } from './VCSCompiler';
 
-
 /* defines supported simulators/compilers */
 export enum compilerType {
     Verilator = 1,

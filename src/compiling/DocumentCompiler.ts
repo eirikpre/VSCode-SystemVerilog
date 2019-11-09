@@ -10,30 +10,8 @@ import {
 import * as path from 'path';
 import * as child from 'child_process';
 import { getPathFromUri } from '../utils/common';
-import { isSystemVerilogDocument, isVerilogDocument } from '../utils/server';
-
-/** Defines the information needed to create a `Diagnostic` object. */
-export class DiagnosticData {
-    line: number;
-    problem: string;
-    diagnosticSeverity: DiagnosticSeverity;
-    filePath: string;
-}
-
-/** 
-    Checks if `diagnosticData`'s fields are not `undefined`
-
-    @param diagnosticData the DiagnosticData
-    @return true if at least one field is `undefined`
-*/
-export function isDiagnosticDataUndefined(diagnosticData: DiagnosticData): boolean {
-    if (diagnosticData.line === undefined || diagnosticData.problem === undefined ||
-        diagnosticData.diagnosticSeverity === undefined || diagnosticData.filePath === undefined) {
-        return true;
-    }
-
-    return false;
-}
+import { isSystemVerilogDocument, isVerilogDocument, getLineRange } from '../utils/server';
+import { DiagnosticData } from "./DiagnosticData";
 
 /* 
     DocumentCompiler is an abstract class that defines the common behavior of Document compilers.
@@ -116,16 +94,6 @@ export abstract class DocumentCompiler {
     */
     public abstract parseDiagnostics(error: child.ExecException, stdout: string, stderr: string, compiledDocument: TextDocument, documentFilePath: string, collection: Map<string, Diagnostic[]>): void;
 
-    /** 
-        Gets the `range` of a line given the line number
-
-        @param line the line number
-        @return the line's range
-    */
-    getLineRange(line: number): Range {
-        return Range.create(Position.create(line, 0), Position.create(line, Number.MAX_VALUE));
-    }
-
     /**
         Publishes a given `Diagnostic` to a document specified by a `filePath`.
         It resets the Diagnostics array for the document if `resetDiagnostics` is `true`.
@@ -142,7 +110,7 @@ export abstract class DocumentCompiler {
 
         if (diagnosticData.filePath.localeCompare(getPathFromUri(compiledDocument.uri, this.workspaceRootPath)) === 0) {
             //set `diagnostic`'s range
-            let range: Range = this.getLineRange(diagnosticData.line);
+            let range: Range = getLineRange(diagnosticData.line, diagnosticData.offendingSymbol, diagnosticData.charPosition);
 
             diagnostic = {
                 severity: diagnosticData.diagnosticSeverity,
@@ -168,7 +136,7 @@ export abstract class DocumentCompiler {
 
                 let document: TextDocument = this.documents.get(uri);
 
-                let range: Range = this.getLineRange(diagnosticData.line);
+                let range: Range = getLineRange(diagnosticData.line, diagnosticData.offendingSymbol, diagnosticData.charPosition);
                 diagnostic = {
                     severity: diagnosticData.diagnosticSeverity,
                     range: range,

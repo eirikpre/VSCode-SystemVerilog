@@ -3,6 +3,12 @@
     "version": "0.1.0",
     "configurations": [
         {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach",
+            "port": 6009
+        },
+        {
             "name": "Extension",
             "type": "extensionHost",
             "request": "launch",
@@ -24,7 +30,7 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}",
-                "--extensionTestsPath=${workspaceRoot}/out/test"
+                "--extensionTestsPath=${workspaceRoot}/out/test/index"
             ],
             "stopOnEntry": false,
             "sourceMaps": true,
