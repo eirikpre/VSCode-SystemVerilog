@@ -7,62 +7,75 @@ export class SystemVerilogParser {
     private comment = /(?:\/\/.*$)?/
 
     private r_decl_block: RegExp = new RegExp([
-        /(?<=^\s*)/,
+        "(?<=^\\s*",
         /(?<type>module|program|interface|package|primitive|config|property)\s+/,
         // Mask automatic
         /(?:automatic\s+)?/,
+        ")",
         /(?<name>\w+)/,
         /(?<params>\s*#\s*\([\w\W]*?\))?/,
         /(?<ports>\s*\([\W\w]*?\))?/,
         /\s*;/,
         /(?<body>[\W\w]*?)/,
         /(?<end>end\1)/,
-    ].map(x => x.source).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_decl_class: RegExp = new RegExp([
-        /(?<=^\s*(virtual)?\s*)/,
+        "(?<=^\\s*(virtual\\s+)?",
         /(?<type>class)\s+/,
+        ")",
         /(?<name>\w+)/,
         /(\s+(extends|implements)\s+[\w\W]+?|\s*#\s*\([\w\W]+?\))*?/,
         /\s*;/,
         /(?<body>[\w\W]*?)/,
         /(?<end>endclass)/
-    ].map(x => x.source).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_decl_method: RegExp = new RegExp([
-        /(?<=^\s*(virtual|local|extern|pure\s+virtual)?\s*)/,
+        "(?<=^\\s*(virtual|local|extern|pure\\s+virtual)?\\s*",
         /(?<type>(function|task))\s+/,
         /(?<return>[\w:\[\]\s*]+\s*)?/,
-        /\b(?<name>\w+)/,
-        /(?<ports>\s*\([\W\w]*?\))?/,
+        ")",
+        /\b(?<name>[\w\.]+)\b\s*/,
+        /(?<ports>\([\W\w]*?\))?/,
         /\s*;/,
         /(?<body>[\w\W]*?)/,
         /(?<end>end(function|task))/
-    ].map(x => x.source).join(''), 'mg');
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
 
     private r_typedef: RegExp = new RegExp([
         /(?<=^\s*)/,
         /(?<type>typedef)\s+/,
-        /(?<body>\w+(\s+|\s*{[\W\w]*?}\s*|))/,
-        /(?<name>\w+)/,
+        /(?<body>[^;]*)/,
+        /(?<name>\b\w+)/,
+        /\s*(\[[^;]*?\])*?/,
         /\s*(?<end>;)/
     ].map(x => x.source).join(''), 'mg');
 
     private r_instantiation: RegExp = new RegExp([
-        /(?<=^\s*)/,
+        "(?<=^\\s*",
         /(?:(?<modifier>virtual|static|automatic|rand|randc|pure virtual)\s+)?/,
         // Symbol type, ignore packed array
         this.illegalMatches,
-        /\b(?<type>[:\w]+)(?:\s*\[.*?\])?\s*/,
+        /\b(?<type>[:\w]+(?:\s*\[[^\]]*?\])*?)\s*/,
         this.comment,
         /(?<params>#\s*\([\w\W]*?\))?\s*/,
-        // Symbol name, ignore unpacked array
+        // Allow multiple declaration
+        /(\b\w+\s*,\s*)*?/,
+        ")",
         this.illegalMatches,
-        /\b(?<name>\w+)(?:\s*\[.*?\])*?\s*/,
-        /(?<ports>\([\w\W]*?\))?\s*/,
-        /\s*(?<end>;)/
-    ].map(x => x.source).join(''), 'mg');
+        // Symbol name
+        /\b(?<name>\w+)\s*/,
+        // Unpacked array | Ports
+        /(?:(\[[^\]]*?\]\s*)*?|(\([\w\W]*?\))?)\s*/,
+        /\s*(?<end>;|,|=)/
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
     
+    private r_assert: RegExp = new RegExp([
+        /(?<=^\s*(?<name>\w+)\s*:\s*)/,
+        /(?<type>assert\b)/
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
+
     private r_define: RegExp = new RegExp([
         /(?<=^\s*)/,
         /`(?<type>define)\s+/,
@@ -82,6 +95,19 @@ export class SystemVerilogParser {
         /\bend\b(\s*:\s*\1)?/
     ].map(x => x.source).join(''), 'mg');
 
+    private r_ports: RegExp = new RegExp([
+        /(?<!^(?:\/\/|`|\n).*?)/,
+        "(?<=",
+        /(?:\b(?:input|output|inout)\b)\s*/,
+        /(?<type>(?:`?\w+)?\s*(\[.*?\])*?)?\s*/,
+        // Allow multiple declaration
+        /(\b\w+\s*,\s*)*?/,
+        ")",
+        /(?<name>\b\w+\b)/,
+        // Has to be followed by , or )
+        /(?=\s*((\[.*?\]\s*)*?|\/\/[^\n]*\s*)(?:,|\)))/
+    ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
+
     private r_block_fast = new RegExp([
         , /(?<=^\s*(?:virtual\s+)?)/
         , /(?<type>module|class|interface|package|program)\s+/
@@ -98,7 +124,8 @@ export class SystemVerilogParser {
         this.r_typedef,
         this.r_define,
         this.r_label,
-        this.r_instantiation
+        this.r_instantiation,
+        this.r_assert
     ];
 
     public readonly declaration_parse = [
@@ -156,15 +183,22 @@ export class SystemVerilogParser {
                         )))
                 symbols.push(symbolInfo);
 
-                // TODO: Match parameter/port-lists
+                if (match.groups.ports && precision == 'full') {
+                    this.get_ports(
+                        document,
+                        match.groups.ports,
+                        offset + match.index + match[0].indexOf(match.groups.ports),
+                        match.groups.name
+                    ).then( out => symbols.push.apply(symbols, out) );
+                }
 
                 if (match.groups.body) {
                     sub_blocks.push(match);
                 }
-
             }
-            
         }
+
+        // Recursively expand the sub-blocks
         if (depth != maxDepth) {
             for (const i in sub_blocks) {
                 const match = sub_blocks[i];
@@ -183,15 +217,26 @@ export class SystemVerilogParser {
         return symbols;
     };
 
-    /**
-     * TODO
-     * @param document
-     * @param module
-     */
-    public get_ports(document: TextDocument, module: String): Thenable<Array<SystemVerilogSymbol>> {
 
+    private get_ports(document: TextDocument, text: string, offset, parent): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
-            resolve();
+            let symbols: Array<SystemVerilogSymbol> = [];
+            while(1) {
+                let match_ports: RegExpMatchArray = this.r_ports.exec(text)
+                if (match_ports == null) {
+                    break;
+                }
+                let symbolInfo = new SystemVerilogSymbol(
+                    match_ports.groups.name,
+                    match_ports.groups.type,
+                    parent,
+                    new Location(document.uri,
+                        new Range(document.positionAt(match_ports.index + offset),
+                            document.positionAt(match_ports.index + match_ports[0].length + offset)
+                        )))
+                symbols.push(symbolInfo);
+            }
+            resolve(symbols);
         });
     }
 

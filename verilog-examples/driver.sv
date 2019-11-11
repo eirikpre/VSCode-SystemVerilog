@@ -54,3 +54,29 @@ class driver;
   endtask
   
 endclass
+
+class typedef_test;
+    typedef int unsigned uint_t;
+    typedef logic [0:15] packed_array_t;
+
+    typedef int unsigned uint_array[10];
+    typedef int unsigned uint_queue[$];
+    typedef int unsigned uint_dynamic_array[];
+    typedef int unsigned uint_associative_array[uint_t];
+    typedef int unsigned uint_array_2d[10][10];
+    typedef logic unpacked_array_t [10];
+    typedef logic [0:15] packed_unpacked_array_t [10];
+
+    // Working:
+    uint_t number;
+    packed_array_t packed_array;
+
+    // Not working:
+    uint_array array;
+    uint_queue queue;
+    uint_dynamic_array dynamic_array;
+    uint_associative_array associative_array;
+    uint_array_2d array_2d;
+    unpacked_array_t unpacked_array;
+    packed_unpacked_array_t packed_unpacked_array;
+endclass

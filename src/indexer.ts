@@ -21,6 +21,7 @@ export class SystemVerilogIndexer {
     public systemVerilogFileExtensions = ["sv", "v", "svh", "vh"];
     public globPattern: string = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
     public exclude: GlobPattern = undefined;
+    public forceFastIndexing: Boolean = false;
 
     public outputChannel: OutputChannel;
 
@@ -54,8 +55,9 @@ export class SystemVerilogIndexer {
         this.statusbar.text = "SystemVerilog: Indexing.."
         const settings = workspace.getConfiguration();
         this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
+        this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
         let exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
-        if (exclude = "insert globPattern here") {
+        if (exclude == "insert globPattern here") {
             exclude = undefined;
         }
 
@@ -97,7 +99,7 @@ export class SystemVerilogIndexer {
     public async processFile(uri: Uri, total_files: number=0) {
         return new Promise(async (resolve) => {
             resolve(workspace.openTextDocument(uri).then(doc => {
-                if (total_files >= 1000*this.parallelProcessing) {
+                if (total_files >= 1000*this.parallelProcessing || this.forceFastIndexing) {
                     return this.parser.get_all_recursive(doc, "fast", 0);
                 }
                 else if (total_files >= 100*this.parallelProcessing) {

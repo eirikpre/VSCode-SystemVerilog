@@ -20,6 +20,11 @@ export class SystemVerilogSymbol extends SymbolInformation {
 // See docs/SymbolKind_icons.png for an overview of the available icons
 // Use show_SymbolKinds to see the latest symbols
 export function getSymbolKind(name: string): SymbolKind {
+    if (name === undefined || name === '') { // Ports may be declared without type
+        return SymbolKind.Variable;
+    } else if (name.indexOf('[') != -1) {
+        return  SymbolKind.Array;
+    }
     switch (name) {
         case 'parameter':
         case 'localparam': return SymbolKind.Constant;
@@ -32,11 +37,13 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'task': return SymbolKind.Method;
         case 'function': return SymbolKind.Function;
         case 'interface': return SymbolKind.Interface;
+        case 'assert':
         case 'event': return SymbolKind.Event;
         case 'struct': return SymbolKind.Struct;
         case 'typedef': return SymbolKind.TypeParameter;
         case 'genvar': return SymbolKind.Operator;
         case 'enum': return SymbolKind.Enum;
+        case 'modport': return SymbolKind.Null;
         case 'define':
         case 'property': return SymbolKind.Property;
         case 'wire':
@@ -44,6 +51,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'bit':
         case 'logic':
         case 'int':
+        case 'integer':
         case 'char':
         case 'float': return SymbolKind.Variable;
         case 'module':

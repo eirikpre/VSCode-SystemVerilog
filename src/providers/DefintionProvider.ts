@@ -1,20 +1,16 @@
-import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace } from 'vscode';
+import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri } from 'vscode';
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
-import { SystemVerilogDocumentSymbolProvider } from './DocumentSymbolProvider';
 import { SystemVerilogSymbol } from '../symbol';
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
-
     private workspaceSymProvider : SystemVerilogWorkspaceSymbolProvider;
-    private docSymProvider       : SystemVerilogDocumentSymbolProvider;
 
     // Strings used in regex'es
     // private regex_module = '$\\s*word\\s*(';
     private regex_port = '\\.word\\s*\\(';
 
-    constructor(workspaceSymProvider: SystemVerilogWorkspaceSymbolProvider, docSymProvider : SystemVerilogDocumentSymbolProvider) {
+    constructor(workspaceSymProvider: SystemVerilogWorkspaceSymbolProvider) {
         this.workspaceSymProvider = workspaceSymProvider;
-        this.docSymProvider = docSymProvider;
     };
 
     public provideDefinition(document: TextDocument, position: Position, token: CancellationToken): Promise<Definition> {
@@ -23,12 +19,14 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             let line = document.lineAt(position.line).text;
             let word = document.getText(range);
 
+            // Check for port
+            let match_port = line.match(this.regex_port.replace('word', word))
+
             if (!range) {
                 reject();
             }
 
-            // Check for port
-            else if (line.match(this.regex_port.replace('word', word))) {
+            else if (match_port && match_port.index === range.start.character-1) {
                 let container = moduleFromPort(document, range)
 
                 resolve(Promise.resolve(this.workspaceSymProvider.provideWorkspaceSymbols(container, token, true).then( res => {
@@ -40,22 +38,40 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             else {
                 // Lookup all symbols in the current document
-                await this.docSymProvider.provideDocumentSymbols(document).then(symbols => {
-                    symbols.forEach(x => {
-                        if(x.name === word) {
-                            resolve(x.location);
-                        }
-                    });
+                await commands.executeCommand("vscode.executeDocumentSymbolProvider", document.uri, word)
+                .then( (symbols : DocumentSymbol[]) => {
+                    let results: Location[] = [];
+                    getDocumentSymbols(results, symbols, word, document.uri);
+                    if (results.length !== 0) {
+                        resolve(results);
+                    }
                 });
 
-                await this.workspaceSymProvider.provideWorkspaceSymbols(word, token, true).then( res => {
-                    if (res.length == 0) {
-                        reject();
+                await this.workspaceSymProvider.provideWorkspaceSymbols(word, token, true)
+                .then( res => {
+                    if (res.length !== 0) {
+                        resolve(res.map( x => x.location ));
                     }
-                    resolve(res.map( x => x.location ));
                 });
             }
         });
+    }
+}
+
+
+// Retrieves locations from the hierarchical DocumentSymbols
+function getDocumentSymbols(results: Location[], entries: DocumentSymbol[], word: string, uri: Uri): void {
+    for (let entry of entries) {
+        if (entry.name === word)
+        {
+            results.push({
+                uri: uri,
+                range: entry.range,
+            });
+        }
+        if (entry.children) {
+            getDocumentSymbols(results, entry.children, word, uri);
+        }
     }
 }
 
