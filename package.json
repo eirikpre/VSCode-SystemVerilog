@@ -59,7 +59,7 @@
                     },
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
-                        "default": false,
+                        "default": true,
                         "description": "Force indexing to use fast regex parsing"
                     },
                     "systemverilog.compilerType": {
@@ -92,12 +92,12 @@
                     },
                     "systemverilog.antlrVerification": {
                         "type": "boolean",
-                        "default": true,
+                        "default": false,
                         "description": "Use ANTLR parser to verify text documents when edited."
                     },
                     "systemverilog.verifyOnOpen": {
                         "type": "boolean",
-                        "default": true,
+                        "default": false,
                         "description": "Run ANTLR verification on all files when opened."
                     }
                 }
