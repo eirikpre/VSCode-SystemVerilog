@@ -1,6 +1,8 @@
 /* Defines tools that require `vscode-languageserver` module */
 
-import { TextDocument } from 'vscode-languageserver';
+import { TextDocument,
+        Range,
+        Position } from 'vscode-languageserver';
 
 /**
     Check if a given `document` is a SystemVerilog file.
@@ -36,4 +38,21 @@ export function isVerilogDocument(document: TextDocument): boolean {
     }
 
     return false;
+}
+
+/** 
+        Gets the `range` of a line given the line number
+
+        @param line the line number
+        @return the line's range
+    */
+export function getLineRange(line: number, offendingSymbol: string, startPosition: number): Range {
+    let endPosition: number;
+    if (startPosition == null && offendingSymbol == null) {
+        startPosition = 0;
+        endPosition = Number.MAX_VALUE;
+    } else {
+        endPosition = startPosition + offendingSymbol.length;
+    }
+    return Range.create(Position.create(line, startPosition), Position.create(line, (endPosition)));
 }

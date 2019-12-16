@@ -68,7 +68,6 @@ export class SystemVerilogIndexer {
         }, async (_progress, token) => {
             this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
             let uris = await Promise.resolve(workspace.findFiles(this.globPattern, exclude, undefined, token));
-
             console.time('build_index');
             for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                 let subset = uris.slice(filenr, filenr + this.parallelProcessing)

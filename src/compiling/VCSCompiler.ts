@@ -3,7 +3,8 @@ import {
     TextDocument
 } from "vscode-languageserver";
 import * as child from 'child_process';
-import { DocumentCompiler, DiagnosticData, isDiagnosticDataUndefined } from './DocumentCompiler';
+import { DocumentCompiler } from './DocumentCompiler';
+import { DiagnosticData, isDiagnosticDataUndefined } from "./DiagnosticData";
 
 /**
  * VCS Compiler class contains functionality for compiling SystemVerilog/Verilog files using VCS simulator.
