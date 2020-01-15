@@ -53,6 +53,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'int':
         case 'integer':
         case 'char':
+        case 'time':
         case 'float': return SymbolKind.Variable;
         case 'module':
         default: return SymbolKind.Field;
