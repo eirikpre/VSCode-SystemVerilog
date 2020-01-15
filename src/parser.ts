@@ -3,7 +3,7 @@ import { SystemVerilogSymbol } from "./symbol";
 
 
 export class SystemVerilogParser {
-    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert)/
+    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert|disable)/
     private comment = /(?:\/\/.*$)?/
 
     private r_decl_block: RegExp = new RegExp([
