@@ -84,11 +84,12 @@
                     "systemverilog.trace.server": {
                         "type": "string",
                         "enum": [
-                            "verbose",
-                            "none"
+                            "off",
+                            "messages",
+                            "verbose"
                         ],
-                        "default": "verbose",
-                        "description": "Output debugging information to console"
+                        "default": "off",
+                        "description": "Traces the communication between VS Code and the SystemVerilog language server"
                     },
                     "systemverilog.antlrVerification": {
                         "type": "boolean",
