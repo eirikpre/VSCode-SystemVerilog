@@ -8,7 +8,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
     // Strings used in regex'es
     // private regex_module = '$\\s*word\\s*(';
     private regex_port = '\\.word\\s*\\(';
-    private regex_parameter = '\\b(\\w+)\\s*::\\s*(word)';
+    private regex_package = '\\b(\\w+)\\s*::\\s*(word)';
 
     constructor(workspaceSymProvider: SystemVerilogWorkspaceSymbolProvider) {
         this.workspaceSymProvider = workspaceSymProvider;
@@ -22,7 +22,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // Check for port
             let match_port = line.match(this.regex_port.replace('word', word));
-            let match_parameter = line.match(this.regex_parameter.replace('word', word));
+            let match_package = line.match(this.regex_package.replace('word', word));
 
             if (!range) {
                 reject();
@@ -37,20 +37,26 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 }).then( arrWithUndefined => {
                     return clean(arrWithUndefined, undefined)
                 })));
+                reject();
             }
 
             // Parameter
-            else if (match_parameter && line.indexOf(word, match_parameter.index) == range.start.character) {
-                await this.workspaceSymProvider.provideWorkspaceSymbols(match_parameter[1], token, true)
+            else if (match_package && line.indexOf(word, match_package.index) == range.start.character) {
+                await this.workspaceSymProvider.provideWorkspaceSymbols(match_package[1], token, true)
                 .then( (ws_symbols: SymbolInformation[]) => {
-                    return ws_symbols[0].location.uri;
+                    if (ws_symbols.length && ws_symbols[0].location) {
+                        return ws_symbols[0].location.uri;
+                    }
                 }).then( uri => {
-                    commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word).then( (symbols) => {
-                        let results: Location[] = [];
-                        getDocumentSymbols(results, symbols, word, uri, match_parameter[1]);
-                        resolve(results)
-                    })
+                    if (uri) {
+                        commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word).then( (symbols) => {
+                            let results: Location[] = [];
+                            getDocumentSymbols(results, symbols, word, uri, match_package[1]);
+                            resolve(results)
+                        })
+                    }
                 });
+                reject();
             }
 
             else {
@@ -70,7 +76,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                         resolve(res.map( x => x.location ));
                     }
                 });
-                reject()
+                reject();
             }
         });
     }
