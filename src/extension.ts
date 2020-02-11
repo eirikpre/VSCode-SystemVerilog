@@ -50,61 +50,6 @@ export function activate(context: ExtensionContext) {
     language: 'verilog'
   }];
 
-  /** Starts the `LanguageClient` */
-
-  // point to the path of the server's module
-  let serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
-  // The debug options for the server
-  // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
-  let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
-
-  // If the extension is launched in debug mode then the debug server options are used
-  // Otherwise the run options are used
-  let serverOptions: ServerOptions = {
-    run: { module: serverModule, transport: TransportKind.ipc },
-    debug: {
-      module: serverModule,
-      transport: TransportKind.ipc,
-      options: debugOptions
-    }
-  };
-
-  // Options to control the language client
-  let clientOptions: LanguageClientOptions = {
-    // Register the server for selected documents
-    documentSelector: selector as string[]
-    /*
-    synchronize: {
-      // Notify the server about file changes to SystemVerilog/Verilog files contained in the workspace
-      fileEvents: workspace.createFileSystemWatcher(indexer.globPattern)
-    }*/
-  };
-
-  // Create the language client and start the client.
-  client = new LanguageClient(
-    'systemverilog',
-    'System Verilog Language Server',
-    serverOptions,
-    clientOptions
-  );
-
-  // Start the client. This will also launch the server
-  client.start();
-
-  client.onReady().then(() => {
-    client.sendNotification("workspaceRootPath", workspace.workspaceFolders[0].uri.fsPath);
-
-    /* Update `closeWindowProgress` to true when the client is notified by the server. */
-    client.onNotification("closeWindowProgress", function () {
-      closeWindowProgress = true;
-    });
-
-    /* Notify the server that the workspace configuration has been changed */
-    workspace.onDidChangeConfiguration(() => {
-      client.sendNotification("onDidChangeConfiguration");
-    });
-  });
-
   //Output Channel
   var outputChannel = window.createOutputChannel("SystemVerilog");
 
@@ -122,7 +67,7 @@ export function activate(context: ExtensionContext) {
   const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
   const defProvider = new SystemVerilogDefinitionProvider(symProvider);
-  const hoverProvider = new SystemVerilogHoverProvider(symProvider, docProvider);
+  const hoverProvider = new SystemVerilogHoverProvider();
   const moduleInstantiator = new SystemVerilogModuleInstantiator();
 
   context.subscriptions.push(statusBar);
@@ -135,15 +80,6 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
-
-  // WIP
-  // const completionProvider = new SystemVerilogCompletionItemProvider(indexer);
-  // context.subscriptions.push(languages.registerCompletionItemProvider(selector, completionProvider));
-  // window.registerTreeDataProvider('systemverilogModules', new SystemVerilogTreeDataProvider())
-  // window.registerTreeDataProvider('systemverilogDocuementSymbols', new SystemVerilogDocumentSymbolTreeProvider())
-
-  // Built-in DocumentHighlightProvider is better
-  // context.subscriptions.push(languages.registerDocumentHighlightProvider(selector, new SystemVerilogDocumentHighlightProvider()));
 
   // Background processes
   context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
@@ -191,6 +127,61 @@ export function activate(context: ExtensionContext) {
       window.showErrorMessage(error);
     });
   }
+
+  /** Starts the `LanguageClient` */
+
+  // point to the path of the server's module
+  let serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
+
+  // If the extension is launched in debug mode then the debug server options are used
+  // Otherwise the run options are used
+  // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
+  let serverOptions: ServerOptions = {
+    run: { 
+      module: serverModule,
+      transport: TransportKind.ipc },
+    debug: {
+      module: serverModule,
+      transport: TransportKind.ipc,
+      options: { execArgv: ['--nolazy', '--inspect=6009'] }
+    }
+  };
+
+  // Options to control the language client
+  let clientOptions: LanguageClientOptions = {
+    // Register the server for selected documents
+    documentSelector: selector as string[]
+    /*
+    synchronize: {
+      // Notify the server about file changes to SystemVerilog/Verilog files contained in the workspace
+      fileEvents: workspace.createFileSystemWatcher(indexer.globPattern)
+    }*/
+  };
+
+  // Create the language client and start the client.
+  client = new LanguageClient(
+    'systemverilog',
+    'System Verilog Language Server',
+    serverOptions,
+    clientOptions
+  );
+
+  // Start the client. This will also launch the server
+  client.start();
+
+  client.onReady().then(() => {
+    client.sendNotification("workspaceRootPath", workspace.workspaceFolders[0].uri.fsPath);
+
+    /* Update `closeWindowProgress` to true when the client is notified by the server. */
+    client.onNotification("closeWindowProgress", function () {
+      closeWindowProgress = true;
+    });
+
+    /* Notify the server that the workspace configuration has been changed */
+    workspace.onDidChangeConfiguration(() => {
+      client.sendNotification("onDidChangeConfiguration");
+    });
+  });
 }
 
 
