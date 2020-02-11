@@ -8,6 +8,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.9.4]
+- Rewrote hover to use built-in caching
+
 ## [0.9.2]
 - Adds package expansion on provideDefinition
 - Includes experimental ANTLR parser (disabled by default)
