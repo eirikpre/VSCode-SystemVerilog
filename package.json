@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.9.3",
+    "version": "0.9.4",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
