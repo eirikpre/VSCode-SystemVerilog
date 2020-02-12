@@ -1,12 +1,19 @@
-import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position } from 'vscode'
+import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position, workspace, CommentThreadCollapsibleState } from 'vscode'
 import { SystemVerilogParser } from '../parser';
 import { SystemVerilogSymbol } from '../symbol';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     private parser: SystemVerilogParser;
+    private precision: string;
+    private depth: number = -1;
 
     constructor(parser) {
         this.parser = parser;
+        const settings = workspace.getConfiguration();
+        this.precision = settings.get("systemverilog.documentSymbolsPrecision");
+        if (this.precision != "full") {
+            this.depth = 1;
+        }
     }
 
     /**
@@ -20,13 +27,14 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         signaled by returning `undefined`, `null`, or an empty list.
     */
     public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
+        console.debug("provideDocumentSymbols!",document.uri.path);
         return new Promise((resolve) => {
             /* 
             Matches the regex and uses the index from the regex to find the position
             TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
-            resolve(this.parser.get_all_recursive(document, "full"));
+            resolve(this.parser.get_all_recursive(document, this.precision, this.depth));
             // resolve(show_SymbolKinds(document.uri));
         });
     }
