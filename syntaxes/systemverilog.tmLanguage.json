@@ -68,8 +68,8 @@
         },
         "strings": {
             "name": "string.quoted.double.systemverilog",
-            "begin": "\"",
-            "end": "\"",
+            "begin": "`?\"",
+            "end": "\"`?",
             "patterns": [
                 {   "include": "#FIXME-TODO-XXX"    },
                 {
