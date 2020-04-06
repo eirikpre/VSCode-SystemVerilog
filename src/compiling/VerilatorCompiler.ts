@@ -75,7 +75,8 @@ export class VerilatorCompiler extends DocumentCompiler {
                     diagnosticData.line = parseInt(matches[2]) - 1;
                     if(matches[3] !== undefined){
                         diagnosticData.charPosition = parseInt(matches[3].substr(1)) - 1;
-                        diagnosticData.offendingSymbol = this.regexOffendPart.exec(error)[1];
+                        let symbol = this.regexOffendPart.exec(error);
+                        diagnosticData.offendingSymbol = symbol ? symbol[1] : null;
                     }
                     diagnosticData.problem = matches[4].trim();
                     diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
@@ -87,7 +88,8 @@ export class VerilatorCompiler extends DocumentCompiler {
                     diagnosticData.line = parseInt(matches[3]) - 1;
                     if(matches[4] !== undefined){
                         diagnosticData.charPosition = parseInt(matches[4].substr(1)) - 1;
-                        diagnosticData.offendingSymbol = this.regexOffendPart.exec(error)[1];
+                        let symbol = this.regexOffendPart.exec(error);
+                        diagnosticData.offendingSymbol = symbol ? symbol[1] : null;
                     }
                     diagnosticData.problem = matches[1] + ": " + matches[3] + matches[4];
                     diagnosticData.problem = diagnosticData.problem.trim();
@@ -101,7 +103,8 @@ export class VerilatorCompiler extends DocumentCompiler {
                         diagnosticData.line = parseInt(matches[3]) - 1;
                         if(matches[4] !== undefined){
                             diagnosticData.charPosition = parseInt(matches[4].substr(1)) - 1;
-                            diagnosticData.offendingSymbol = this.regexOffendPart.exec(error)[1];
+                            let symbol = this.regexOffendPart.exec(error);
+                            diagnosticData.offendingSymbol = symbol ? symbol[1] : null;
                         }
                         diagnosticData.problem = matches[1] + ": " + matches[5];
                         diagnosticData.problem = diagnosticData.problem.trim();

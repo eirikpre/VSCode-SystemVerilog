@@ -48,8 +48,10 @@ export function isVerilogDocument(document: TextDocument): boolean {
     */
 export function getLineRange(line: number, offendingSymbol: string, startPosition: number): Range {
     let endPosition: number;
-    if (startPosition == null && offendingSymbol == null) {
+    if (startPosition == null) {
         startPosition = 0;
+    }
+    if(offendingSymbol == null || offendingSymbol == undefined){ // When offendingSymbol is null, we assume the error is marked to the end of the line.
         endPosition = Number.MAX_VALUE;
     } else {
         endPosition = startPosition + offendingSymbol.length;
