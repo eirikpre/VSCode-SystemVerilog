@@ -27,14 +27,15 @@ enum CannotFindModuleState {
 */
 export class VerilatorCompiler extends DocumentCompiler {
     //Regex expressions
-    regexError = new RegExp("%Error: (.*):([0-9]+):(.*)");
-    regexErrorWarning = new RegExp("%Error-(.*): (.*):([0-9]+):(.*)");
-    regexWarning = new RegExp("%Warning-(.*): (.*):([0-9]+):(.*)");
+    regexError = new RegExp("%Error: ([^:]*):([0-9]+)(:[0-9]+)?: (.*)");
+    regexErrorWarning = new RegExp("%Error-(.*): ([^:]*):([0-9]+)(:[0-9]+)?: (.*)");
+    regexWarning = new RegExp("%Warning-(.*): ([^:]*):([0-9]+)(:[0-9]+)?: (.*)");
     regexWarningSuggest = new RegExp("%Warning-(.*): (.*)");
-    regexCannotFindModule = new RegExp("%Error: (.*):([0-9]+): Cannot find(.*): (.*)");
-    regexSearchPathNotFound = new RegExp("%Error: (.*):([0-9]+): This may be because there's no search path specified with -I<dir>.");
-    regexLookedIn = new RegExp("%Error: (.*):([0-9]+): Looked in:");
-    regexFilesSearchedSource = "%Error: (.*):([0-9]+):       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|)$";
+    regexCannotFindModule = new RegExp("%Error: ([^:]*):([0-9]+)(:[0-9]+)?: Cannot find(.*): (.*)");
+    regexSearchPathNotFound = new RegExp("%Error: ([^:]*):([0-9]+)(:[0-9]+)?: This may be because there's no search path specified with -I<dir>.");
+    regexLookedIn = new RegExp("%Error: ([^:]*):([0-9]+)(:[0-9]+)?: Looked in:");
+    regexFilesSearchedSource = "%Error: ([^:]*):([0-9]+)(:[0-9]+)?:       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|)$";
+    regexOffendPart = new RegExp(".*'(.*)'.*");
 
     /**
         Parses `stderr` into `Diagnostics` that are added to `collection` by adding each `Diagnostic` to an array
@@ -69,10 +70,14 @@ export class VerilatorCompiler extends DocumentCompiler {
             let matches = undefined;
 
             if (matches = this.regexError.exec(error)) {
-                if (matches && matches.length > 3) {
+                if (matches && matches.length > 4) {
                     diagnosticData.filePath = matches[1];
                     diagnosticData.line = parseInt(matches[2]) - 1;
-                    diagnosticData.problem = matches[3].trim();
+                    if(matches[3] !== undefined){
+                        diagnosticData.charPosition = parseInt(matches[3].substr(1)) - 1;
+                        diagnosticData.offendingSymbol = this.regexOffendPart.exec(error)[1];
+                    }
+                    diagnosticData.problem = matches[4].trim();
                     diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
                 }
             }
@@ -80,17 +85,25 @@ export class VerilatorCompiler extends DocumentCompiler {
                 if (matches && matches.length > 4) {
                     diagnosticData.filePath = matches[2];
                     diagnosticData.line = parseInt(matches[3]) - 1;
-                    diagnosticData.problem = matches[1] + ": " + matches[3];
+                    if(matches[4] !== undefined){
+                        diagnosticData.charPosition = parseInt(matches[4].substr(1)) - 1;
+                        diagnosticData.offendingSymbol = this.regexOffendPart.exec(error)[1];
+                    }
+                    diagnosticData.problem = matches[1] + ": " + matches[3] + matches[4];
                     diagnosticData.problem = diagnosticData.problem.trim();
                     diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
                 }
             }
             else if (matches = this.regexWarningSuggest.exec(error.trim())) {
                 if (matches = this.regexWarning.exec(error.trim())) {
-                    if (matches && matches.length > 4) {
+                    if (matches && matches.length > 5) {
                         diagnosticData.filePath = matches[2];
                         diagnosticData.line = parseInt(matches[3]) - 1;
-                        diagnosticData.problem = matches[1] + ": " + matches[4];
+                        if(matches[4] !== undefined){
+                            diagnosticData.charPosition = parseInt(matches[4].substr(1)) - 1;
+                            diagnosticData.offendingSymbol = this.regexOffendPart.exec(error)[1];
+                        }
+                        diagnosticData.problem = matches[1] + ": " + matches[5];
                         diagnosticData.problem = diagnosticData.problem.trim();
                         diagnosticData.diagnosticSeverity = DiagnosticSeverity.Warning;
                     }
@@ -105,8 +118,8 @@ export class VerilatorCompiler extends DocumentCompiler {
                 }
             }
             if (matches = this.regexCannotFindModule.exec(error)) {
-                if (matches && matches.length > 4) {
-                    i = this.skipCannotFindModuleTrailingErrors(errors, i, matches[4]);
+                if (matches && matches.length > 5) {
+                    i = this.skipCannotFindModuleTrailingErrors(errors, i, matches[5]);
                 }
             }
 
