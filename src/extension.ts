@@ -9,6 +9,8 @@ import {
   DocumentSelector,
   ExtensionContext,
   ProgressLocation,
+  Location,
+  Range
 } from 'vscode';
 import {
   LanguageClient,
@@ -77,8 +79,11 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
   const build_handler = () => { 
-    indexer.build_index();
-    context.workspaceState.update("systemverilog.symbols", indexer.symbols);
+    indexer.build_index().then(v => {
+      let syms = [ ...indexer.symbols ]
+      context.workspaceState.update("symbols", syms);
+    });
+    
    };
   const instantiate_handler = () => { moduleInstantiator.instantiateModule() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
@@ -95,11 +100,33 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(watcher);
 
   const settings = workspace.getConfiguration();
-  let symbols: Map<string, SystemVerilogSymbol[]> = context.workspaceState.get("systemverilog.symbols")
-  if (symbols) {
-    indexer.symbols = symbols;
-    statusBar.text = "SystemVerilog: Preserved last workspace state";
-  } else {
+  try {
+    let symbols: Array<any> = context.workspaceState.get("symbols");
+    let num_symbols: number = 0;
+    if (symbols) {
+      symbols.forEach(entry => {
+        // Hack because typecasting didn't work
+        let syms: SystemVerilogSymbol[] = new Array<SystemVerilogSymbol>();
+        entry[1].forEach(s => {
+          syms.push(
+            new SystemVerilogSymbol(
+              s.name, s.type, s.containerName,
+              new Location(s.location.uri,
+                new Range(
+                  s.location.range[0].line, s.location.range[0].character,
+                  s.location.range[1].line, s.location.range[1].character
+                ))));
+          num_symbols += 1;
+        });
+        indexer.symbols.set(entry[0], syms)
+      })
+      statusBar.text = 'SystemVerilog: ' + num_symbols + ' indexed objects';
+    }
+    else {
+      throw "";
+    }
+  }
+  catch (error) {
     if (settings.get('systemverilog.disableIndexing')) {
       statusBar.text = "SystemVerilog: Indexing disabled on boot";
     } else {
