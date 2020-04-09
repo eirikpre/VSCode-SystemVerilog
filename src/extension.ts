@@ -24,6 +24,7 @@ import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbo
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexer } from './indexer';
+import { SystemVerilogSymbol } from './symbol';
 
 
 // the LSP's client
@@ -55,7 +56,7 @@ export function activate(context: ExtensionContext) {
 
   // Status Bar
   const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
-  statusBar.text = 'SystemVerilog: Active';
+  statusBar.text = 'SystemVerilog: Activating';
   statusBar.show();
   statusBar.command = 'systemverilog.build_index';
 
@@ -75,7 +76,10 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
-  const build_handler = () => { indexer.build_index() };
+  const build_handler = () => { 
+    indexer.build_index();
+    context.workspaceState.update("systemverilog.symbols", indexer.symbols);
+   };
   const instantiate_handler = () => { moduleInstantiator.instantiateModule() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
   context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
@@ -90,6 +94,18 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
   context.subscriptions.push(watcher);
 
+  const settings = workspace.getConfiguration();
+  let symbols: Map<string, SystemVerilogSymbol[]> = context.workspaceState.get("systemverilog.symbols")
+  if (symbols) {
+    indexer.symbols = symbols;
+    statusBar.text = "SystemVerilog: Preserved last workspace state";
+  } else {
+    if (settings.get('systemverilog.disableIndexing')) {
+      statusBar.text = "SystemVerilog: Indexing disabled on boot";
+    } else {
+      commands.executeCommand("systemverilog.build_index");
+    }
+  }
 
   /**
     Sends a notification to the LSP to compile the opened document.

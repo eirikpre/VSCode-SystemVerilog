@@ -30,15 +30,7 @@ export class SystemVerilogIndexer {
         this.parser = parser;
         this.outputChannel = channel;
         this.symbols = new Map<string, Array<SystemVerilogSymbol>>()
-
-        const settings = workspace.getConfiguration();
-        if (settings.get('systemverilog.disableIndexing')) {
-            this.statusbar.text = "SystemVerilog: Indexing disabled on boot"
-        } else {
-            this.build_index().then(() => {
-                this.updateMostRecentSymbols(undefined);
-            });
-        }
+        this.updateMostRecentSymbols(undefined);
     };
 
     /**
