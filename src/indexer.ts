@@ -30,7 +30,6 @@ export class SystemVerilogIndexer {
         this.parser = parser;
         this.outputChannel = channel;
         this.symbols = new Map<string, Array<SystemVerilogSymbol>>()
-        this.updateMostRecentSymbols(undefined);
     };
 
     /**
