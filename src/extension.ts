@@ -119,6 +119,7 @@ export function activate(context: ExtensionContext) {
           num_symbols += 1;
         });
         indexer.symbols.set(entry[0], syms)
+        indexer.symbolsCount = num_symbols;
       })
       statusBar.text = 'SystemVerilog: ' + num_symbols + ' indexed objects';
     }

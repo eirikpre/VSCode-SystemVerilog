@@ -25,10 +25,11 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 - Linter capabilites with simulators ( [More info on the wiki](https://github.com/eirikpre/VSCode-SystemVerilog/wiki) )
 - Fast real-time error identification through an integrated SystemVerilog parser and IntelliSense ( Fully accurate to IEEE Standard 1800-2017 )
+- Quick-start on already indexed workspaces
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, Eg: `**/syn/**`
-- Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog
+- Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog and Verilog.
 
 ## Settings
 - `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
@@ -57,6 +58,9 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 
 ## Release Notes
 See changelog for mode details
+### 0.10
+- It now saves the indexed database between runs,
+allowing quickstart on previous workspaces
 ### 0.9
 - Increased the number of symbols the parser understands.
 - Extensive bug squashing

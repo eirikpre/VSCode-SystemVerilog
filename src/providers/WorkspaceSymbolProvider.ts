@@ -27,7 +27,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     */
     public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve, reject) => {
-            if (query.length === 0) {
+            if (query==undefined || query.length === 0) {
                 resolve(this.indexer.mostRecentSymbols);
             } else {
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
