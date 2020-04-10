@@ -10,7 +10,7 @@ import {
   ExtensionContext,
   ProgressLocation,
   Location,
-  Range
+  Range, Uri
 } from 'vscode';
 import {
   LanguageClient,
@@ -80,8 +80,7 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
   const build_handler = () => { 
     indexer.build_index().then(v => {
-      let syms = [ ...indexer.symbols ]
-      context.workspaceState.update("symbols", syms);
+      saveIndex();
     });
     
    };
@@ -91,12 +90,12 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
 
   // Background processes
-  context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
-  context.subscriptions.push(window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document) }));
+  context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); saveIndex(); }));
+  context.subscriptions.push(window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); saveIndex(); }));
   let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-  context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
-  context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
-  context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
+  context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); saveIndex(); }));
+  context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); saveIndex(); }));
+  context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); saveIndex(); }));
   context.subscriptions.push(watcher);
 
   const settings = workspace.getConfiguration();
@@ -111,7 +110,8 @@ export function activate(context: ExtensionContext) {
           syms.push(
             new SystemVerilogSymbol(
               s.name, s.type, s.containerName,
-              new Location(s.location.uri,
+              new Location(
+                Uri.file(entry[0]),
                 new Range(
                   s.location.range[0].line, s.location.range[0].character,
                   s.location.range[1].line, s.location.range[1].character
@@ -133,6 +133,11 @@ export function activate(context: ExtensionContext) {
     } else {
       commands.executeCommand("systemverilog.build_index");
     }
+  }
+
+  function saveIndex(): void {
+    let syms = [ ...indexer.symbols ];
+    context.workspaceState.update("symbols", syms);
   }
 
   /**
