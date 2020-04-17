@@ -178,39 +178,11 @@
                 "title": "SystemVerilog: Compile the opened document"
             }
         ],
-        "taskDefinitions": [
+        "jsonValidation": [
             {
-                "type": "shell",
-                "properties": {
-                    "command": { "default": "verilator" },
-                    "args": {
-                        "default": [
-                            "-sv", "--language", "1800-2012",
-                            "--lint-only",
-                            "<input filelist here>"
-                        ]
-                    },
-                    "problemMatcher": {
-                        "default": "$verilator"
-                    }
-                }
-            }
-        ],
-        "problemMatchers": [
-            {
-                "name": "verilator",
-                "owner": "systemverilog",
-                "pattern": "name"
-            }
-        ],
-        "problemPatterns": [
-            {
-                "name": "verilator",
-                "regexp": "^%([\\w-]+): ([\\w_\\./-]+):(\\d+):\\s+([\\w\\W]+)$",
-                "severity": 1,
-                "file": 2,
-                "line": 3,
-                "message": 4
+                "fileMatch": "tasks.json",
+                "url": "./schemas/tasks.schema.json"
+                
             }
         ]
     },

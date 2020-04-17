@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "./schemas/tasks.schema.json",
+    "title": "Verilog/SystemVerilog Tasks",
+    "type": "object",
+    "properties": {
+        "tasks": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "default": {
+                    "label": "Verilator",
+                    "type": "shell",
+                    "command": "verilator",
+                    "args": [
+                        "-sv", "--language", "1800-2012",
+                        "--lint-only",
+                        "${relativeFile}"
+                    ],
+                    "problemMatcher": {
+                        "owner": "systemverilog",
+                        "pattern": {
+                            "regexp": "^%([\\w-]+): ([\\w_\\./-]+):(\\d+):\\s+([\\w\\W]+)$",
+                            "severity": 1,
+                            "file": 2,
+                            "line": 3,
+                            "message": 4
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
