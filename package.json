@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog / SystemVerilog",
-    "version": "0.10.1",
+    "version": "0.10.2",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -182,7 +182,6 @@
             {
                 "fileMatch": "tasks.json",
                 "url": "./schemas/tasks.schema.json"
-                
             }
         ]
     },
