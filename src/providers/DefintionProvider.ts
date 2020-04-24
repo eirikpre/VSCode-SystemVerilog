@@ -68,6 +68,8 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                     if (results.length !== 0) {
                         resolve(results);
                     }
+                }, ( reason: any ) => {
+                    console.log(reason);
                 });
 
                 await this.workspaceSymProvider.provideWorkspaceSymbols(word, token, true)
@@ -78,6 +80,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 });
                 reject();
             }
+            reject();
         });
     }
 }
@@ -85,6 +88,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
 // Retrieves locations from the hierarchical DocumentSymbols
 function getDocumentSymbols(results: Location[], entries, word: string, uri: Uri, containerName?: string): void {
+    if (!entries) { return }
     for (let entry of entries) {
         if (entry.name === word) {
             if (containerName) {
@@ -93,7 +97,7 @@ function getDocumentSymbols(results: Location[], entries, word: string, uri: Uri
                         uri: uri,
                         range: entry.range,
                     });
-                } 
+                }
             } else {
                 results.push({
                     uri: uri,
@@ -117,7 +121,7 @@ export function moduleFromPort(document, range): string {
             depthParathesis++;
         else if (text[i] == '(')
             depthParathesis--;
-        
+
         if (depthParathesis == -1) {
             let match_param = text.slice(0, i).match(/(\w+)\s*#\s*$/);
             let match_simple = text.slice(0, i).match(/(\w+)\s+(\w+)\s*$/);
