@@ -1,6 +1,6 @@
 [![Build Status](https://dev.azure.com/CPS-External/VSCode-SystemVerilog/_apis/build/status/VSCode-SystemVerilog%20Github?branchName=master)](https://dev.azure.com/CPS-External/VSCode-SystemVerilog/_build/latest?definitionId=5&branchName=master)
 
-# SystemVerilog - Language Support 
+# SystemVerilog - Language Support
 
 This package adds language support for Verilog/SystemVerilog. It supports SystemVerilog syntax, with planned support for signal intelliSense.
 
@@ -32,10 +32,11 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - Disclaimer: This is not a functional HDL tool that will compile and simulate your code, but this extension will make it easier and more user-friendly to write/navigate SystemVerilog and Verilog.
 
 ## Settings
-- `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
+- `systemverilog.includeIndexing`: _Array_, Globs defining files to be indexed.
 - `systemverilog.disableIndexing`: _Boolean_, Disable indexing
 - `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on glob
 - `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
+- `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
 - `systemverilog.launchConfiguration`: _String_, the command to run when launching verilator
   * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
   * If not in path, replace _verilator_ with the appropriate command
@@ -59,6 +60,7 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 ## Release Notes
 See changelog for mode details
 ### 0.10
+- Folders outside the workspace can now be included with `systemverilog.includeIndexing`
 - It now saves the indexed database between runs,
 allowing quickstart on previous workspaces
 ### 0.9

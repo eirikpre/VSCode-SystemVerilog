@@ -32,15 +32,15 @@ import { SystemVerilogSymbol } from './symbol';
 // the LSP's client
 let client: LanguageClient;
 
-/* 
-  this flag is used to determine when to close the `Progress` window after `compile` command is fired. 
+/*
+  this flag is used to determine when to close the `Progress` window after `compile` command is fired.
 */
 let closeWindowProgress = true;
 
 /**
  * this method is called when your extension is activate.
  * your extension is activated the very first time the command is executed.
- * 
+ *
  * @param context the current context of the extension.
  */
 export function activate(context: ExtensionContext) {
@@ -78,11 +78,11 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
   context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
   context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
-  const build_handler = () => { 
+  const build_handler = () => {
     indexer.build_index().then(v => {
       saveIndex();
     });
-    
+
    };
   const instantiate_handler = () => { moduleInstantiator.instantiateModule() };
   context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
@@ -92,7 +92,7 @@ export function activate(context: ExtensionContext) {
   // Background processes
   context.subscriptions.push(workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); saveIndex(); }));
   context.subscriptions.push(window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); saveIndex(); }));
-  let watcher = workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
+  let watcher = workspace.createFileSystemWatcher("**/*.{sv,v,svh,vh}", false, false, false);
   context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); saveIndex(); }));
   context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); saveIndex(); }));
   context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); saveIndex(); }));
@@ -142,7 +142,7 @@ export function activate(context: ExtensionContext) {
 
   /**
     Sends a notification to the LSP to compile the opened document.
-    Keeps the `Progress` window opened until `extensionLanguageClient.closeWindowProgress` is set to true or 
+    Keeps the `Progress` window opened until `extensionLanguageClient.closeWindowProgress` is set to true or
     the interval iterations count reaches the maximum value.
     `closeWindowProgress` is updated to true when a notification is sent to the client from LSP.
   */
@@ -186,7 +186,7 @@ export function activate(context: ExtensionContext) {
   // Otherwise the run options are used
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
   let serverOptions: ServerOptions = {
-    run: { 
+    run: {
       module: serverModule,
       transport: TransportKind.ipc },
     debug: {
@@ -235,7 +235,7 @@ export function activate(context: ExtensionContext) {
 
 
 
-/** 
+/**
  * this method is called when your extension is deactivated
  */
 export function deactivate(): Thenable<void> | undefined {

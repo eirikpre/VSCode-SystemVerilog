@@ -1,7 +1,9 @@
+import { sync } from 'glob'
 import { StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
 import { SystemVerilogSymbol } from './symbol';
+import { CancellationToken } from 'vscode-languageclient';
 
 export class SystemVerilogIndexer {
     /*
@@ -18,8 +20,7 @@ export class SystemVerilogIndexer {
 
     public NUM_FILES: number = 250;
     public parallelProcessing: number;
-    public systemVerilogFileExtensions = ["sv", "v", "svh", "vh"];
-    public globPattern: string = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
+    public filesGlob: string = undefined;
     public exclude: GlobPattern = undefined;
     public forceFastIndexing: Boolean = false;
 
@@ -47,10 +48,6 @@ export class SystemVerilogIndexer {
         const settings = workspace.getConfiguration();
         this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
         this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
-        let exclude: GlobPattern = settings.get('systemverilog.excludeIndexing');
-        if (exclude == "insert globPattern here") {
-            exclude = undefined;
-        }
 
         return await window.withProgress({
             location: ProgressLocation.Notification,
@@ -58,7 +55,7 @@ export class SystemVerilogIndexer {
             cancellable: true
         }, async (_progress, token) => {
             this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
-            let uris = await Promise.resolve(workspace.findFiles(this.globPattern, exclude, undefined, token));
+            let uris: Uri[] = await this.find_files(token);
             console.time('build_index');
             for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                 let subset = uris.slice(filenr, filenr + this.parallelProcessing)
@@ -79,6 +76,33 @@ export class SystemVerilogIndexer {
                 this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects'
             }
         });
+    }
+
+    /**
+     * find_files
+     */
+    public async find_files(token: CancellationToken): Promise<Uri[]> {
+        return new Promise( async resolve => {
+            const settings = workspace.getConfiguration();
+            let globArray: string[] = settings.get('systemverilog.includeIndexing')
+            let exclude: string = settings.get('systemverilog.excludeIndexing');
+            let uris: Uri[] = [];
+
+            const find = (str: string) => {
+                if (str.startsWith('*')) {
+                    return workspace.findFiles(str, exclude, undefined, token)
+                    .then(files => {
+                        uris = uris.concat(files)
+                    })
+                } else {
+                    let files: string[] = sync(str, {ignore : exclude})
+                    uris = uris.concat(files.map(Uri.file))
+                }
+            }
+            await Promise.all(globArray.map(find))
+            resolve(uris);
+        })
+
     }
 
     /**
