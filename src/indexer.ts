@@ -1,4 +1,4 @@
-import { sync } from 'glob'
+import * as glob from 'glob'
 import { StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
@@ -95,7 +95,7 @@ export class SystemVerilogIndexer {
                         uris = uris.concat(files)
                     })
                 } else {
-                    let files: string[] = sync(str, {ignore : exclude})
+                    let files: string[] = glob.sync(str, {ignore : exclude})
                     uris = uris.concat(files.map(Uri.file))
                 }
             }
