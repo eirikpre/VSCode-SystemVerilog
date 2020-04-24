@@ -115,7 +115,7 @@
                     "patterns": [
                         {
                             "name": "meta.inst.module-simple.systemverilog",
-                            "begin": "(?:^\\s*|^\\s*(\\w+)::)(?!module|function|task|interface|clocking|property|primitive|program|else|if|for|return|begin|end|case)(\\w+)\\s+(\\w+)\\s*(?:\\[(.*)\\]\\s*)?(?=\\()",
+                            "begin": "(?:^\\s*|^\\s*(\\w+)::)(?!module|function|task|interface|clocking|property|primitive|program|else|if|for|return|begin|end|case|unique)(\\w+)\\s+(\\w+)\\s*(?:\\[(.*)\\]\\s*)?(?=\\()",
                             "beginCaptures": {
                                 "1": { "name": "entity.name.type.package.systemverilog" },
                                 "2": { "name": "entity.name.class.module.systemverilog" },
@@ -280,7 +280,7 @@
                     "begin": "\\/\\*",
                     "end": "\\*\\/",
                     "patterns": [{  "include": "#FIXME-TODO-XXX"    }]
-                }   
+                }
             ]
         },
         "FIXME-TODO-XXX": {
@@ -305,8 +305,8 @@
                     "name": "constant.numeric.decimal.systemverilog",
                     "match": "\\b([\\d\\.]+)((f|p|n|u|m)?s)?\\b"
                 },
-                { 
-                    "name": "constant.numeric.parameter.uppercase.systemverilog", 
+                {
+                    "name": "constant.numeric.parameter.uppercase.systemverilog",
                     "match": "\\b(?<!\\.)([A-Z_0-9]+)(?!\\.)\\b"
                 }
             ]
