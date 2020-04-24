@@ -8,6 +8,9 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.10.3]
+- Added includeIndexing setting to configure indexed files
+
 ## [0.10.0]
 - Preserve state of indexed database in-between runs
 
@@ -100,7 +103,7 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 
 ## [0.2.4] - 2018.02.06
 - DocumentSymbolProvider now provides instatiated modules
-- Adjusted TM of module instantiation 
+- Adjusted TM of module instantiation
 
 ## [0.2.3] - 2018.02.03
 - Added extension icon
