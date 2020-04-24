@@ -1,29 +1,33 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
-//gets the packet from generator and drive the transaction paket items into interface (interface is connected to DUT, so the items driven into interface signal will get driven in to DUT) 
+//gets the packet from generator and drive the transaction paket items into interface (interface is connected to DUT, so the items driven into interface signal will get driven in to DUT)
 
 `define MY_MACRO HELP! :-)
 
 class driver;
-  
+
+  cat u_cat();
+  123 u_123();
+  abc u_abc();
+
   //used to count the number of transactions
   int no_transactions;
-  
+
   //creating virtual interface handle
   virtual intf vif;
-  
+
   //creating mailbox handle
   mailbox gen2driv;
-  
+
   //constructor
   function new(virtual intf vif,mailbox gen2driv);
     //getting the interface
     this.vif = vif;
-    //getting the mailbox handles from  environment 
+    //getting the mailbox handles from  environment
     this.gen2driv = gen2driv;
   endfunction
-  
+
   //Reset task, Reset the Interface signals to default/initial values
   task reset;
     wait(vif.reset);
@@ -34,7 +38,7 @@ class driver;
     wait(!vif.reset);
     $display("[ DRIVER ] ----- Reset Ended   -----");
   endtask
-  
+
   //drivers the transaction items to interface signals
   task main;
     forever begin
@@ -52,7 +56,7 @@ class driver;
       no_transactions++;
     end
   endtask
-  
+
 endclass
 
 class typedef_test;
