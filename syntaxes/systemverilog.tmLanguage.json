@@ -9,7 +9,6 @@
         {   "include": "#comment"       },
         {   "include": "#strings"       },
         {   "include": "#support"       },
-        {   "include": "#variables"     },
         {   "include": "#keywords"      },
         {   "include": "#macros"        },
         {   "include": "#constant"      },
@@ -303,7 +302,7 @@
                 },
                 {
                     "name": "constant.numeric.decimal.systemverilog",
-                    "match": "\\b([\\d\\.]+)((f|p|n|u|m)?s)?\\b"
+                    "match": "\\b(\\d[\\d\\.]+)((f|p|n|u|m)?s)?\\b"
                 },
                 {
                     "name": "constant.numeric.parameter.uppercase.systemverilog",
@@ -335,22 +334,6 @@
                             "match": "\\w+"
                         }
                     ]
-                }
-            ]
-        },
-        "variables": {
-            "patterns": [
-                {
-                    "name": "variable.language.systemverilog",
-                    "match": "\\b(this)(?=\\.)"
-                },
-                {
-                    "name": "variable.name.systemverilog",
-                    "match": "(?=\\s|\\.| )(?!`)\\w+(?=\\.)"
-                },
-                {
-                    "name": "variable.name.systemverilog",
-                    "match": "(?=\\.)\\w+"
                 }
             ]
         },
