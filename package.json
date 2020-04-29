@@ -55,7 +55,7 @@
                     "systemverilog.includeIndexing": {
                         "type": "array",
                         "default": [
-                            "**/*.{sv, v, svh, vh}"
+                            "**/*.{sv,v,svh,vh}"
                         ],
                         "description": "Files being indexed(globPattern)"
                     },
