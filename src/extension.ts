@@ -69,7 +69,7 @@ export function activate(context: ExtensionContext) {
   // Providers
   const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
   const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
-  const defProvider = new SystemVerilogDefinitionProvider(symProvider);
+  const defProvider = new SystemVerilogDefinitionProvider();
   const hoverProvider = new SystemVerilogHoverProvider();
   const moduleInstantiator = new SystemVerilogModuleInstantiator();
 
