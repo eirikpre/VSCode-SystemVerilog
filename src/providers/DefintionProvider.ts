@@ -7,81 +7,89 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
     // Strings used in regex'es
     // private regex_module = '$\\s*word\\s*(';
-    private regex_port = '\\.word\\s*\\(';
-    private regex_package = '\\b(\\w+)\\s*::\\s*(word)';
+
+
 
     constructor(workspaceSymProvider: SystemVerilogWorkspaceSymbolProvider) {
         this.workspaceSymProvider = workspaceSymProvider;
     };
 
     public provideDefinition(document: TextDocument, position: Position, token: CancellationToken): Promise<Definition> {
-        return new Promise ( async (resolve, reject) => {
+        return new Promise<Definition>( async (resolve, reject) => {
             let range = document.getWordRangeAtPosition(position);
             let line = document.lineAt(position.line).text;
             let word = document.getText(range);
-
-            // Check for port
-            let match_port = line.match(this.regex_port.replace('word', word));
-            let match_package = line.match(this.regex_package.replace('word', word));
+            let results: Location[] = [];
 
             if (!range) {
-                reject();
+                return results
             }
 
             // Port
-            else if (match_port && match_port.index === range.start.character-1) {
-                let container = moduleFromPort(document, range)
+            await findPortInModule();
 
-                resolve(Promise.resolve(this.workspaceSymProvider.provideWorkspaceSymbols(container, token, true).then( res => {
-                    return Promise.all( res.map(x => findPortLocation(x, word)));
-                }).then( arrWithUndefined => {
-                    return clean(arrWithUndefined, undefined)
-                })));
-                reject();
-            }
+            // Package
+            await findInPackage();
 
-            // Parameter
-            else if (match_package && line.indexOf(word, match_package.index) == range.start.character) {
-                await this.workspaceSymProvider.provideWorkspaceSymbols(match_package[1], token, true)
-                .then( (ws_symbols: SymbolInformation[]) => {
-                    if (ws_symbols.length && ws_symbols[0].location) {
-                        return ws_symbols[0].location.uri;
-                    }
-                }).then( uri => {
-                    if (uri) {
-                        commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word).then( (symbols) => {
-                            let results: Location[] = [];
-                            getDocumentSymbols(results, symbols, word, uri, match_package[1]);
-                            resolve(results)
-                        })
-                    }
-                });
-                reject();
-            }
-
-            else {
-                // Lookup all symbols in the current document
+            // Lookup all symbols in the current document
+            if (results.length == 0) {
                 await commands.executeCommand("vscode.executeDocumentSymbolProvider", document.uri, word)
-                .then( (symbols : DocumentSymbol[]) => {
-                    let results: Location[] = [];
-                    getDocumentSymbols(results, symbols, word, document.uri);
-                    if (results.length !== 0) {
-                        resolve(results);
-                    }
-                }, ( reason: any ) => {
-                    console.log(reason);
-                });
+                    .then( (symbols : DocumentSymbol[]) => {
+                        getDocumentSymbols(results, symbols, word, document.uri);
+                    }, ( reason: any ) => {
+                        console.log(reason);
+                    });
+            }
 
+            // Look up all indexed symbols
+            if (results.length == 0) {
                 await this.workspaceSymProvider.provideWorkspaceSymbols(word, token, true)
                 .then( res => {
                     if (res.length !== 0) {
-                        resolve(res.map( x => x.location ));
+                        res.map( x => results.push(x.location) );
                     }
                 });
-                reject();
             }
-            reject();
-        });
+
+            resolve(results);
+
+
+            async function findInPackage() {
+                const regex_package = '\\b(\\w+)\\s*::\\s*(word)';
+                const match_package = line.match(regex_package.replace('word', word));
+                if (match_package && line.indexOf(word, match_package.index) == range.start.character) {
+                    // await this.workspaceSymProvider.provideWorkspaceSymbols(match_package[1], token, true)
+                    await commands.executeCommand("vscode.executeWorkspaceSymbolProvider",match_package[1], token, true)
+                    .then( (ws_symbols: SymbolInformation[]) => {
+                        if (ws_symbols.length && ws_symbols[0].location) {
+                                return ws_symbols[0].location.uri;
+                        }})
+                    .then( async (uri) => {
+                        await commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word)
+                            .then((symbols) => {
+                                getDocumentSymbols(results, symbols, word, uri, match_package[1]);
+                            });
+                    });
+                }
+            }
+
+            async function findPortInModule() {
+                const regex_port = '\\.word\\s*\\(';
+                const match_port = line.match(regex_port.replace('word', word));
+                if (match_port && match_port.index === range.start.character-1) {
+                    let container = moduleFromPort(document, range)
+                    await this.workspaceSymProvider.provideWorkspaceSymbols(container, token, true).then( res => {
+                        return Promise.all( res.map(x => findPortLocation(x, word)));
+                    }).then( arrWithUndefined => {
+                        arrWithUndefined.forEach( e => {
+                            if (e) {
+                                results.push(e)
+                            }
+                        })
+                    });
+                }
+            }
+        })
     }
 }
 
@@ -105,11 +113,13 @@ function getDocumentSymbols(results: Location[], entries, word: string, uri: Uri
                 });
             }
         }
-        if (entry.children) {
+        if (entry.children.length > 0) {
             getDocumentSymbols(results, entry.children, word, uri);
         }
     }
 }
+
+
 
 export function moduleFromPort(document, range): string {
     let text = document.getText(new Range(new Position(0,0), range.end))
@@ -134,9 +144,8 @@ export function moduleFromPort(document, range): string {
 }
 
 
-function findPortLocation(symbol: SystemVerilogSymbol, port:string): Thenable<Location> {
-    return workspace.openTextDocument(symbol.location.uri).then( doc => {
-
+function findPortLocation(symbol: SystemVerilogSymbol, port:string): Location | void {
+    workspace.openTextDocument(symbol.location.uri).then( doc => {
         for (let i = symbol.location.range.start.line; i<doc.lineCount; i++) {
             let line = doc.lineAt(i).text;
             if (line.match("\\bword\\b".replace('word', port))) {
@@ -144,14 +153,4 @@ function findPortLocation(symbol: SystemVerilogSymbol, port:string): Thenable<Lo
             }
         }
     });
-}
-
-function clean(arr: Array<any>, deleteValue): Array<any> {
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i] == deleteValue) {
-        arr.splice(i, 1);
-        i--;
-      }
-    }
-    return arr;
 }

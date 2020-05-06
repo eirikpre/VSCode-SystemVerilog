@@ -6,6 +6,8 @@
 `define MY_MACRO HELP! :-)
 
 class driver;
+  localparam P1 = pa_Package::PARAMETER;
+  localparam P2 = pa_Package::PARAMETER2;
 
   cat u_cat();
   123 u_123();
