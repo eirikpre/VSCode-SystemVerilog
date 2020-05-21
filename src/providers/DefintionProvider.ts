@@ -1,5 +1,4 @@
 import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode';
-import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
@@ -33,11 +32,11 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             // Look up all indexed symbols
             if (results.length == 0) {
                 await commands.executeCommand("vscode.executeWorkspaceSymbolProvider", word, token, true)
-                .then( (res: SymbolInformation[]) => {
-                    if (res.length !== 0) {
-                        res.map( x => results.push(x.location) );
-                    }
-                });
+                    .then( (res: SymbolInformation[]) => {
+                        if (res.length !== 0) {
+                            res.map( x => results.push(x.location) );
+                        }
+                    });
             }
 
             resolve(results);
@@ -53,10 +52,12 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                                     return ws_symbols[0].location.uri;
                             }})
                         .then( async (uri) => {
-                            await commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word)
-                                .then((symbols) => {
-                                    getDocumentSymbols(results, symbols, word, uri, match_package[1]);
-                                });
+                            if (uri) {
+                                await commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word)
+                                    .then((symbols) => {
+                                        getDocumentSymbols(results, symbols, word, uri, match_package[1]);
+                                    });
+                            }
                     });
                 }
             }
@@ -66,16 +67,18 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 const match_port = line.match(regex_port.replace('word', word));
                 if (match_port && match_port.index === range.start.character-1) {
                     let container = moduleFromPort(document, range)
-                    await commands.executeCommand("vscode.executeWorkspaceSymbolProvider", container, token, true)
-                        .then( (res: SymbolInformation[]) => {
-                            return Promise.all( res.map(x => findPortLocation(x, word)));
-                        }).then( arrWithUndefined => {
-                            arrWithUndefined.forEach( e => {
-                                if (e) {
-                                    results.push(e)
-                                }
-                            })
-                        });
+                    if (container) {
+                        await commands.executeCommand("vscode.executeWorkspaceSymbolProvider", container, token, true)
+                            .then( (res: SymbolInformation[]) => {
+                                return Promise.all( res.map(x => findPortLocation(x, word)));
+                            }).then( arrWithUndefined => {
+                                arrWithUndefined.forEach( e => {
+                                    if (e) {
+                                        results.push(e)
+                                    }
+                                })
+                            });
+                    }
                 }
             }
         })
