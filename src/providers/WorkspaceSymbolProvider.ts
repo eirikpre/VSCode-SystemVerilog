@@ -4,9 +4,9 @@ import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
-    /* 
+    /*
     * this.symbols: filePath => Array<SystemVerilogSymbol>
-    * each entry's key represents a file path, 
+    * each entry's key represents a file path,
     * and the entry's value is a list of the symbols that exist in the file
     */
     public indexer: SystemVerilogIndexer;
@@ -16,23 +16,26 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         this.indexer = indexer;
     };
 
-    /** 
+    /**
         Queries a symbol from `this.symbols`, performs an exact match if `exactMatch` is set to true,
         and a partial match if it's not passed or set to false.
 
-        @param query the symbol's name
+        @param query the symbol's name, if it is prepended with a ¤ it signifies an exact match
         @param token the CancellationToken
-        @param exactMatch whether to perform an exact or a partial match
-        @return an array of matching SystemVerilogSymbol 
+        @return an array of matching SystemVerilogSymbol
     */
-    public provideWorkspaceSymbols(query: string, token: CancellationToken, exactMatch?: Boolean): Thenable<Array<SystemVerilogSymbol>> {
+    public provideWorkspaceSymbols(query: string, token: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve, reject) => {
             if (query==undefined || query.length === 0) {
                 resolve(this.indexer.mostRecentSymbols);
             } else {
                 const pattern = new RegExp(".*" + query.replace(" ", "").split("").map((c) => c).join(".*") + ".*", 'i');
                 let results = new Array<SystemVerilogSymbol>();
-
+                let exactMatch: Boolean = false;
+                if (query.startsWith("¤")) {
+                    exactMatch = true
+                    query = query.substr(1)
+                }
                 this.indexer.symbols.forEach(list => {
                     list.forEach(symbol => {
                         if (exactMatch === true) {
@@ -52,7 +55,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         });
     }
 
-    /**  
+    /**
         Queries a `module` with a given name from `this.symbols`, performs an exact match if `exactMatch` is set to true,
         and a partial match if it's not passed or set to false.
         @param query the symbol's name
