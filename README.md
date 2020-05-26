@@ -47,18 +47,17 @@ This package adds language support for Verilog/SystemVerilog. It supports System
 - `systemverilog.trace.server`: _String_, drop down to select verbosity of LSP message tracing
 
 ## Known Issues
-- Starting up may be a little bit slow if it's a large workspace with many `.sv` files because of indexing
-- If you experience the slowness, use the setting: `systemverilog.forceFastIndexing`
+- Initial indexation might hog CPU/RAM when looking through files in huge workspaces
 - `randcase` is not matching with `endcase` brackets properly
 
 ## Future
 - Tree view of module hierarchy
 - References document
-- IntelliSense support
+- IntelliSense support (CompletionProvider)
 - Back-end Language server for Systemverilog
 
 ## Release Notes
-See changelog for mode details
+See changelog for more details
 ### 0.10
 - Folders outside the workspace can now be included with `systemverilog.includeIndexing`
 - It now saves the indexed database between runs,
