@@ -70,13 +70,12 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                     if (container) {
                         await commands.executeCommand("vscode.executeWorkspaceSymbolProvider", "¤"+container)
                             .then( (res: SymbolInformation[]) => {
-                                return Promise.all( res.map(x => findPortLocation(x, word)));
-                            }).then( arrWithUndefined => {
-                                arrWithUndefined.forEach( e => {
-                                    if (e) {
-                                        results.push(e)
-                                    }
-                                })
+                                return Promise.all( res.map( async (x) => {
+                                    return await commands.executeCommand("vscode.executeDocumentSymbolProvider", x.location.uri, word)
+                                        .then( (symbols) => {
+                                            getDocumentSymbols(results, symbols, word, x.location.uri, container)
+                                        });
+                                }));
                             });
                     }
                 }
@@ -133,16 +132,4 @@ export function moduleFromPort(document, range): string {
                 return match_simple[1]
         }
     }
-}
-
-
-function findPortLocation(symbol: SymbolInformation, port:string): Location | void {
-    workspace.openTextDocument(symbol.location.uri).then( doc => {
-        for (let i = symbol.location.range.start.line; i<doc.lineCount; i++) {
-            let line = doc.lineAt(i).text;
-            if (line.match("\\bword\\b".replace('word', port))) {
-                return new Location(symbol.location.uri, new Position(i, line.indexOf(port)));
-            }
-        }
-    });
 }
