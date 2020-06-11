@@ -13,7 +13,7 @@ export class SystemVerilogHoverProvider implements HoverProvider {
             resolve(commands.executeCommand(
                 "vscode.executeDefinitionProvider", document.uri, position, token)
                 .then((loc: Location[]): Thenable<string> => {
-                    if (loc.length == 0) { Promise.reject() }
+                    if (loc.length == 0) { return undefined }
                     return workspace.openTextDocument(loc[0].uri).then(doc => {
                         return doc.lineAt(loc[0].range.start.line).text.trim();
                     });
