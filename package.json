@@ -69,6 +69,11 @@
                         "default": true,
                         "description": "Force indexing to use fast regex parsing"
                     },
+                    "systemverilog.enableIncrementalIndexing": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable incremental indexation as you open files"
+                    },
                     "systemverilog.documentSymbolsPrecision": {
                         "type": "string",
                         "enum": [

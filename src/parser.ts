@@ -70,7 +70,7 @@ export class SystemVerilogParser {
         /(?:(\[[^\]]*?\]\s*)*?|(\([\w\W]*?\))?)\s*/,
         /\s*(?<end>;|,|=)/
     ].map(x => (typeof x === 'string') ?  x : x.source).join(''), 'mg');
-    
+
     private r_assert: RegExp = new RegExp([
         /(?<=^\s*(?<name>\w+)\s*:\s*)/,
         /(?<type>assert\b)/

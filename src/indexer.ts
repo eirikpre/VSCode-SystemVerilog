@@ -1,4 +1,5 @@
 import * as glob from 'glob'
+import * as minimatch from 'minimatch'
 import { StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode';
 import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
@@ -30,7 +31,7 @@ export class SystemVerilogIndexer {
         this.statusbar = statusbar;
         this.parser = parser;
         this.outputChannel = channel;
-        this.symbols = new Map<string, Array<SystemVerilogSymbol>>()
+        this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
     };
 
     /**
@@ -160,8 +161,14 @@ export class SystemVerilogIndexer {
         return await new Promise( () => {
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 return;
-            } else {
+            } else if (!workspace.getConfiguration().get('systemverilog.enableIncrementalIndexing')) {
+                return;
+            } else if (!minimatch(
+                    document.uri.toString(),
+                    workspace.getConfiguration().get('systemverilog.excludeIndexing').toString())) {
                 return this.processFile(document.uri)
+            } else {
+                return;
             }
         })
     }
