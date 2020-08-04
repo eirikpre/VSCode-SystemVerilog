@@ -195,6 +195,110 @@
                 "fileMatch": "tasks.json",
                 "url": "./schemas/tasks.schema.json"
             }
+        ],
+        "problemMatchers": [
+            {
+                "name": "vlog-error",
+                "owner": "Questasim",
+                "source": "systemverilog",
+                "severity": "error",
+                "fileLocation": "autoDetect",
+                "pattern":[
+                    {
+                        "regexp": "\\*\\* Error: ([^:]*?)\\((\\d+)\\): \\((.*?)\\) (.*)",
+                        "file": 1,
+                        "line": 2,
+                        "code": 3,
+                        "message": 4
+                    }
+                ]
+            },
+            {
+                "name": "vlog-warn",
+                "owner": "Questasim",
+                "source": "systemverilog",
+                "severity": "warning",
+                "fileLocation": "autoDetect",
+                "pattern":[
+                    {
+                        "regexp": "\\*\\* Warning: ([^:]*?)\\((\\d+)\\): \\((.*?)\\) (.*)",
+                        "file": 1,
+                        "line": 2,
+                        "code": 3,
+                        "message": 4
+                    }
+                ]
+            },
+            {
+                "name": "vlog-info",
+                "owner": "Questasim",
+                "source": "systemverilog",
+                "severity": "info",
+                "fileLocation": "autoDetect",
+                "pattern":[
+                    {
+                        "regexp": "\\*\\* (Info|Note \\(downgraded\\)): ([^:]*?)\\((\\d+)\\): \\((.*?)\\) (.*)",
+                        "file": 2,
+                        "line": 3,
+                        "code": 4,
+                        "message": 5
+                    }
+                ]
+            },
+            {
+                "name": "vsim-error",
+                "owner": "Questasim",
+                "source": "systemverilog",
+                "severity": "error",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "\\*\\* Error: (.*)",
+                        "message": 1
+                    },
+                    {
+                        "regexp": ".*? File: (.+?) Line: (\\d+)",
+                        "file": 1,
+                        "line": 2
+                    }
+                ]
+            },
+            {
+                "name": "vsim-warning",
+                "owner": "Questasim",
+                "source": "systemverilog",
+                "severity": "warning",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "\\*\\* Warning: (.*)",
+                        "message": 1
+                    },
+                    {
+                        "regexp": ".*? File: (.+?) Line: (\\d+)",
+                        "file": 1,
+                        "line": 2
+                    }
+                ]
+            },
+            {
+                "name": "vsim-info",
+                "owner": "Questasim",
+                "source": "systemverilog",
+                "severity": "info",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "\\*\\* Info: (.*)",
+                        "message": 1
+                    },
+                    {
+                        "regexp": ".*? File: (.+?) Line: (\\d+)",
+                        "file": 1,
+                        "line": 2
+                    }
+                ]
+            }
         ]
     },
     "scripts": {
