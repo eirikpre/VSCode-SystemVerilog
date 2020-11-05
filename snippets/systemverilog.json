@@ -82,7 +82,7 @@
     "elseif": {
         "prefix": "else if",
         "body": [
-            "else if ${1:condition} begin",
+            "else if (${1:condition}) begin",
             "\t${2:pass}",
             "end"
         ],
