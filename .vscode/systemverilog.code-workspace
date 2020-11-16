@@ -4,13 +4,16 @@
             "path": ".."
         },
         {
-            "path": "C:\\Users\\eipr\\Desktop\\SystemVerilog.wiki"
+            "path": "..\\..\\SystemVerilog.wiki"
         }
     ],
     "settings": {
         "typescript.tsc.autoDetect": "off",
         "typescript.tsdk": "node_modules\\typescript\\lib",
         "terminal.integrated.shell.windows": null,
-        "terminal.integrated.shellArgs.windows": [""]
+        "terminal.integrated.shellArgs.windows": [""],
+        "search.exclude": {
+            "out": true // set this to false to include "out" folder in search results
+        },
     }
 }
