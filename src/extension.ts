@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import {
+  tasks,
   workspace,
   window,
   languages,
@@ -24,6 +25,7 @@ import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolP
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
+import { SystemVerilogTaskProvider } from './providers/TaskProvider';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexer } from './indexer';
 import { SystemVerilogSymbol } from './symbol';
@@ -60,8 +62,10 @@ export function activate(context: ExtensionContext) {
     const defProvider = new SystemVerilogDefinitionProvider();
     const hoverProvider = new SystemVerilogHoverProvider();
     const moduleInstantiator = new SystemVerilogModuleInstantiator();
+    const taskProvider = new SystemVerilogTaskProvider()
 
     context.subscriptions.push(statusBar);
+    context.subscriptions.push(tasks.registerTaskProvider("systemverilog", taskProvider))
     context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
     context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
