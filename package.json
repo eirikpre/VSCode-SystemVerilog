@@ -298,6 +298,40 @@
                         "line": 2
                     }
                 ]
+            },
+            {
+                "name": "verilator-error",
+                "owner": "Verilator",
+                "source": "systemverilog",
+                "severity": "error",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "%Error(-[A-Z0-9]+)?: ((\\S+):(\\d+):((\\d+):)? )?(.*)$",
+                        "severity": 1,
+                        "file": 2,
+                        "line": 3,
+                        "column": 4,
+                        "message": 5
+                    }
+                ]
+            },
+            {
+                "name": "verilator-warning",
+                "owner": "Verilator",
+                "source": "systemverilog",
+                "severity": "warning",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "%Warning(-[A-Z0-9]+)?: ((\\S+):(\\d+):((\\d+):)? )?(.*)$",
+                        "severity": 1,
+                        "file": 2,
+                        "line": 3,
+                        "column": 4,
+                        "message": 5
+                    }
+                ]
             }
         ]
     },

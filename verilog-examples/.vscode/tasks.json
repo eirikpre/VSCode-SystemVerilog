@@ -1,0 +1,41 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "SystemVerilog: Verilator",
+            "command": "verilator",
+            "args": [
+                "-sv", "--language", "1800-2012",
+                "--lint-only",
+                "${file}"
+            ],
+            "problemMatcher": {
+                "owner": "systemverilog",
+                "pattern": [
+                    {
+                        "regexp": "%((?:Warning|Error)(?:-[A-Z0-9]+)?): ((\\S+):(\\d+):((\\d+):)? )?(.*)$",
+                        "severity": 1,
+                        "file": 2,
+                        "line": 3,
+                        "column": 4,
+                        "message": 5
+                    }
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        }
+    ]
+}
