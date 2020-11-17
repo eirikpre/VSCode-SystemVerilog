@@ -8,6 +8,11 @@ All notable changes to the "VSCode SystemVerilog - Language Support" extension w
 - Back-end Language server for Systemverilog
 - Complete syntax highlighting
 
+## [0.10.11]
+- added problem matchers
+- Elsif snippet fix
+- npm package update
+
 ## [0.10.10]
 - Added setting to disable incremental indexing
 - Bugfixes
