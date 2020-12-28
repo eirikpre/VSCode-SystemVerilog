@@ -13,6 +13,7 @@ import { ANTLRBackend } from '../compiling/ANTLRBackend';
 const testFolderLocation = '../../src/test/test-files/ANTLRCompiler.test';
 const TEST_LANGUAGE_ID = 'typescript';
 
+/* eslint-disable no-underscore-dangle */
 class TestStream extends Duplex {
     _write(chunk: string, _encoding: string, done: () => void) {
         this.emit('data', chunk);
@@ -20,6 +21,7 @@ class TestStream extends Duplex {
     }
     _read(_size: number) {}
 }
+/* eslint-enable no-underscore-dangle */
 
 const up = new TestStream();
 const down = new TestStream();
@@ -63,7 +65,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -95,7 +97,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -127,7 +129,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -152,7 +154,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -177,7 +179,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -209,7 +211,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -241,7 +243,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
@@ -265,7 +267,7 @@ suite('ANTLRBackend Tests', () => {
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length === 0) await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
         const documentCompiler = new ANTLRBackend();
 
