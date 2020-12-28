@@ -39,7 +39,7 @@ suite('VCSCompiler Tests', () => {
         let stdout = fs.readFileSync(stderrFile).toString();
         stdout = stderrSetUp(stdout, compiledFilePath);
 
-        documentCompiler.parseDiagnostics(undefined, stdout, undefined, document, compiledFilePath, diagnosticCollection);
+        documentCompiler.parseDiagnostics(undefined, stdout, undefined, document, compiledFilePath, diagnosticCollection); // prettier-ignore
 
         let collection = diagnosticCollection.get(document.uri);
         assert.equal(collection.length, 4);
