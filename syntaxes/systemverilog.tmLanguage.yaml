@@ -522,11 +522,11 @@ repository:
         name: keyword.operator.comparison.systemverilog
       - match: <<|<<<|>>|>>>
         name: keyword.operator.bitwise.shift.c
-      - match: '\?'
-        name: keyword.operator.ternary.systemverilog
+      # - match: '\?|:'
+      #   name: keyword.operator.ternary.systemverilog
       - match: '@|#|->|->>'
         name: keyword.operator.channel.systemverilog
-      - match: '&|\||\^|~|\^~|~\^|{|''{|}|:'
+      - match: '&|\||\^|~|\^~|~\^|{|''{|}|:|\?'
         name: keyword.operator.bitwise.systemverilog
   comments:
     patterns:
