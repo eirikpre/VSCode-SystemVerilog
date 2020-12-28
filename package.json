@@ -1,7 +1,7 @@
 {
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
-    "description": "Language support for Verilog / SystemVerilog",
+    "description": "Language support for Verilog and SystemVerilog.",
     "version": "0.10.11",
     "publisher": "eirikpre",
     "author": {
@@ -332,6 +332,38 @@
                         "message": 5
                     }
                 ]
+            },
+            {
+                "name": "verible-error",
+                "owner": "Verible",
+                "source": "systemverilog",
+                "severity": "error",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "(.+?):(\\d+):(\\d+):\\s+(.+?)\\s+\\(https://github\\.com/google/verible\\)\\.$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                ]
+            },
+            {
+                "name": "verible-warning",
+                "owner": "Verible",
+                "source": "systemverilog",
+                "severity": "warning",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "(.+?):(\\d+):(\\d+):\\s+(.+?)\\s+\\[(Style:\\s+[-\\w]+)\\]\\s+\\[([-\\w]+)\\]$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                ]
             }
         ]
     },
@@ -341,27 +373,40 @@
         "watch": "tsc -watch -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "coverage": "nyc npm test",
-        "antlr4ts_compile": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build"
+        "antlr4ts_compile": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
+        "lint": "eslint -c .eslintrc --ext .ts src",
+        "pretty": "prettier --write \"**/*\"",
+        "pretty:check": "prettier --check \"**/*\""
     },
     "devDependencies": {
         "@types/glob": "^7.1.3",
         "@types/mocha": "^5.2.7",
-        "@types/node": "^12.19.4",
+        "@types/node": "^12.19.11",
         "@types/vscode": "^1.51.0",
+        "@typescript-eslint/eslint-plugin": "^4.11.0",
+        "@typescript-eslint/parser": "^4.11.0",
         "antlr4ts-cli": "^0.5.0-alpha.3",
+        "eslint": "^7.16.0",
+        "eslint-config-airbnb-typescript": "^12.0.0",
+        "eslint-config-prettier": "^7.1.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jsx-a11y": "^6.4.1",
+        "eslint-plugin-react": "^7.21.5",
         "languages": "0.1.3",
         "mocha": "^6.2.3",
         "mocha-multi-reporters": "^1.5.1",
-        "nyc": "^14.1.1",
+        "nyc": "^15.1.0",
+        "prettier": "^2.2.1",
         "typescript": "^3.9.7",
         "vscode-test": "^1.4.1"
     },
     "dependencies": {
-        "antlr4": "^4.8.0",
+        "antlr4": "^4.9.0",
         "antlr4ts": "^0.5.0-alpha.3",
         "child_process": "^1.0.2",
         "glob": "^7.1.6",
-        "uri-js": "^4.2.2",
+        "minimatch": "^3.0.4",
+        "uri-js": "^4.4.0",
         "vscode-languageclient": "^5.2.1",
         "vscode-languageserver": "^5.2.1"
     }

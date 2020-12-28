@@ -1,77 +1,90 @@
-
+import { CompletionItemProvider, CompletionItem, TextDocument, Position, CancellationToken, CompletionContext, commands, CompletionItemKind } from 'vscode'; // prettier-ignore
 import { SystemVerilogIndexer } from '../indexer';
-import { CompletionItemProvider, CompletionItem, TextDocument, Position, CancellationToken, CompletionContext, commands, CompletionItemKind } from 'vscode';
 import { SystemVerilogSymbol } from '../symbol';
 
 // See test/SymbolKind_icons.png for an overview of the icons
 export function getCompletionItemKind(name: String): CompletionItemKind {
     switch (name) {
         case 'parameter':
-        case 'localparam': return CompletionItemKind.Property;
+        case 'localparam':
+            return CompletionItemKind.Property;
         case 'package':
-        case 'import': return CompletionItemKind.File;
+        case 'import':
+            return CompletionItemKind.File;
         case 'wire':
         case 'reg':
-        case 'logic': return CompletionItemKind.Variable;
-        case 'string': return CompletionItemKind.Text;
-        case 'class': return CompletionItemKind.Class;
-        case 'task': return CompletionItemKind.Method;
-        case 'function': return CompletionItemKind.Function;
-        case 'interface': return CompletionItemKind.Interface;
-        case 'event': return CompletionItemKind.Event;
-        case 'struct': return CompletionItemKind.Struct;
+        case 'logic':
+            return CompletionItemKind.Variable;
+        case 'string':
+            return CompletionItemKind.Text;
+        case 'class':
+            return CompletionItemKind.Class;
+        case 'task':
+            return CompletionItemKind.Method;
+        case 'function':
+            return CompletionItemKind.Function;
+        case 'interface':
+            return CompletionItemKind.Interface;
+        case 'event':
+            return CompletionItemKind.Event;
+        case 'struct':
+            return CompletionItemKind.Struct;
         case 'program':
         case 'module':
-        default: return CompletionItemKind.Reference;
+        default:
+            return CompletionItemKind.Reference;
     }
 }
 
-
 export class SystemVerilogCompletionItemProvider implements CompletionItemProvider {
     private indexer: SystemVerilogIndexer;
-    private globals: CompletionItem[]
-    private known_types: CompletionItem[]
+    private globals: CompletionItem[];
+    private known_types: CompletionItem[];
 
     constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
 
         // See CompletionItemKind for overview
         this.globals = [
-            new CompletionItem("begin"      ,CompletionItemKind.Module),
-            new CompletionItem("end"        ,CompletionItemKind.Module),
-            new CompletionItem("parameter"  ,CompletionItemKind.Constant),
-            new CompletionItem("localparam" ,CompletionItemKind.Constant),
-            new CompletionItem("logic"      ,CompletionItemKind.Variable),
-
+            new CompletionItem('begin', CompletionItemKind.Module),
+            new CompletionItem('end', CompletionItemKind.Module),
+            new CompletionItem('parameter', CompletionItemKind.Constant),
+            new CompletionItem('localparam', CompletionItemKind.Constant),
+            new CompletionItem('logic', CompletionItemKind.Variable)
         ];
 
         this.known_types = [
-            new CompletionItem("input"   ,CompletionItemKind.Interface),
-            new CompletionItem("output"  ,CompletionItemKind.Interface),
+            new CompletionItem('input', CompletionItemKind.Interface),
+            new CompletionItem('output', CompletionItemKind.Interface)
         ];
-
-    };
+    }
 
     //Entrypoint for getting completion items
-    provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): Promise<CompletionItem[]>{
-        return new Promise( (resolve) => {
+    provideCompletionItems(
+        document: TextDocument,
+        position: Position,
+        token: CancellationToken,
+        context: CompletionContext
+    ): Promise<CompletionItem[]> {
+        return new Promise((resolve) => {
             let completionItems: CompletionItem[] = new Array<CompletionItem>();
             completionItems = completionItems.concat(this.globals);
             // var lookupRange = document.getWordRangeAtPosition(position);
             // var lookupTerm = document.getText(lookupRange);
 
             // get all DocumentSymbolproviders and step to each of them
-            return commands.executeCommand("vscode.executeDocumentSymbolProvider", document.uri)
-            .then( (symbols : SystemVerilogSymbol[]) => {
-                symbols.forEach( (value: SystemVerilogSymbol) => {
-                   console.log(value.containerName);
-                   completionItems.push(this.constructModuleItem(value));
+            return commands
+                .executeCommand('vscode.executeDocumentSymbolProvider', document.uri)
+                .then((symbols: SystemVerilogSymbol[]) => {
+                    symbols.forEach((value: SystemVerilogSymbol) => {
+                        console.log(value.containerName);
+                        completionItems.push(this.constructModuleItem(value));
+                    });
+                })
+                .then((_) => {
+                    return resolve(completionItems);
                 });
-            }).then(_ => {
-                return resolve(completionItems)
-            });
 
-            
             // this.indexer.provideWorkspaceSymbols(lookupTerm, token, false).then((symbols: SystemVerilogSymbol[]) => {
             //     symbols.forEach((value: SystemVerilogSymbol) => {
             //         if(value.kind = SymbolKind.Module){
@@ -81,10 +94,9 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             //     }, completionItems);
             //     resolve(completionItems);
             // });
-        // });
-        })
-    };
-
+            // });
+        });
+    }
 
     // Contruct completion item for all system verilog module items
     constructModuleItem(symbol: SystemVerilogSymbol): CompletionItem {
@@ -101,8 +113,6 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
     //     item.insertText = new SnippetString(this.createModuleInsertionText(item));
     //     return item;
     // };
-
-
 
     // createModuleInsertionText(item: CompletionItem) : string {
 
@@ -160,4 +170,4 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
     //     insertText = insertText + "\n);";
     //     return insertText;
     // };
-};
+}

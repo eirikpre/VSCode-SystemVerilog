@@ -1,4 +1,3 @@
-// A launch configuration that launches the extension inside a new window
 {
     "version": "0.2.0",
     "configurations": [
@@ -9,11 +8,9 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 // "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceRoot}",
+                "--extensionDevelopmentPath=${workspaceRoot}"
             ],
-            "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
-            ],
+            "outFiles": ["${workspaceRoot}/out/**/*.js"],
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -42,7 +39,7 @@
     "compounds": [
         {
             "name": "Client + Server",
-            "configurations": ["Extension", "Attach"],
+            "configurations": ["Extension", "Attach"]
         }
     ]
 }

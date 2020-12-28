@@ -9,23 +9,21 @@ import * as uriJs from 'uri-js';
 */
 export function getPathFromUri(uri: string, rootPath: string): string {
     if (!uri || !rootPath) {
-        return "";
+        return '';
     }
 
-    uri = decodeURIComponent(uri); //convert hex chars to ASCII
-
-    let parsedUri = uriJs.parse(uri);
+    const lUri = decodeURIComponent(uri); // convert hexadecimal characters to ASCII
+    const parsedUri = uriJs.parse(lUri);
     if (!parsedUri.path) {
-        return "";
+        return '';
     }
-
-    rootPath = rootPath.replace(/\\/g, '/');
-    let regex = new RegExp("/?" + rootPath + "(.*)");
 
     let matches;
-    if ((matches = regex.exec(parsedUri.path)) && matches.length > 1) {
-        return rootPath + matches[1];
+    const lRootPath = rootPath.replace(/\\/g, '/');
+    const regex = new RegExp(`/?${lRootPath}(.*)`);
+    if ((matches = regex.exec(parsedUri.path)) != null && matches.length > 1) {
+        return lRootPath + matches[1];
     }
 
-    return "";
+    return '';
 }

@@ -1,4 +1,4 @@
-import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position, workspace, CommentThreadCollapsibleState } from 'vscode'
+import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position, workspace } from 'vscode' // prettier-ignore
 import { SystemVerilogParser } from '../parser';
 import { SystemVerilogSymbol } from '../symbol';
 
@@ -10,8 +10,8 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     constructor(parser) {
         this.parser = parser;
         const settings = workspace.getConfiguration();
-        this.precision = settings.get("systemverilog.documentSymbolsPrecision");
-        if (this.precision != "full") {
+        this.precision = settings.get('systemverilog.documentSymbolsPrecision');
+        if (this.precision !== 'full') {
             this.depth = 1;
         }
     }
@@ -22,11 +22,14 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         otherwise add the objects to an empty list and return it.
 
         @param document The document in which the command was invoked.
-        @param token A cancellation token.
+        @param _token A cancellation token.
         @return A list of `SystemVerilogSymbol` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    public provideDocumentSymbols(document: TextDocument, token?: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
+    public provideDocumentSymbols(
+        document: TextDocument,
+        _token?: CancellationToken
+    ): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
             /*
             Matches the regex and uses the index from the regex to find the position
@@ -39,35 +42,35 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     }
 }
 
-
 // Function to easily show all the SymbolKind icons
 function show_SymbolKinds(uri: Uri): Array<SymbolInformation> {
+    // prettier-ignore
     return new Array<SymbolInformation>(
-        new SymbolInformation("File",           SymbolKind.File,          "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Module",         SymbolKind.Module,        "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Namespace",      SymbolKind.Namespace,     "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Package",        SymbolKind.Package,       "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Class",          SymbolKind.Class,         "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Method",         SymbolKind.Method,        "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Property",       SymbolKind.Property,      "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Field",          SymbolKind.Field,         "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Constructor",    SymbolKind.Constructor,   "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Enum",           SymbolKind.Enum,          "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Interface",      SymbolKind.Interface,     "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Function",       SymbolKind.Function,      "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Variable",       SymbolKind.Variable,      "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Constant",       SymbolKind.Constant,      "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("String",         SymbolKind.String,        "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Number",         SymbolKind.Number,        "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Boolean",        SymbolKind.Boolean,       "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Array",          SymbolKind.Array,         "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Object",         SymbolKind.Object,        "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Key",            SymbolKind.Key,           "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Null",           SymbolKind.Null,          "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("EnumMember",     SymbolKind.EnumMember,    "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Struct",         SymbolKind.Struct,        "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Event",          SymbolKind.Event,         "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("Operator",       SymbolKind.Operator,      "", new Location(uri, new Position(0,0))),
-        new SymbolInformation("TypeParameter",  SymbolKind.TypeParameter, "", new Location(uri, new Position(0,0)))
+        new SymbolInformation("File",          SymbolKind.File,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Module",        SymbolKind.Module,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Namespace",     SymbolKind.Namespace,     "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Package",       SymbolKind.Package,       "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Class",         SymbolKind.Class,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Method",        SymbolKind.Method,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Property",      SymbolKind.Property,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Field",         SymbolKind.Field,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constructor",   SymbolKind.Constructor,   "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Enum",          SymbolKind.Enum,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Interface",     SymbolKind.Interface,     "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Function",      SymbolKind.Function,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Variable",      SymbolKind.Variable,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Constant",      SymbolKind.Constant,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("String",        SymbolKind.String,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Number",        SymbolKind.Number,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Boolean",       SymbolKind.Boolean,       "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Array",         SymbolKind.Array,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Object",        SymbolKind.Object,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Key",           SymbolKind.Key,           "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Null",          SymbolKind.Null,          "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("EnumMember",    SymbolKind.EnumMember,    "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Struct",        SymbolKind.Struct,        "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Event",         SymbolKind.Event,         "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("Operator",      SymbolKind.Operator,      "", new Location(uri, new Position(0,0))),
+        new SymbolInformation("TypeParameter", SymbolKind.TypeParameter, "", new Location(uri, new Position(0,0)))
     );
 }

@@ -88,4 +88,3 @@ allowing quickstart on previous workspaces
 - Indexing of every module/interface/program/class in workspace
 ### 0.1
 - Alpha 1 release with syntax highlighting, and go to symbols
-

@@ -1,7 +1,6 @@
 # Change Log
 All notable changes to the "VSCode SystemVerilog - Language Support" extension will be documented in this file.
 
-
 ## [Unreleased]
 - Tree view of module hierarchy, given a top module
 - IntelliSense support

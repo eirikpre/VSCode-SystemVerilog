@@ -1,5 +1,3 @@
-/* Defines tools that require `vscode` module */
-
 import { TextDocument } from 'vscode';
 
 /**
@@ -9,15 +7,7 @@ import { TextDocument } from 'vscode';
     @return true if the document is a SystemVerilog file
 */
 export function isSystemVerilogDocument(document: TextDocument | undefined): boolean {
-    if (!document) {
-        return false;
-    }
-
-    if (document.languageId === "systemverilog") {
-        return true;
-    }
-
-    return false;
+    return document?.languageId === 'systemverilog';
 }
 
 /**
@@ -26,14 +16,6 @@ export function isSystemVerilogDocument(document: TextDocument | undefined): boo
     @param document the document to check
     @return true if the document is a Verilog file
 */
-export function isVerilogDocument(document: TextDocument): boolean {
-    if (!document) {
-        return false;
-    }
-
-    if (document.languageId === "verilog") {
-        return true;
-    }
-
-    return false;
+export function isVerilogDocument(document: TextDocument | undefined): boolean {
+    return document?.languageId === 'verilog';
 }
