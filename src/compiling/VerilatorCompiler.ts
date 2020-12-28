@@ -58,24 +58,24 @@ export class VerilatorCompiler extends DocumentCompiler {
         // Remove multiple new lines characters
         stderr = stderr.replace(/\r\n|\n|\r/g, '\n').trim();
 
-        let errors = stderr.split(/\r|\n/g);
+        const errors = stderr.split(/\r|\n/g);
 
-        let visitedDocuments = new Map<string, boolean>();
+        const visitedDocuments = new Map<string, boolean>();
 
-        let previousLine = undefined;
+        let previousLine;
 
         for (let i = 0; i < errors.length; i++) {
-            let error = errors[i].trim();
-            let diagnosticData: DiagnosticData = new DiagnosticData();
-            let matches = undefined;
+            const error = errors[i].trim();
+            const diagnosticData: DiagnosticData = new DiagnosticData();
+            let matches;
 
             if ((matches = this.regexError.exec(error))) {
                 if (matches && matches.length > 4) {
-                    diagnosticData.filePath = matches[1];
-                    diagnosticData.line = parseInt(matches[2]) - 1;
+                    diagnosticData.filePath = matches[1]; // eslint-disable-line prefer-destructuring
+                    diagnosticData.line = parseInt(matches[2], 10) - 1;
                     if (matches[3] !== undefined) {
-                        diagnosticData.charPosition = parseInt(matches[3].substr(1)) - 1;
-                        let symbol = this.regexOffendPart.exec(error);
+                        diagnosticData.charPosition = parseInt(matches[3].substr(1), 10) - 1;
+                        const symbol = this.regexOffendPart.exec(error);
                         diagnosticData.offendingSymbol = symbol ? symbol[1] : null;
                     }
                     diagnosticData.problem = matches[4].trim();
@@ -83,28 +83,28 @@ export class VerilatorCompiler extends DocumentCompiler {
                 }
             } else if ((matches = this.regexErrorWarning.exec(error.trim()))) {
                 if (matches && matches.length > 4) {
-                    diagnosticData.filePath = matches[2];
-                    diagnosticData.line = parseInt(matches[3]) - 1;
+                    diagnosticData.filePath = matches[2]; // eslint-disable-line prefer-destructuring
+                    diagnosticData.line = parseInt(matches[3], 10) - 1;
                     if (matches[4] !== undefined) {
-                        diagnosticData.charPosition = parseInt(matches[4].substr(1)) - 1;
-                        let symbol = this.regexOffendPart.exec(error);
+                        diagnosticData.charPosition = parseInt(matches[4].substr(1), 10) - 1;
+                        const symbol = this.regexOffendPart.exec(error);
                         diagnosticData.offendingSymbol = symbol ? symbol[1] : null;
                     }
-                    diagnosticData.problem = matches[1] + ': ' + matches[3] + matches[4];
+                    diagnosticData.problem = `${matches[1]}: ${matches[3]}${matches[4]}`;
                     diagnosticData.problem = diagnosticData.problem.trim();
                     diagnosticData.diagnosticSeverity = DiagnosticSeverity.Error;
                 }
             } else if ((matches = this.regexWarningSuggest.exec(error.trim()))) {
                 if ((matches = this.regexWarning.exec(error.trim()))) {
                     if (matches && matches.length > 5) {
-                        diagnosticData.filePath = matches[2];
-                        diagnosticData.line = parseInt(matches[3]) - 1;
+                        diagnosticData.filePath = matches[2]; // eslint-disable-line prefer-destructuring
+                        diagnosticData.line = parseInt(matches[3], 10) - 1;
                         if (matches[4] !== undefined) {
-                            diagnosticData.charPosition = parseInt(matches[4].substr(1)) - 1;
-                            let symbol = this.regexOffendPart.exec(error);
+                            diagnosticData.charPosition = parseInt(matches[4].substr(1), 10) - 1;
+                            const symbol = this.regexOffendPart.exec(error);
                             diagnosticData.offendingSymbol = symbol ? symbol[1] : null;
                         }
-                        diagnosticData.problem = matches[1] + ': ' + matches[5];
+                        diagnosticData.problem = `${matches[1]}: ${matches[5]}`;
                         diagnosticData.problem = diagnosticData.problem.trim();
                         diagnosticData.diagnosticSeverity = DiagnosticSeverity.Warning;
                     }
@@ -112,7 +112,7 @@ export class VerilatorCompiler extends DocumentCompiler {
                     matches = this.regexWarningSuggest.exec(error.trim());
                     if (matches && matches.length > 2) {
                         diagnosticData.filePath = documentFilePath;
-                        diagnosticData.problem = matches[1] + ': ' + matches[2];
+                        diagnosticData.problem = `${matches[1]}: ${matches[2]}`;
                         diagnosticData.diagnosticSeverity = DiagnosticSeverity.Information;
                     }
                 }
@@ -152,14 +152,14 @@ export class VerilatorCompiler extends DocumentCompiler {
     skipCannotFindModuleTrailingErrors(errors, i, notFoundModule): number {
         let state = CannotFindModuleState.CannotFindModule;
 
-        let regexFilesSearched = new RegExp(
+        const regexFilesSearched = new RegExp(
             this.regexFilesSearchedSource.replace('notFoundModulePlaceHolder', notFoundModule)
         );
 
         while (i < errors.length && state !== CannotFindModuleState.End) {
             i += 1;
-            let error = errors[i].trim();
-            let matches = undefined;
+            const error = errors[i].trim();
+            let matches;
 
             switch (state) {
                 case CannotFindModuleState.CannotFindModule:

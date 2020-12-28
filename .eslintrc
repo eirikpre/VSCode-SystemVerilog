@@ -13,11 +13,17 @@
     },
     "rules": {
         "class-methods-use-this": "off",
+        "consistent-return": "off",
+        "no-async-promise-executor": "off",
         "no-cond-assign": ["error", "except-parens"],
+        "no-param-reassign": "off",
         "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+        "no-restricted-syntax": "off",
+        "no-return-await": "off",
         "import/prefer-default-export": "off",
         "@typescript-eslint/lines-between-class-members": "off",
         "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/no-shadow": "off",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-unused-vars": "off"
     }

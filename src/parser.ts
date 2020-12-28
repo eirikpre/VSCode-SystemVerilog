@@ -44,9 +44,9 @@ export class SystemVerilogParser {
         [
             '(?<=^\\s*(virtual|local|extern|pure\\s+virtual)?\\s*',
             /(?<type>(function|task))\s+/,
-            /(?<return>[\w:\[\]\s*]+\s*)?/,
+            /(?<return>[\w:[\]\s*]+\s*)?/,
             ')',
-            /\b(?<name>[\w\.]+)\b\s*/,
+            /\b(?<name>[\w.]+)\b\s*/,
             /(?<ports>\([\W\w]*?\))?/,
             /\s*;/,
             /(?<body>[\w\W]*?)/,
@@ -144,7 +144,6 @@ export class SystemVerilogParser {
 
     private r_block_fast = new RegExp(
         [
-            ,
             /(?<=^\s*(?:virtual\s+)?)/,
             /(?<type>module|class|interface|package|program)\s+/,
             /(?:automatic\s+)?/,
@@ -208,18 +207,15 @@ export class SystemVerilogParser {
 
         // Find blocks
         for (let i = 0; i < regexes.length; i++) {
+            // eslint-disable-next-line no-constant-condition
             while (true) {
                 const match: RegExpMatchArray = regexes[i].exec(text);
                 if (match == null) {
                     break;
                 } else if (match.index === 0 && parent !== undefined) {
-                    continue;
-                } else if (
-                    sub_blocks.some((b) => {
-                        return match.index >= b.index && match.index < b.index + b[0].length;
-                    })
-                ) {
-                    continue;
+                    continue; // eslint-disable-line no-continue
+                } else if (sub_blocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
+                    continue; // eslint-disable-line no-continue
                 }
 
                 const symbolInfo = new SystemVerilogSymbol(
@@ -242,7 +238,7 @@ export class SystemVerilogParser {
                         match.groups.ports,
                         offset + match.index + match[0].indexOf(match.groups.ports),
                         match.groups.name
-                    ).then((out) => symbols.push.apply(symbols, out));
+                    ).then((out) => symbols.push(...out)); // eslint-disable-line @typescript-eslint/no-loop-func
                 }
 
                 if (match.groups.body) {
@@ -253,6 +249,7 @@ export class SystemVerilogParser {
 
         // Recursively expand the sub-blocks
         if (depth !== maxDepth) {
+            // eslint-disable-next-line guard-for-in
             for (const i in sub_blocks) {
                 const match = sub_blocks[i];
                 const sub = this.get_all_recursive(
@@ -273,6 +270,7 @@ export class SystemVerilogParser {
     private get_ports(document: TextDocument, text: string, offset, parent): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
             const symbols: Array<SystemVerilogSymbol> = [];
+            // eslint-disable-next-line no-constant-condition
             while (true) {
                 const match_ports: RegExpMatchArray = this.r_ports.exec(text);
                 if (match_ports == null) {

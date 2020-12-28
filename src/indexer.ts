@@ -60,24 +60,20 @@ export class SystemVerilogIndexer {
                 async (_progress, token) => {
                     this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
                     const uris: Uri[] = await this.find_files(token);
-                    console.time('build_index');
+                    console.time('build_index'); // eslint-disable-line no-console
                     for (let filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                         const subset = uris.slice(filenr, filenr + this.parallelProcessing);
                         if (token.isCancellationRequested) {
                             cancelled = true;
                             break;
                         }
-                        await Promise.all(
-                            subset.map((uri) => {
-                                return this.processFile(uri, uris.length);
-                            })
-                        );
+                        await Promise.all(subset.map((uri) => this.processFile(uri, uris.length))); // eslint-disable-line no-await-in-loop
                     }
                 }
             )
             .then(() => {
                 this.building = false;
-                console.timeEnd('build_index');
+                console.timeEnd('build_index'); // eslint-disable-line no-console
                 if (cancelled) {
                     this.statusbar.text = 'SystemVerilog: Indexing cancelled';
                 } else {
@@ -101,10 +97,9 @@ export class SystemVerilogIndexer {
                     return workspace.findFiles(str, exclude, undefined, token).then((files) => {
                         uris = uris.concat(files);
                     });
-                } else {
-                    const files: string[] = glob.sync(str, { ignore: exclude });
-                    uris = uris.concat(files.map(Uri.file));
                 }
+                const files: string[] = glob.sync(str, { ignore: exclude });
+                uris = uris.concat(files.map(Uri.file));
             };
             await Promise.all(globArray.map(find));
             resolve(uris);
@@ -123,11 +118,11 @@ export class SystemVerilogIndexer {
                 workspace.openTextDocument(uri).then((doc) => {
                     if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
                         return this.parser.get_all_recursive(doc, 'fast', 0);
-                    } else if (total_files >= 100 * this.parallelProcessing) {
-                        return this.parser.get_all_recursive(doc, 'declaration', 0);
-                    } else {
-                        return this.parser.get_all_recursive(doc, 'declaration', 1);
                     }
+                    if (total_files >= 100 * this.parallelProcessing) {
+                        return this.parser.get_all_recursive(doc, 'declaration', 0);
+                    }
+                    return this.parser.get_all_recursive(doc, 'declaration', 1);
                 })
             );
         })
@@ -168,17 +163,17 @@ export class SystemVerilogIndexer {
         return await new Promise(() => {
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 return;
-            } else if (!workspace.getConfiguration().get('systemverilog.enableIncrementalIndexing')) {
+            }
+            if (!workspace.getConfiguration().get('systemverilog.enableIncrementalIndexing')) {
                 return;
-            } else if (
+            }
+            if (
                 !minimatch(
                     document.uri.toString(),
                     workspace.getConfiguration().get('systemverilog.excludeIndexing').toString()
                 )
             ) {
                 return this.processFile(document.uri);
-            } else {
-                return;
             }
         });
     }
@@ -191,11 +186,7 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onCreate(uri: Uri): Promise<any> {
-        return await new Promise(() => {
-            return workspace.openTextDocument(uri).then((document) => {
-                return this.onChange(document);
-            });
-        });
+        return await new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
     }
 
     /**
@@ -206,11 +197,7 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onDelete(uri: Uri): Promise<any> {
-        return await new Promise(() => {
-            return workspace.openTextDocument(uri).then((document) => {
-                return this.onChange(document);
-            });
-        });
+        return await new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
     }
 
     /**
@@ -233,9 +220,9 @@ export class SystemVerilogIndexer {
             }
 
             resolve(
-                workspace.openTextDocument(document.uri).then((doc) => {
-                    return this.parser.get_all_recursive(doc, 'declaration', 1);
-                })
+                workspace
+                    .openTextDocument(document.uri)
+                    .then((doc) => this.parser.get_all_recursive(doc, 'declaration', 1))
             );
         }).then((output: Array<SystemVerilogSymbol>) => {
             if (output.length > 0) {

@@ -48,7 +48,7 @@ export class VCSCompiler extends DocumentCompiler {
 
             if ((matches = regexError.exec(error))) {
                 diagnosticData.filePath = documentFilePath;
-                diagnosticData.line = parseInt(matches[4]) - 1;
+                diagnosticData.line = parseInt(matches[4], 10) - 1;
                 diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity(matches[1]);
 
                 // Format Diagnostic's problem
@@ -83,10 +83,10 @@ export class VCSCompiler extends DocumentCompiler {
     formatError(error: string): string {
         error = error.trim();
 
-        let regex = new RegExp('( +)?,( +)?\n', 'g');
+        let regex = new RegExp('( +)?,( +)?\n', 'g'); // eslint-disable-line no-control-regex
         error = error.replace(regex, ', ');
 
-        regex = new RegExp('( +)?\n( +)?', 'g');
+        regex = new RegExp('( +)?\n( +)?', 'g'); // eslint-disable-line no-control-regex
         error = error.replace(regex, '. ');
 
         error = error.replace(/ +/g, ' ');
