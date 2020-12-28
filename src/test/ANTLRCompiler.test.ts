@@ -1,4 +1,4 @@
-import { TextDocument, createConnection, Diagnostic, DiagnosticSeverity, Range, Position, TextDocuments, DidOpenTextDocumentParams, DidOpenTextDocumentNotification } from 'vscode-languageserver';
+import { TextDocument, createConnection, Diagnostic, DiagnosticSeverity, Range, Position, TextDocuments, DidOpenTextDocumentParams, DidOpenTextDocumentNotification } from 'vscode-languageserver'; // prettier-ignore
 import * as vscode from 'vscode';
 import { Uri, workspace } from 'vscode';
 import * as path from 'path';

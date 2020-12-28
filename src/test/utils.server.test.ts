@@ -9,7 +9,7 @@ const testFolderLocation = '../../src/test';
 suite('Utils Server Tests', () => {
     test('test #1: isSystemVerilogDocument', async () => {
         const svUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'design.sv'));
-        const vUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
+        const vUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v')); // prettier-ignore
         const nonSVUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'foo.txt'));
 
         const sVDocument = await vscode.workspace.openTextDocument(svUri);
@@ -27,7 +27,7 @@ suite('Utils Server Tests', () => {
 
     test('test #2: isVerilogDocument', async () => {
         const svUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'design.sv'));
-        const vUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
+        const vUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v')); // prettier-ignore
         const nonSVUri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'foo.txt'));
 
         const sVDocument = await vscode.workspace.openTextDocument(svUri);

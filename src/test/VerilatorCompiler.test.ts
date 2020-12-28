@@ -31,7 +31,7 @@ suite('VerilatorCompiler Tests', () => {
         let stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
 
-        documentCompiler.parseDiagnostics(undefined, undefined, stderr, document, compiledFilePath, diagnosticCollection);
+        documentCompiler.parseDiagnostics(undefined, undefined, stderr, document, compiledFilePath, diagnosticCollection); // prettier-ignore
 
         const collection = diagnosticCollection.get(document.uri);
         assert.strictEqual(collection.length, 6);
