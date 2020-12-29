@@ -45,34 +45,34 @@
                     "systemverilog.disableIndexing": {
                         "type": "boolean",
                         "default": false,
-                        "description": "Disable the automatic indexing when opening a folder or workspace"
+                        "description": "Disable automatic indexing when opening a folder or workspace."
                     },
                     "systemverilog.parallelProcessing": {
                         "type": "integer",
                         "default": 10,
-                        "description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
+                        "description": "The number of files the extension should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
                     },
                     "systemverilog.includeIndexing": {
                         "type": "array",
                         "default": [
                             "**/*.{sv,v,svh,vh}"
                         ],
-                        "description": "Files being indexed(globPattern)"
+                        "description": "Files included for indexing (glob pattern)."
                     },
                     "systemverilog.excludeIndexing": {
                         "type": "string",
                         "default": "",
-                        "description": "Files being excluded from indexing(globPattern)"
+                        "description": "Files excluded from indexing (glob pattern)."
                     },
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
                         "default": true,
-                        "description": "Force indexing to use fast regex parsing"
+                        "description": "Force indexing to use fast regular expression parsing."
                     },
                     "systemverilog.enableIncrementalIndexing": {
                         "type": "boolean",
                         "default": true,
-                        "description": "Enable incremental indexation as you open files"
+                        "description": "Enable incremental indexation as you open files."
                     },
                     "systemverilog.documentSymbolsPrecision": {
                         "type": "string",
@@ -82,7 +82,7 @@
                             "fast"
                         ],
                         "default": "full",
-                        "description": "The level of detail the parser should look for when looking for symbols"
+                        "description": "The level of detail the parser should look for when looking for symbols."
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
@@ -96,7 +96,7 @@
                     "systemverilog.launchConfiguration": {
                         "type": "string",
                         "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
-                        "description": "Launch command for running the compiler"
+                        "description": "Launch command for running the compiler."
                     },
                     "systemverilog.compileOnSave": {
                         "type": "boolean",
@@ -111,7 +111,7 @@
                             "verbose"
                         ],
                         "default": "off",
-                        "description": "Traces the communication between VS Code and the SystemVerilog language server"
+                        "description": "Traces the communication between VS Code and the SystemVerilog language server."
                     },
                     "systemverilog.antlrVerification": {
                         "type": "boolean",
