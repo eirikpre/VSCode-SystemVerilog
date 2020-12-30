@@ -16,10 +16,13 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - If you find a bug or would like a feature, request it as an [Issue](https://github.com/eirikpre/VSCode-SystemVerilog/issues) or submit a [Pull Request](https://github.com/eirikpre/VSCode-SystemVerilog/pulls)
 
 ## Examples
+
 ### Syntax Highlighting
 ![Syntax Highlighting Example](docs/syntax_example_adder.png)
+
 ### Go To Definition
 ![Go To Definition Example](docs/goToDef_demo.gif)
+
 ### Module Instantiation
 ![Module Instantiation Example](docs/moduleInit_demo.gif)
 
@@ -55,12 +58,15 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 
 ## Release Notes
 See the [changelog](CHANGELOG.md) for more details
+
 ### 0.10
 - Folders outside the workspace can now be included with `systemverilog.includeIndexing`
 - It now saves the indexed database between runs, allowing quickstart on previous workspaces
+
 ### 0.9
 - Increased the number of symbols the parser understands.
 - Extensive bug squashing
+
 ### 0.8
 - Compile an opened document using `Verilator` simulator, display errors/warnings as `Diagnostics` in documents, thanks to `oehaddouchi`
 - Compile documents on save feature using `Verilator` simulator
@@ -68,22 +74,29 @@ See the [changelog](CHANGELOG.md) for more details
 - Added an `LSP`, set it to communicate with the extension's client
 - Keep track of the recently used modules in the indexer
 - Added diagnostic support for `VCS` compiler
+
 ### 0.7
 - Instantiate module from already indexed module, thanks to `oehaddouchi`
 - Update to documentSymbolProvider
+
 ### 0.6
 - Stability and performance upgrade
 - PCRE Regexes
+
 ### 0.5
 - HoverProvider added, thanks to `toastedcornflakes`
 - Improvements to DocumentSymbolProvider to better support Hover
+
 ### 0.4
 - Added setting to exclude folders from indexing
+
 ### 0.3
 - DefinitionProvider fetching from indexed modules implemented
 - Indexing is now more safe, and will work for large workspaces
+
 ### 0.2
 - Alpha 2 release with expanded syntax highlighting and snippets
 - Indexing of every module/interface/program/class in workspace
+
 ### 0.1
 - Alpha 1 release with syntax highlighting, and go to symbols
