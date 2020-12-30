@@ -29,7 +29,8 @@
         "vscode": "^1.51.0"
     },
     "categories": [
-        "Programming Languages"
+        "Programming Languages",
+        "Formatters"
     ],
     "main": "./out/extension.js",
     "activationEvents": [
@@ -96,6 +97,11 @@
                     "systemverilog.launchConfiguration": {
                         "type": "string",
                         "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
+                        "description": "Launch command for running the compiler"
+                    },
+                    "systemverilog.formatCommand": {
+                        "type": "string",
+                        "default": "verible-verilog-format",
                         "description": "Launch command for running the compiler"
                     },
                     "systemverilog.compileOnSave": {
