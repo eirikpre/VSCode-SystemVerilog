@@ -102,7 +102,7 @@
                     "systemverilog.formatCommand": {
                         "type": "string",
                         "default": "verible-verilog-format",
-                        "description": "Launch command for running the compiler"
+                        "description": "Launch command for running the formatter."
                     },
                     "systemverilog.compileOnSave": {
                         "type": "boolean",
