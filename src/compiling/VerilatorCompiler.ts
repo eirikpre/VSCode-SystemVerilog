@@ -1,4 +1,5 @@
-import { DiagnosticSeverity, Diagnostic, TextDocument } from 'vscode-languageserver';
+import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as child from 'child_process';
 import { DocumentCompiler } from './DocumentCompiler';
 import { DiagnosticData, isDiagnosticDataUndefined } from './DiagnosticData';

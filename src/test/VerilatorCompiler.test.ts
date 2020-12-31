@@ -1,4 +1,5 @@
-import { TextDocument, Diagnostic, DiagnosticSeverity, Range, Position } from 'vscode-languageserver';
+import { Diagnostic, DiagnosticSeverity, Range, Position } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as vscode from 'vscode';
 import { Uri, workspace } from 'vscode';
 import * as path from 'path';

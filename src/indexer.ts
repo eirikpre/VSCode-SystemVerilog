@@ -1,5 +1,5 @@
 import { StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode'; // prettier-ignore
-import { CancellationToken } from 'vscode-languageclient';
+import { CancellationToken } from 'vscode-languageclient/node';
 import * as glob from 'glob';
 import * as minimatch from 'minimatch';
 import { SystemVerilogParser } from './parser';

@@ -1,4 +1,5 @@
-import { TextDocument, Range, Position } from 'vscode-languageserver';
+import { Range, Position } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import * as path from 'path';

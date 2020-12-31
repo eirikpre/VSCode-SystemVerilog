@@ -1,4 +1,5 @@
-import { Connection, Diagnostic, TextDocument, TextDocuments, Range, DiagnosticSeverity } from 'vscode-languageserver';
+import { Connection, Diagnostic, TextDocuments, Range, DiagnosticSeverity } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as path from 'path';
 import * as child from 'child_process';
 import { getPathFromUri } from '../utils/common';
@@ -10,14 +11,14 @@ import { DiagnosticData } from './DiagnosticData';
 */
 export abstract class DocumentCompiler {
     public connection: Connection;
-    public documents: TextDocuments;
+    public documents: TextDocuments<TextDocument>;
     public workspaceRootPath: string;
     public configurations: Map<string, any>;
     public compilerConfigurationsKeys: string[];
 
     constructor(
         connection: Connection,
-        documents: TextDocuments,
+        documents: TextDocuments<TextDocument>,
         workspaceRootPath: string,
         configurations: Map<string, any>,
         compilerConfigurationsKeys: string[]

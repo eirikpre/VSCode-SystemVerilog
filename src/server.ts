@@ -1,14 +1,14 @@
-import { createConnection, TextDocuments, TextDocument, Diagnostic, ProposedFeatures, InitializeParams, TextDocumentPositionParams, CompletionItem } from 'vscode-languageserver'; // prettier-ignore
+import { createConnection, TextDocuments, Diagnostic, ProposedFeatures, InitializeParams, TextDocumentPositionParams, CompletionItem, TextDocumentSyncKind } from 'vscode-languageserver/node'; // prettier-ignore
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
 import { ANTLRBackend } from './compiling/ANTLRBackend';
 
-// Create a connection for the server. The connection uses Node's IPC as a transport.
+// Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
 
-// Create a simple text document manager. The text document manager
-// supports full document sync only
-const documents: TextDocuments = new TextDocuments();
+// Create a simple text document manager.
+const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 let documentCompiler: SystemVerilogCompiler;
 
@@ -26,9 +26,10 @@ const backend: ANTLRBackend = new ANTLRBackend();
 
 connection.onInitialize((_params: InitializeParams) => ({
     capabilities: {
-        textDocumentSync: documents.syncKind
+        textDocumentSync: TextDocumentSyncKind.Incremental
+        // Tell the client that this server supports code completion.
         // completionProvider: {
-        // 	resolveProvider: true
+        //     resolveProvider: true
         // }
     }
 }));

@@ -1,4 +1,5 @@
-import { Range, DiagnosticSeverity, Diagnostic, TextDocument } from 'vscode-languageserver';
+import { Range, DiagnosticSeverity, Diagnostic } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { SystemVerilogLexer } from './ANTLR/grammar/build/SystemVerilogLexer';
 import { SystemVerilogParser } from './ANTLR/grammar/build/SystemVerilogParser';
