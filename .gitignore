@@ -1,5 +1,6 @@
 out
 node_modules
+src/compiling/ANTLR/grammar/build
 *.vsix
 .vscode-test/
 vsc-extension-quickstart.md
