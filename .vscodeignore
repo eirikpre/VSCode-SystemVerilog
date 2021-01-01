@@ -2,14 +2,14 @@
 .nyc_output/
 .vscode/
 .vscode-test/
-resources/**
+resources/
 !resources/sys_verilog_logo.png
 out/**/*.map
 out/test/
 out/wip/
 src/
 syntaxes/systemverilog.tmLanguage.yaml
-verilog-examples/**
+verilog-examples/
 .eslintignore
 .eslintrc
 .gitignore
