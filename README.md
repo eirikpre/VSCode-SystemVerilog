@@ -18,13 +18,13 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ## Examples
 
 ### Syntax Highlighting
-![Syntax Highlighting Example](docs/syntax_example_adder.png)
+![Syntax Highlighting Example](resources/syntax_example_adder.png)
 
 ### Go To Definition
-![Go To Definition Example](docs/goToDef_demo.gif)
+![Go To Definition Example](resources/goToDef_demo.gif)
 
 ### Module Instantiation
-![Module Instantiation Example](docs/moduleInit_demo.gif)
+![Module Instantiation Example](resources/moduleInit_demo.gif)
 
 ## Recommendations
 - If you have netlists in your workspace you can exclude them in the settings, e.g.: `**/syn/**`

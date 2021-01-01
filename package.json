@@ -16,7 +16,7 @@
         "highlighting",
         "hdl"
     ],
-    "icon": "docs/icon2.png",
+    "icon": "resources/sys_verilog_logo.png",
     "galleryBanner": {
         "color": "#1e415e",
         "theme": "dark"
