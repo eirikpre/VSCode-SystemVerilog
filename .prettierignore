@@ -1,7 +1,7 @@
 /.nyc_output/
 /.vscode-test/
-/docs/
 /out/
+/resources/
 /src/compiling/ANTLR/grammar/
 /src/test/ModuleInstantiator.test.ts
 /src/test/test-files/
