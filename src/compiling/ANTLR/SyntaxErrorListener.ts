@@ -13,7 +13,7 @@ export class SyntaxErrorListener implements ANTLRErrorListener<any> {
         line: number,
         charPositionInLine: number,
         msg: string,
-        e: RecognitionException | undefined
+        _e: RecognitionException | undefined
     ): void {
         line -= 1;
         this.error_list.push({ offendingSymbol, line, charPositionInLine, msg });
