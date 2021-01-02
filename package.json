@@ -32,13 +32,13 @@
     "engines": {
         "vscode": "^1.50.1"
     },
+    "main": "./dist/client/extension.js",
     "activationEvents": [
         "onLanguage:systemverilog",
         "onLanguage:verilog",
         "onLanguage:markdown",
         "workspaceContains:**/*.{sv,v,svh,vh}"
     ],
-    "main": "./out/extension.js",
     "contributes": {
         "languages": [
             {
@@ -386,9 +386,12 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
+        "vscode:prepublish": "npm run compile && npm run webpack",
         "compile": "npm run yj && npm run antlr4ts_compile && tsc -p ./",
         "watch": "tsc -watch -p ./",
+        "webpack": "webpack --mode production --config ./build/client.webpack.config.js && webpack --mode production --config ./build/server.webpack.config.js",
+        "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
+        "test-compile": "npm run compile && tsc -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "coverage": "nyc npm test",
         "antlr4ts_compile": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
@@ -412,12 +415,16 @@
         "eslint-plugin-jsx-a11y": "^6.4.1",
         "eslint-plugin-react": "^7.22.0",
         "languages": "0.1.3",
+        "merge-options": "^3.0.4",
         "mocha": "^8.2.1",
         "mocha-multi-reporters": "^1.5.1",
         "nyc": "^15.1.0",
         "prettier": "^2.2.1",
+        "ts-loader": "^8.0.12",
         "typescript": "^3.9.7",
-        "vscode-test": "^1.4.1"
+        "vscode-test": "^1.4.1",
+        "webpack": "^5.11.1",
+        "webpack-cli": "^4.3.0"
     },
     "dependencies": {
         "antlr4": "^4.9.1",
