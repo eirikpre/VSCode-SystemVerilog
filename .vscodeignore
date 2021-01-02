@@ -5,6 +5,7 @@
 build/
 dist/**/*.LICENSE.txt
 dist/**/*.map
+node_modules/
 out/
 resources/
 !resources/sys_verilog_logo.png
