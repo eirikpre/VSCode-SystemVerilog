@@ -462,7 +462,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                     );
                     output.push(`${lastParameter})\n`);
                 }
-                output.push(`) u_${symbol} (\r\n`);
+                output.push(`) u_${symbol} (\n`);
 
                 lastParameter = undefined;
             }
@@ -473,7 +473,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 output.push(
                     `${padding}.${lastPort}${' '.repeat(maxLength - lastPort.length)}${' '.repeat(4)}(${lastPort})`
                 );
-                output.push(',\r\n');
+                output.push(',\n');
 
                 lastPort = undefined;
             } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
@@ -502,7 +502,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 output.push(
                     `${padding}.${lastPort}${' '.repeat(maxLength - lastPort.length)}${' '.repeat(4)}(${lastPort})`
                 );
-                output.push('\r\n');
+                output.push('\n');
             }
         }
 
@@ -511,7 +511,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 output.push(
                     `${padding}.${lastPort}${' '.repeat(maxLength - lastPort.length)}${' '.repeat(4)}(${lastPort})`
                 );
-                output.push('\r\n');
+                output.push('\n');
             }
             break;
         }
@@ -524,7 +524,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
         instance.push(`${output.join('')});`);
     } else {
         instance.push(`${symbol} u_${symbol}`);
-        instance.push(` (\r\n${output.join('')});`);
+        instance.push(` (\n${output.join('')});`);
     }
 
     return instance.join('');

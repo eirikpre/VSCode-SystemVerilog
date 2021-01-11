@@ -14,20 +14,20 @@ suite('ModuleInstantiator Tests', () => {
         let fullRange = new vscode.Range(document.positionAt(587), document.positionAt(1143));
 
         const container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
-
+        console.debug(container);
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
         fullRange = new vscode.Range(document.positionAt(152), document.positionAt(354));
 
-        let instance = document.getText(fullRange).replace(/\r\n|\n|\r/g, ' ').trim();
+        let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
         let actual_instance;
 
         try {
-            actual_instance = formatInstance('adder', container).replace(/\r\n|\n|\r/g, ' ').trim();
+            actual_instance = formatInstance('adder', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
@@ -54,14 +54,14 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(507), document.positionAt(785));
 
-        let instance = document.getText(fullRange).replace(/\r\n|\n|\r/g, ' ').trim();
+        let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
         let actual_instance;
 
         try {
-            actual_instance = formatInstance('bar', container).replace(/\r\n|\n|\r/g, ' ').trim();
+            actual_instance = formatInstance('bar', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
@@ -88,14 +88,14 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(955), document.positionAt(1071));
 
-        let instance = document.getText(fullRange).replace(/\r\n|\n|\r/g, ' ').trim();
+        let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
         let actual_instance;
 
         try {
-            actual_instance = formatInstance('akker', container).replace(/\r\n|\n|\r/g, ' ').trim();
+            actual_instance = formatInstance('akker', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
@@ -122,14 +122,14 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(1241), document.positionAt(1407));
 
-        let instance = document.getText(fullRange).replace(/\r\n|\n|\r/g, ' ').trim();
+        let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
         let actual_instance;
 
         try {
-            actual_instance = formatInstance('accer', container).replace(/\r\n|\n|\r/g, ' ').trim();
+            actual_instance = formatInstance('accer', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
@@ -156,14 +156,14 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(1591), document.positionAt(1747));
 
-        let instance = document.getText(fullRange).replace(/\r\n|\n|\r/g, ' ').trim();
+        let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
         let actual_instance;
 
         try {
-            actual_instance = formatInstance('anner', container).replace(/\r\n|\n|\r/g, ' ').trim();
+            actual_instance = formatInstance('anner', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
