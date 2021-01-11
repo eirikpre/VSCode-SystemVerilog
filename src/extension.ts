@@ -190,7 +190,7 @@ export function activate(context: ExtensionContext) {
     /** Starts the `LanguageClient` */
 
     // Point to the path of the server's module
-    let serverModule = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
+    const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used

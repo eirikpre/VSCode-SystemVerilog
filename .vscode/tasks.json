@@ -8,26 +8,24 @@
             "isBackground": true,
             "presentation": {
                 "reveal": "never",
-				"panel": "dedicated"
+                "panel": "dedicated"
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         },
-		{
-			"type": "npm",
-			"script": "compile",
-			"isBackground": false,
-			"group": "build",
-			"presentation": {
-				"reveal": "never",
-				"panel": "dedicated"
-			},
-			"problemMatcher": [
-				"$tsc"
-			]
-		},
+        {
+            "type": "npm",
+            "script": "compile",
+            "isBackground": false,
+            "group": "build",
+            "presentation": {
+                "reveal": "never",
+                "panel": "dedicated"
+            },
+            "problemMatcher": ["$tsc"]
+        },
         {
             "label": "Verilator: Compile",
             "isBackground": true,

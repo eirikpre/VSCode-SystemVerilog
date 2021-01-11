@@ -14,7 +14,6 @@ suite('ModuleInstantiator Tests', () => {
         let fullRange = new vscode.Range(document.positionAt(587), document.positionAt(1143));
 
         const container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
-        console.debug(container);
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
