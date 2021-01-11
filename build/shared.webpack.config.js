@@ -1,5 +1,5 @@
 const path = require('path');
-const merge = require('merge-options');
+const merge = require('merge-options'); // eslint-disable-line import/no-extraneous-dependencies
 
 module.exports = function withDefaults(extConfig) {
     const config = {
@@ -13,14 +13,14 @@ module.exports = function withDefaults(extConfig) {
             path: path.join(extConfig.context, 'dist'),
             filename: '[name].js',
             libraryTarget: 'commonjs2',
-            devtoolModuleFilenameTemplate: '../[resource-path]',
+            devtoolModuleFilenameTemplate: '../[resource-path]'
         },
         devtool: 'source-map',
         externals: {
-            vscode: 'commonjs vscode',
+            vscode: 'commonjs vscode'
         },
         resolve: {
-            extensions: ['.ts', '.js'],
+            extensions: ['.ts', '.js']
         },
         module: {
             rules: [
@@ -29,13 +29,13 @@ module.exports = function withDefaults(extConfig) {
                     exclude: /node_modules/,
                     use: [
                         {
-                            loader: 'ts-loader',
-                        },
-                    ],
-                },
-            ],
-        },
+                            loader: 'ts-loader'
+                        }
+                    ]
+                }
+            ]
+        }
     };
 
     return merge(config, extConfig);
-}
+};

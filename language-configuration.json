@@ -49,10 +49,9 @@
         ["\"", "\""]
     ],
     "folding": {
-        "offSide": false,
         "markers": {
-            "start": "^\\s*`(ifdef|ifndef|elsif|else)|(//#region)",
-            "end": "^\\s*`(elsif|else|endif)|(//#endregion)"
+            "start": "^[ \\t\\n]*(?://[ \\t\\n]*#?region|`(?:ifdef|ifndef|elsif|else)\\b|\\b(?:(?:macro)?module|class)\\b)",
+            "end": "^[ \\t\\n]*(?://[ \\t\\n]*#?endregion|`(?:elsif|else|endif)\\b|\\b(?:endmodule|endclass)\\b)"
         }
     }
 }

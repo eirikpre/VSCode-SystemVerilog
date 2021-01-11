@@ -25,7 +25,7 @@
     "always_ff": {
         "prefix": "always_ff",
         "body": [
-            "always_ff @(posedge ${1:ck} or negedge ${2:arst}) begin",
+            "always_ff @(posedge ${1:ck} or negedge ${2:arstn}) begin",
             "\t$0",
             "end"
         ],
@@ -102,7 +102,7 @@
             "case (${1:variable})",
             "\t$0",
             "\tdefault: begin",
-            "\t\t${2:pass}",
+            "\t\t${2:default_case}",
             "\tend",
             "endcase"
         ],
@@ -163,7 +163,7 @@
         "description": "Snippet for a class definition"
     },
     "class/extends": {
-        "prefix": "classextends",
+        "prefix": "class/extends",
         "body": [
             "class ${1:name} extends ${2:super};",
             "\tfunction new();",
@@ -316,7 +316,7 @@
         "prefix": "heading",
         "body": [
             "// -------------------------------------------------------",
-            "// -- $1",
+            "// -- ${1:heading}",
             "// -------------------------------------------------------\n$0"
         ],
         "description": "Snippet for a heading"
@@ -325,9 +325,9 @@
         "prefix": "heading+description",
         "body": [
             "// -------------------------------------------------------",
-            "// -- $1",
+            "// -- ${1:heading}",
             "// -------------------------------------------------------",
-            "// $2",
+            "// ${2:description}",
             "// -------------------------------------------------------\n$0"
         ],
         "description": "Snippet for a heading with a block for description"

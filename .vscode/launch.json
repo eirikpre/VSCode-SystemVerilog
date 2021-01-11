@@ -38,7 +38,7 @@
                 "type": "npm",
                 "script": "test-compile"
             }
-        },
+        }
     ],
     "compounds": [
         {

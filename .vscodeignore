@@ -3,12 +3,15 @@
 .vscode/
 .vscode-test/
 build/
+# dist/
 dist/**/*.LICENSE.txt
 dist/**/*.map
 node_modules/
 out/
-resources/
-!resources/sys_verilog_logo.png
+# out/test/
+# out/wip/
+resources/*
+!resources/icon.png
 src/
 syntaxes/systemverilog.tmLanguage.yaml
 verilog-examples/

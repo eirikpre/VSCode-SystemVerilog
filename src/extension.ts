@@ -72,8 +72,10 @@ export function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         window.onDidChangeActiveTextEditor((editor) => {
-            indexer.onChange(editor.document);
-            saveIndex();
+            if (editor !== undefined) {
+                indexer.onChange(editor.document);
+                saveIndex();
+            }
         })
     );
     const watcher = workspace.createFileSystemWatcher('**/*.{sv,v,svh,vh}', false, false, false);

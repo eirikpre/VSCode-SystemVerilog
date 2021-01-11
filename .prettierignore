@@ -13,6 +13,7 @@
 /.prettierignore
 /.vscodeignore
 /CHANGELOG.md
-/LICENCE
+/LICENSE
 /README.md
 /results.xml
+*.vsix

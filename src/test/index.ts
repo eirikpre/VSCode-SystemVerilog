@@ -1,16 +1,12 @@
-//
-// PLEASE DO NOT MODIFY / DELETE UNLESS YOU KNOW WHAT YOU ARE DOING
-//
 // This file is providing the test runner to use when running extension tests.
-// By default the test runner in use is Mocha based.
-//
+// By default the test runner in use is Mocha-based.
 
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
 
 export function run(): Promise<void> {
-    // Create the mocha test
+    // Create the Mocha test
     const mocha = new Mocha({
         ui: 'tdd',
         color: true,
