@@ -2,8 +2,8 @@
 .nyc_output/
 .vscode/
 .vscode-test/
-docs/*
-!docs/icon2.png
+resources/**
+!resources/sys_verilog_logo.png
 out/**/*.map
 out/test/
 out/wip/

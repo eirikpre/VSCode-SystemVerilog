@@ -17,7 +17,7 @@ export class SystemVerilogSymbol extends SymbolInformation {
     }
 }
 
-// See docs/SymbolKind_icons.png for an overview of the available icons
+// See resources/SymbolKind_icons.png for an overview of the available icons
 // Use show_SymbolKinds to see the latest symbols
 export function getSymbolKind(name: string): SymbolKind {
     if (name === undefined || name === '') {

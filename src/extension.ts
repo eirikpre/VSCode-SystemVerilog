@@ -3,6 +3,7 @@ import { LanguageClient, ServerOptions, TransportKind, LanguageClientOptions } f
 import * as path from 'path';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
+import { SystemVerilogFormatProvider } from './providers/FormatProvider';
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
@@ -41,12 +42,15 @@ export function activate(context: ExtensionContext) {
     const defProvider = new SystemVerilogDefinitionProvider();
     const hoverProvider = new SystemVerilogHoverProvider();
     const moduleInstantiator = new SystemVerilogModuleInstantiator();
+    const formatProvider = new SystemVerilogFormatProvider(outputChannel);
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
     context.subscriptions.push(languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(languages.registerHoverProvider(selector, hoverProvider));
     context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
+    context.subscriptions.push(languages.registerDocumentRangeFormattingEditProvider(selector, formatProvider));
+    context.subscriptions.push(languages.registerDocumentFormattingEditProvider(selector, formatProvider));
 
     const build_handler = () => {
         indexer.build_index().then((_) => saveIndex());
@@ -54,6 +58,7 @@ export function activate(context: ExtensionContext) {
     const instantiate_handler = () => {
         moduleInstantiator.instantiateModule();
     };
+
     context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
     context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
     context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));

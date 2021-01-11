@@ -1,9 +1,10 @@
-out
-node_modules
 src/compiling/ANTLR/grammar/build
-*.vsix
-.vscode-test/
-vsc-extension-quickstart.md
-packages
-results.xml
+/.nyc_output/
+/.vscode-test/
+/node_modules/
+/out/
+/packages/
+/results.xml
+/syntaxes/systemverilog.tmLanguage.json
 **/.antlr
+*.vsix
