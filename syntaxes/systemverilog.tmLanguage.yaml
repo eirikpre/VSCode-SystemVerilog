@@ -1,0 +1,680 @@
+name: SystemVerilog
+scopeName: source.systemverilog
+fileTypes:
+  - v
+  - vh
+  - sv
+  - svh
+patterns:
+  - include: '#comments'
+  - include: '#strings'
+  - include: '#module-declaration'
+  - include: '#module-parameters'
+  - include: '#module-no-parameters'
+  - include: '#port-declaration'
+  - include: '#parameter-localparameter-nt-uc'
+  - include: '#parameter-localparameter-nt'
+  - include: '#parameter-localparameter-wt'
+  - include: '#function-task'
+  # - include: '#task'
+  - include: '#class'
+  - include: '#sequence'
+  - include: '#labeled-block'
+  - include: '#system-tasks-functions'
+  - include: '#typedef-complex'
+  - include: '#typedef-simple'
+  # - include: '#property'
+  - include: '#assertion'
+  - include: '#bind-directive'
+  # - include: '#sv-struct-assign'
+  - include: '#cast-operator'
+  - include: '#storage-scope'
+  - include: '#keywords'
+  - include: '#all-types'
+  - include: '#operators'
+  - include: '#constants'
+  - include: '#functions'
+  - include: '#identifiers'
+  - include: '#slices'
+repository:
+  function-task:
+    begin: \s*\b(function|task)(?:\s+(static|automatic))?\b
+    beginCaptures:
+      '1':
+        name: storage.type.function.systemverilog
+      '2':
+        name: storage.modifier.systemverilog
+    end: ;
+    endCaptures:
+      '0':
+        name: punctuation.definition.function.end.systemverilog
+    patterns:
+      - match: '\b([a-zA-Z_][a-zA-Z0-9_$]*\s+)?([a-zA-Z_][a-zA-Z0-9_:]*)\s*(?=\(|;)'
+        captures:
+          '1':
+            name: storage.type.systemverilog
+          '2':
+            name: entity.name.function.systemverilog
+      - include: '#port-declaration'
+      - include: '#base-grammar'
+    name: meta.function.systemverilog
+  # task:
+  #   match: \s*\b(task)\s+(automatic)?\s*(\w+)\s*;
+  #   captures:
+  #     '1':
+  #       name: keyword.control.systemverilog
+  #     '2':
+  #       name: keyword.control.systemverilog
+  #     '3':
+  #       name: entity.name.function.systemverilog
+  #   name: meta.task.simple.systemverilog
+  typedef-complex:
+    begin: >-
+      \s*(typedef)\s+(enum|struct|union|class|interface\s+class)(?:\s+(packed))?(?:\s+([a-zA-Z_][a-zA-Z0-9_$]*)(?=\s*(\[[a-zA-Z0-9_:\$\-\+\s*]*\])?))?(?=\s*{)
+    beginCaptures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: keyword.control.systemverilog
+      '3':
+        name: keyword.control.systemverilog
+      '4':
+        name: storage.type.systemverilog
+    end: '(?<=}\s*)([a-zA-Z_][a-zA-Z0-9_$]*)(?:\s*(\[[a-zA-Z0-9_:\$\-\+\s*]*\])?)\s*;'
+    endCaptures:
+      '1':
+        name: storage.type.systemverilog
+      '2':
+        patterns:
+          - include: '#slices'
+    patterns:
+      # - include: '#struct-anonymous'
+      - include: '#base-grammar'
+    name: meta.typedef.complex.systemverilog
+  typedef-simple:
+    begin: \s*(typedef)\s+(enum|struct|union|class|interface\s+class)\b
+    beginCaptures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: keyword.control.systemverilog
+    end: '([a-zA-Z_][a-zA-Z0-9_$]*)(?:\s*(\[[a-zA-Z0-9_:\$\-\+\s*]*\])?)\s*;'
+    endCaptures:
+      '1':
+        name: storage.type.systemverilog
+      '2':
+        patterns:
+          - include: '#slices'
+    patterns:
+      - match: '\b([a-zA-Z_][a-zA-Z0-9_$]*)\s*(#)\('
+        captures:
+          '1':
+            name: storage.type.userdefined.systemverilog
+          '2':
+            name: keyword.operator.param.systemverilog
+        name: meta.typedef.class.systemverilog
+      - include: '#base-grammar'
+      - include: '#module-binding'
+    name: meta.typedef.simple.systemverilog
+  module-declaration:
+    begin: '\s*(module)\s+\b([a-zA-Z_][a-zA-Z0-9_$]*)\b'
+    beginCaptures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.name.type.module.systemverilog
+    end: ;
+    endCaptures:
+      '0':
+        name: punctuation.definition.module.end.systemverilog
+    patterns:
+      - match: \s*(parameter)
+        name: keyword.other.systemverilog
+      - include: '#port-declaration'
+      - include: '#interface-port'
+      - include: '#base-grammar'
+    name: meta.module.systemverilog
+  sequence:
+    match: \b(sequence)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\b
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.name.function.systemverilog
+    name: meta.sequence.systemverilog
+  bind-directive:
+    match: \b(bind)\s+([a-zA-Z_][a-zA-Z0-9_$\.]*)\b
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.name.type.module.systemverilog
+  labeled-block:
+    match: '\s*(begin|fork)\s*((:)\s*([a-zA-Z_][a-zA-Z0-9_$]*))\b'
+    captures:
+      '0':
+        name: meta.section.systemverilog
+      '1':
+        name: keyword.other.block.systemverilog
+      '3':
+        name: punctuation.definition.label.systemverilog
+      '4':
+        name: entity.name.section.systemverilog
+    name: meta.definition.systemverilog
+  # property:
+  #   match: \b(property)\s+([a-zA-Z_][a-zA-Z0-9_$]*)
+  #   captures:
+  #     '1':
+  #       name: keyword.sva.systemverilog
+  #     '2':
+  #       name: entity.name.sva.systemverilog
+  assertion:
+    match: \b([a-zA-Z_][a-zA-Z0-9_$]*)\s*(:)\s*(assert|assume|cover|restrict)\b
+    captures:
+      '1':
+        name: entity.name.goto-label.php
+      '2':
+        name: keyword.operator.systemverilog
+      '3':
+        name: keyword.sva.systemverilog
+  compiler-directives:
+    patterns:
+      - match: (`)(define|undef|pragma)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\b
+        captures:
+          '1':
+            name: punctuation.definition.directive.systemverilog
+          '2':
+            name: keyword.control.directive.systemverilog
+          '3':
+            name: entity.name.function.preprocessor.systemverilog
+      - match: (`)(ifdef|ifndef|elsif|default_nettype)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\b
+        captures:
+          '1':
+            name: punctuation.definition.directive.systemverilog
+          '2':
+            name: keyword.control.directive.systemverilog
+          '3':
+            name: entity.name.function.preprocessor.systemverilog
+      - match: >-
+          (`)(celldefine|else|endcelldefine|endif|include|line|nounconnected_drive|resetall|undefineall|timescale|unconnected_drive|begin_\w+|end_\w+|remove_\w+|restore_\w+|__FILE__|__LINE__)\b
+        captures:
+          '1':
+            name: punctuation.definition.directive.systemverilog
+          '2':
+            name: keyword.control.directive.systemverilog
+      - match: (`)([a-zA-Z_][a-zA-Z0-9_$]*)\b
+        captures:
+          '1':
+            name: punctuation.definition.directive.systemverilog
+          '2':
+            name: entity.name.function.preprocessor.systemverilog
+    name: meta.preprocessor.systemverilog
+  keywords:
+    patterns:
+      - match: >-
+          \b(automatic|cell|config|deassign|defparam|design|disable|edge|endconfig|endgenerate|endspecify|endtable|event|generate|genvar|ifnone|incdir|instance|liblist|library|macromodule|negedge|noshowcancelled|posedge|pulsestyle_onevent|pulsestyle_ondetect|scalared|showcancelled|specify|specparam|table|use|vectored)\b
+        captures:
+          '1':
+            name: keyword.other.systemverilog
+      - include: '#sv-control-begin'
+      - include: '#sv-control-end'
+      - include: '#sv-definition'
+      - include: '#sv-cover-cross'
+      - include: '#sv-extends'
+      - include: '#sv-std'
+      - include: '#sv-option'
+      - include: '#sv-local'
+      - include: '#sv-rand'
+      - include: '#sv-support'
+  sv-control-begin:
+    match: >-
+      \s*\b(initial|always|wait|force|release|assign|always_comb|always_ff|always_latch|forever|repeat|while|for|if|iff|else|case|casex|casez|default|endcase|return|break|continue|do|foreach|with|inside|dist|clocking|cover|coverpoint|property|bins|binsof|illegal_bins|ignore_bins|randcase|modport|matches|solve|static|assert|assume|before|expect|cross|ref|first_match|srandom|struct|packed|final|chandle|alias|tagged|extern|throughout|timeprecision|timeunit|priority|type|union|uwire|wait_order|triggered|randsequence|import|export|context|pure|intersect|wildcard|within|new|typedef|enum|this|super|begin|fork|forkjoin|unique|unique0|priority)\b
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+  sv-control-end:
+    match: >-
+      \s*\b(end|endtask|endmodule|endfunction|endprimitive|endclass|endpackage|endsequence|endprogram|endclocking|endproperty|endgroup|endinterface|join|join_any|join_none)\b(\s*(:)\s*(\w+))?
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+      '3':
+        name: punctuation.definition.label.systemverilog
+      '4':
+        name: entity.name.section.systemverilog
+    name: meta.object.end.systemverilog
+  sv-std:
+    match: '\b(std)\b::'
+    name: support.class.systemverilog
+  sv-definition:
+    match: >-
+      \s*(primitive|package|constraint|interface|covergroup|program)\s+\b([a-zA-Z_][a-zA-Z0-9_$]*)\b
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.name.type.class.systemverilog
+    name: meta.definition.systemverilog
+  sv-cover-cross:
+    match: >-
+      (([a-zA-Z_][a-zA-Z0-9_$]*)\s*(:))?\s*(coverpoint|cross)\s+([a-zA-Z_][a-zA-Z0-9_$]*)
+    captures:
+      '2':
+        name: entity.name.type.class.systemverilog
+      '3':
+        name: keyword.operator.other.systemverilog
+      '4':
+        name: keyword.control.systemverilog
+    name: meta.definition.systemverilog
+  class:
+    match: \b(virtual\s+)?(class|interface|module|program|package)(?:\s+(static|automatic))?\s+([a-zA-Z_][a-zA-Z0-9_$]*)(?:\s+(extends|implements)\s+([a-zA-Z_][a-zA-Z0-9_$]*))?\b
+    captures:
+      '1':
+        name: storage.modifier.systemverilog
+      '2':
+        name: storage.type.class.systemverilog
+      '3':
+        name: storage.modifier.systemverilog
+      '4':
+        name: entity.name.type.class.systemverilog
+      '5':
+        name: keyword.control.systemverilog
+      '6':
+        name: entity.name.type.class.systemverilog
+    name: meta.class.systemverilog
+  sv-extends:
+    match: '\b(extends)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\b'
+    captures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.other.inherited-class.systemverilog
+    name: meta.definition.systemverilog
+  sv-support:
+    match: >-
+      \b(and|nand|nor|or|xor|xnor|buf|not|bufif[01]|notif[01]|r?[npc]mos|tran|r?tranif[01]|pullup|pulldown)\b
+    name: support.type.systemverilog
+  system-tasks-functions:
+    match: '\$\b([a-zA-Z_][a-zA-Z0-9_$]*)\b'
+    name: support.function.systemverilog
+  cast-operator:
+    match: '\b([a-zA-Z_][a-zA-Z0-9_$]*)('')(?=\()'
+    captures:
+      '1':
+        name: storage.type.interface.systemverilog
+      '2':
+        name: keyword.operator.cast.systemverilog
+    name: meta.cast.systemverilog
+  parameter-localparameter-nt-uc:
+    match: '^\s*(localparam|parameter)\s+([A-Z_][A-Z0-9_]*)\b\s*(?=(=))'
+    captures:
+      '1':
+        name: keyword.other.systemverilog
+      '2':
+        name: constant.other.systemverilog
+    name: meta.param.systemverilog
+  parameter-localparameter-nt:
+    match: '^\s*(localparam|parameter)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\b\s*(?=(=))'
+    captures:
+      '1':
+        name: keyword.other.systemverilog
+    name: meta.param.systemverilog
+  parameter-localparameter-wt:
+    match: >-
+      ^\s*(local\s+|protected\s+|localparam\s+|parameter\s+)?(const\s+|virtual\s+)?(rand\s+|randc\s+)?(([a-zA-Z_][a-zA-Z0-9_$]*)(::))?([a-zA-Z_][a-zA-Z0-9_$]*)\b\s*(?=(#\s*\([\w,]+\)\s*)?([a-zA-Z][a-zA-Z0-9_\s\[\]']*)(;|,|=|'\{))
+    captures:
+      '1':
+        name: keyword.other.systemverilog
+      '2':
+        name: keyword.other.systemverilog
+      '3':
+        name: storage.type.rand.systemverilog
+      '5':
+        name: support.type.scope.systemverilog
+      '6':
+        name: keyword.operator.scope.systemverilog
+      '7':
+        name: storage.type.userdefined.systemverilog
+    name: meta.userdefined.systemverilog
+  sv-option:
+    match: \s*\b(option)\.
+    captures:
+      '1':
+        name: keyword.cover.systemverilog
+  sv-local:
+    match: \s*\b(local|const|protected|virtual|localparam|parameter)\b
+    captures:
+      '1':
+        name: keyword.other.systemverilog
+  sv-rand:
+    match: \b(?:rand|randc)\b
+    name: storage.type.rand.systemverilog
+  module-parameters:
+    begin: \b(?:(bind)\s+([a-zA-Z_][\w\.]*)\s+)?([a-zA-Z_][a-zA-Z0-9_$]*)\s*(?!intersect|and|or|throughout|within)(?=#[^#])
+    beginCaptures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.name.type.module.systemverilog
+      '3':
+        name: entity.name.type.module.systemverilog
+    end: '(?=;|=|:)'
+    patterns:
+      - include: '#module-binding'
+      - include: '#parameters'
+      - include: '#comments'
+      - include: '#operators'
+      - include: '#constants'
+      - include: '#strings'
+      - match: '\b([a-zA-Z_][a-zA-Z0-9_$]*)\b(?=\s*(\(|$))'
+        name: variable.other.module.systemverilog
+    name: meta.module.parameters.systemverilog
+  module-no-parameters:
+    begin: >-
+      \b(?:(bind)\s+([a-zA-Z_][\w\.]*)\s+)?([a-zA-Z_][a-zA-Z0-9_$]*)\s+(?!intersect|and|or|throughout|within)([a-zA-Z_][a-zA-Z0-9_$]*)\s*(\[(\d+)(?:(:)(\d+))?\])?\s*(\(|$)
+    beginCaptures:
+      '1':
+        name: keyword.control.systemverilog
+      '2':
+        name: entity.name.type.module.systemverilog
+      '3':
+        name: entity.name.type.module.systemverilog
+      '4':
+        name: variable.other.module.systemverilog
+      '6':
+        name: constant.numeric.decimal.systemverilog
+      '7':
+        name: keyword.operator.bitwise.systemverilog
+      '8':
+        name: constant.numeric.decimal.systemverilog
+    end: ; # ;|=|,|$
+    patterns:
+      - include: '#module-binding'
+      - include: '#comments'
+      - include: '#operators'
+      - include: '#constants'
+      - include: '#strings'
+      - match: '\b([a-zA-Z_][a-zA-Z0-9_$]*)\b(?=\s*(\(|$))'
+        name: variable.other.module.systemverilog
+    name: meta.module.no_parameters.systemverilog
+  # sv-struct-assign:
+  #   begin: \b\s+(<?=)\s*('{)
+  #   beginCaptures:
+  #     '1':
+  #       name: keyword.operator.assignment.systemverilog
+  #     '2':
+  #       name: keyword.operator.bitwise.systemverilog
+  #   end: ;
+  #   patterns:
+  #     - match: \b(\w+)\s*(:)(?!:)
+  #       captures:
+  #         '1':
+  #           name: support.function.field.systemverilog
+  #         '2':
+  #           name: keyword.operator.other.systemverilog
+  #     - include: '#comments'
+  #     - include: '#strings'
+  #     - include: '#operators'
+  #     - include: '#constants'
+  #     - include: '#storage-scope'
+  #   name: meta.struct.assign.systemverilog
+  functions:
+    match: \b(\w+)(?=\s*\()
+    name: entity.name.function.systemverilog
+  all-types:
+    patterns:
+      - include: '#built-ins'
+      - include: '#modifiers'
+      # - include: '#const-modifier-systemverilog'
+  constants:
+    patterns:
+      - match: >-
+          (\b\d+)?'(s?[bB]\s*[0-1xXzZ?][0-1_xXzZ?]*|s?[oO]\s*[0-7xXzZ?][0-7_xXzZ?]*|s?[dD]\s*[0-9xXzZ?][0-9_xXzZ?]*|s?[hH]\s*[0-9a-fA-FxXzZ?][0-9a-fA-F_xXzZ?]*)((e|E)(\+|-)?[0-9]+)?(?!'|\w)
+        name: constant.numeric.systemverilog
+      - match: "'[01xXzZ]"
+        name: constant.numeric.bit.systemverilog
+      - match: \b(?:\d[\d_\.]*(?<!\.)(?:e|E)(?:\+|-)?[0-9]+)\b
+        name: constant.numeric.exp.systemverilog
+      - match: \b(?:\d[\d_\.]*(?!(?:[\d\.\s]|(?:e|E|fs|ps|ns|us|ms|s))))\b
+        name: constant.numeric.decimal.systemverilog
+      - match: \b(?:\d[\d\.]*\s*(?:fs|ps|ns|us|ms|s))\b
+        name: constant.numeric.time.systemverilog
+      - include: '#compiler-directives'
+      - match: \b(null)\b
+        name: support.constant.systemverilog
+      - match: \b([A-Z][A-Z0-9_]*)\b
+        name: constant.other.net.systemverilog
+      - match: \b(?<!\.)([A-Z_0-9]+)(?!\.)\b
+        name: constant.numeric.parameter.uppercase.systemverilog
+      - match: \.\*
+        name: keyword.operator.quantifier.regexp
+  operators:
+    patterns:
+      - match: \+=|-=|/=|\*=|%=|&=|\|=|\^=|>>>=|>>=|<<<=|<<=|<=|=
+        name: keyword.operator.assignment.systemverilog
+      # - match: :|\?
+      #   name: keyword.operator.ternary.systemverilog
+      - match: \+\+
+        name: keyword.operator.increment.systemverilog
+      - match: --
+        name: keyword.operator.decrement.systemverilog
+      - match: \+|-|\*\*|\*|/|%
+        name: keyword.operator.arithmetic.systemverilog
+      - match: '!|&&|\|\|'
+        name: keyword.operator.logical.systemverilog
+      - match: <<<|<<|>>>|>>
+        name: keyword.operator.bitwise.shift.systemverilog
+      - match: ~&|~\||~|\^~|~\^|&|\||\^|{|''{|}|:|\?
+        name: keyword.operator.bitwise.systemverilog
+      - match: <=|<|>=|>|==\?|!=\?|===|!==|==|!=
+        name: keyword.operator.comparison.systemverilog
+      - match: '@|#|->|<->'
+        name: keyword.operator.channel.systemverilog
+      - match: \b(?:dist|inside|or|and)\b|:=|:/|\|->|\|=>|#-#|#=#
+        name: keyword.operator.logical.systemverilog
+  comments:
+    patterns:
+      - begin: /\*
+        beginCaptures:
+          '0':
+            name: punctuation.definition.comment.systemverilog
+        end: \*/
+        endCaptures:
+          '0':
+            name: punctuation.definition.comment.systemverilog
+        patterns:
+          - include: '#fixme-todo'
+        name: comment.block.systemverilog
+      - begin: //
+        beginCaptures:
+          '0':
+            name: punctuation.definition.comment.systemverilog
+        end: $\n?
+        patterns:
+          - include: '#fixme-todo'
+        name: comment.line.double-slash.systemverilog
+  fixme-todo:
+    patterns:
+      - match: (?i:fixme)
+        name: invalid.broken.fixme.systemverilog
+      - match: (?i:todo|xxx)
+        name: invalid.unimplemented.todo.systemverilog
+  port-declaration:
+    patterns:
+      - match: >-
+          ,?\s*(output|input|inout|ref)\b\s+(?:\b([a-zA-Z_][a-zA-Z0-9_$]*)(::))?([a-zA-Z_][a-zA-Z0-9_$]*\b)?(?:\s*(\[[a-zA-Z0-9_:\$\-\+`\s*\[\]]+\])?)(?:\s*\b([a-zA-Z_][a-zA-Z0-9_$]*)\b)(?:\s*(\[[a-zA-Z0-9_:\$\-\+`\s*\[\]]+\])?)(?:\s*(,|;))?
+        captures:
+          '1':
+            name: support.type.systemverilog
+          '2':
+            name: support.type.scope.systemverilog
+          '3':
+            name: keyword.operator.scope.systemverilog
+          '4':
+            patterns:
+              - include: '#built-ins'
+          '5':
+            patterns:
+              - include: '#slices'
+          '6':
+            patterns:
+              - include: '#identifiers'
+          '7':
+            patterns:
+              - include: '#slices'
+          '8':
+            name: punctuation.terminator.port.systemverilog
+        name: meta.port.declaration.systemverilog
+      # - match: ',?\s*\b([a-zA-Z_][a-zA-Z0-9_$]*)\b(?:\s*(,))?'
+      #   captures:
+      #     '1':
+      #       patterns:
+      #         - include: '#identifiers'
+      #     '2':
+      #       name: punctuation.terminator.port.systemverilog
+      #   name: meta.port.declaration.systemverilog
+  base-grammar:
+    patterns:
+      - include: '#all-types'
+      - include: '#comments'
+      - include: '#operators'
+      - include: '#constants'
+      - include: '#strings'
+      - match: '^\s*([a-zA-Z_][a-zA-Z0-9_$]*)\s+[a-zA-Z_][a-zA-Z0-9_,=\s]*'
+        captures:
+          '1':
+            name: storage.type.interface.systemverilog
+      - include: '#storage-scope'
+  built-ins:
+    patterns:
+      - match: >-
+          \s*\b(var|wire|tri|tri[01]|supply[01]|wand|triand|wor|trior|trireg|reg|integer|int|longint|shortint|logic|bit|byte|shortreal|string|time|realtime|real|process|void)\b
+        name: storage.type.built-in.systemverilog
+      - match: >-
+          \s*\b(uvm_transaction|uvm_component|uvm_monitor|uvm_driver|uvm_test|uvm_env|uvm_object|uvm_agent|uvm_sequence_base|uvm_sequence|uvm_sequence_item|uvm_sequence_state|uvm_sequencer|uvm_sequencer_base|uvm_component_registry|uvm_analysis_imp|uvm_analysis_port|uvm_analysis_export|uvm_config_db|uvm_active_passive_enum|uvm_phase|uvm_verbosity|uvm_tlm_analysis_fifo|uvm_tlm_fifo|uvm_report_server|uvm_objection|uvm_recorder|uvm_domain|uvm_reg_field|uvm_reg|uvm_reg_block|uvm_bitstream_t|uvm_radix_enum|uvm_printer|uvm_packer|uvm_comparer|uvm_scope_stack)\b
+        name: storage.type.uvm.systemverilog
+  modifiers:
+    match: >-
+      \b(?:signed|unsigned|small|medium|large|supply[01]|strong[01]|pull[01]|weak[01]|highz[01])\b
+    name: storage.modifier.systemverilog
+  storage-scope:
+    match: '\b([a-zA-Z_][a-zA-Z0-9_$]*)(::)'
+    captures:
+      '1':
+        name: support.type.systemverilog
+      '2':
+        name: keyword.operator.scope.systemverilog
+    name: meta.scope.systemverilog
+  interface-port:
+    match: >-
+      \b([a-zA-Z_][a-zA-Z0-9_$]*)\.([a-zA-Z_][a-zA-Z0-9_$]*)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\b
+    captures:
+      '1':
+        name: storage.type.interface.systemverilog
+      '2':
+        name: support.modport.systemverilog
+  strings:
+    patterns:
+      - begin: '`?"'
+        beginCaptures:
+          '0':
+            name: punctuation.definition.string.begin.systemverilog
+        end: '"`?'
+        endCaptures:
+          '0':
+            name: punctuation.definition.string.end.systemverilog
+        name: string.quoted.double.systemverilog
+        patterns:
+          - match: \\.
+            name: constant.character.escape.systemverilog
+          - match: |-
+              (?x)%
+              (\d+\$)?                             # field (argument #)
+              [#0\- +']*                           # flags
+              [,;:_]?                              # separator character (AltiVec)
+              ((-?\d+)|\*(-?\d+\$)?)?              # minimum field width
+              (\.((-?\d+)|\*(-?\d+\$)?)?)?         # precision
+              (hh|h|ll|l|j|t|z|q|L|vh|vl|v|hv|hl)? # length modifier
+              [bdiouxXhHDOUeEfFgGaACcSspnmt%]      # conversion type
+            name: constant.other.placeholder.systemverilog
+          - match: '%'
+            name: invalid.illegal.placeholder.systemverilog
+          - include: '#fixme-todo'
+  module-binding:
+    begin: '\.([a-zA-Z_][a-zA-Z0-9_$]*)\s*\('
+    beginCaptures:
+      '1':
+        name: support.function.port.systemverilog
+    end: \),?
+    patterns:
+      - include: '#constants'
+      - include: '#comments'
+      - include: '#operators'
+      - include: '#strings'
+      - include: '#constants'
+      - include: '#storage-scope'
+      - include: '#cast-operator'
+      - match: '\$\b([a-zA-Z_][a-zA-Z0-9_$]*)\b'
+        name: support.function.systemverilog
+      - match: \b(virtual)\b
+        name: keyword.control.systemverilog
+      - match: '\.([a-zA-Z_][a-zA-Z0-9_$]*)\s*'
+        captures:
+          '1':
+            name: support.function.port.implicit.systemverilog
+    name: meta.port.binding.systemverilog
+  parameters:
+    begin: (#)\s*(\()
+    beginCaptures:
+      '1':
+        name: keyword.operator.channel.systemverilog
+      '2':
+        name: punctuation.section.parameters.begin
+    end: \)
+    endCaptures:
+      '0':
+        name: punctuation.section.parameters.end
+    patterns:
+      - include: '#comments'
+      - include: '#constants'
+      - include: '#operators'
+      - include: '#strings'
+      - include: '#module-binding'
+      - match: \b(virtual)\b
+        name: keyword.control.systemverilog
+    name: meta.parameters.systemverilog
+  # struct-anonymous:
+  #   begin: \s*\b(struct|union)\s*(packed)?\s*
+  #   beginCaptures:
+  #     '1':
+  #       name: keyword.control.systemverilog
+  #     '2':
+  #       name: keyword.control.systemverilog
+  #   end: '(})\s*([a-zA-Z_][a-zA-Z0-9_$]*)\s*;'
+  #   endCaptures:
+  #     '1':
+  #       name: keyword.operator.other.systemverilog
+  #   patterns:
+  #     - include: '#base-grammar'
+  #   name: meta.struct.anonymous.systemverilog
+  identifiers:
+    patterns:
+      - match: \b[a-zA-Z_][a-zA-Z0-9_$]*\b
+        name: variable.other.identifier.systemverilog
+      - match: (?<=^|\s)\\[!-~]+
+        name: variable.other.identifier.systemverilog
+  slices:
+    begin: \[
+    beginCaptures:
+      '0':
+        name: punctuation.slices.brackets.begin
+    end: \]
+    endCaptures:
+      '0':
+        name: punctuation.slices.brackets.end
+    patterns:
+      - include: '#constants'
+      - include: '#operators'
+      - match: '[a-zA-Z0-9_$:\-\+\s]'
+        name: meta.index.systemverilog
+    name: meta.brackets.slices.systemverilog
