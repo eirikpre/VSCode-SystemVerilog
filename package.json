@@ -20,7 +20,7 @@
         "highlighting",
         "hdl"
     ],
-    "icon": "docs/icon2.png",
+    "icon": "resources/sys_verilog_logo.png",
     "galleryBanner": {
         "color": "#1e415e",
         "theme": "dark"
@@ -108,34 +108,34 @@
                     "systemverilog.disableIndexing": {
                         "type": "boolean",
                         "default": false,
-                        "description": "Disable the automatic indexing when opening a folder or workspace"
+                        "description": "Disable automatic indexing when opening a folder or workspace."
                     },
                     "systemverilog.parallelProcessing": {
                         "type": "integer",
                         "default": 10,
-                        "description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
+                        "description": "The number of files the extension should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
                     },
                     "systemverilog.includeIndexing": {
                         "type": "array",
                         "default": [
                             "**/*.{sv,v,svh,vh}"
                         ],
-                        "description": "Files being indexed(globPattern)"
+                        "description": "Files included for indexing (glob pattern)."
                     },
                     "systemverilog.excludeIndexing": {
                         "type": "string",
                         "default": "",
-                        "description": "Files being excluded from indexing(globPattern)"
+                        "description": "Files excluded from indexing (glob pattern)."
                     },
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
                         "default": true,
-                        "description": "Force indexing to use fast regex parsing"
+                        "description": "Force indexing to use fast regular expression parsing."
                     },
                     "systemverilog.enableIncrementalIndexing": {
                         "type": "boolean",
                         "default": true,
-                        "description": "Enable incremental indexation as you open files"
+                        "description": "Enable incremental indexation as you open files."
                     },
                     "systemverilog.documentSymbolsPrecision": {
                         "type": "string",
@@ -145,7 +145,7 @@
                             "fast"
                         ],
                         "default": "full",
-                        "description": "The level of detail the parser should look for when looking for symbols"
+                        "description": "The level of detail the parser should look for when looking for symbols."
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
@@ -159,7 +159,12 @@
                     "systemverilog.launchConfiguration": {
                         "type": "string",
                         "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
-                        "description": "Launch command for running the compiler"
+                        "description": "Launch command for running the compiler."
+                    },
+                    "systemverilog.formatCommand": {
+                        "type": "string",
+                        "default": "verible-verilog-format",
+                        "description": "Launch command for running the formatter."
                     },
                     "systemverilog.compileOnSave": {
                         "type": "boolean",
@@ -174,7 +179,7 @@
                             "verbose"
                         ],
                         "default": "off",
-                        "description": "Traces the communication between VS Code and the SystemVerilog language server"
+                        "description": "Traces the communication between VS Code and the SystemVerilog language server."
                     },
                     "systemverilog.antlrVerification": {
                         "type": "boolean",
@@ -359,23 +364,23 @@
     },
     "devDependencies": {
         "@types/glob": "^7.1.3",
-        "@types/mocha": "^5.2.7",
-        "@types/node": "^12.19.4",
-        "@types/vscode": "^1.51.0",
-        "antlr4ts-cli": "^0.5.0-alpha.3",
+        "@types/mocha": "^8.2.0",
+        "@types/node": "^12.19.12",
+        "@types/vscode": "^1.52.0",
+        "antlr4ts-cli": "^0.5.0-alpha.4",
         "languages": "0.1.3",
-        "mocha": "^6.2.3",
+        "mocha": "^8.2.1",
         "mocha-multi-reporters": "^1.5.1",
         "nyc": "^14.1.1",
         "typescript": "^3.9.7",
         "vscode-test": "^1.4.1"
     },
     "dependencies": {
-        "antlr4": "^4.8.0",
-        "antlr4ts": "^0.5.0-alpha.3",
+        "antlr4": "^4.9.1",
+        "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
         "glob": "^7.1.6",
-        "uri-js": "^4.2.2",
+        "uri-js": "^4.4.1",
         "vscode-languageclient": "^5.2.1",
         "vscode-languageserver": "^5.2.1"
     }

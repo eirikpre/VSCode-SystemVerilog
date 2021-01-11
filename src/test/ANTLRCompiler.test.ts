@@ -1,336 +1,303 @@
-import {
-    TextDocument,
-    createConnection,
-    Diagnostic,
-    DiagnosticSeverity,
-    Range,
-    Position,
-    TextDocuments,
-    DidOpenTextDocumentParams,
-    DidOpenTextDocumentNotification,
-    DidCloseTextDocumentParams,
-    DidCloseTextDocumentNotification,
-    TextDocumentSyncKind,
-    ProposedFeatures,
-    ConnectionStrategy
-} from 'vscode-languageserver';
+import { TextDocument, createConnection, Diagnostic, DiagnosticSeverity, Range, Position, TextDocuments, DidOpenTextDocumentParams, DidOpenTextDocumentNotification } from 'vscode-languageserver';
 import * as vscode from 'vscode';
-import {
-    Uri, workspace
-} from 'vscode';
+import { Uri, workspace } from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
 import * as assert from 'assert';
-import { ANTLRBackend } from '../compiling/ANTLRBackend';
-import { getPathFromUri } from '../utils/common';
-import { beforeEach } from 'mocha'
-import { Select_expressionContext } from '../compiling/ANTLR/grammar/build/SystemVerilogParser';
-import { TransportKind, TextDocumentIdentifier } from 'vscode-languageclient';
+import { beforeEach } from 'mocha';
 import { Duplex } from 'stream';
+import { ANTLRBackend } from '../compiling/ANTLRBackend';
 
-//This file contains code for testing the antlr backend
-//Mocks the document open notification to test full results including call from server
+// This file contains code for testing the antlr backend
+// Mocks the document open notification to test full results including call from server
 
-const testFolderLocation = '../../src/test/';
-const file_path_placeholder = "FILEPATH_PLACEHOLDER";
+const testFolderLocation = '../../src/test/test-files/ANTLRCompiler.test';
 const TEST_LANGUAGE_ID = 'typescript';
 
-
+/* eslint-disable no-underscore-dangle */
 class TestStream extends Duplex {
-	_write(chunk: string, _encoding: string, done: () => void) {
-		this.emit('data', chunk);
-		done();
-	}
-	_read(_size: number) { }
+    _write(chunk: string, _encoding: string, done: () => void) {
+        this.emit('data', chunk);
+        done();
+    }
+    _read(_size: number) {}
 }
+/* eslint-enable no-underscore-dangle */
 
 const up = new TestStream();
 const down = new TestStream();
 
-let server = createConnection(up, down);
-let client = createConnection(down, up);
+const server = createConnection(up, down);
+const client = createConnection(down, up);
 server.listen();
 client.listen();
 
-function mockOpenDocNotif(config: { version: number, uri:string, text: string }): DidOpenTextDocumentParams {
-	const { version, uri, text } = config;
-	return { textDocument: { uri: uri, languageId: TEST_LANGUAGE_ID, version, text } };
+function mockOpenDocNotif(config: { version: number; uri: string; text: string }): DidOpenTextDocumentParams {
+    const { version, uri, text } = config;
+    return { textDocument: { uri, languageId: TEST_LANGUAGE_ID, version, text } };
 }
 
 function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms)
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
     });
 }
 
-let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/single_error.sv`);
-let uriDoc = Uri.file(filePath);
+const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
 
-const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: "Basic testing text!!!" });
+const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: 'Basic testing text!!!' });
 client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
-
-let root = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/`);
 
 let documents: TextDocuments;
 
 suite('ANTLRBackend Tests', () => {
-
-    beforeEach(function() {
+    beforeEach(() => {
         documents = new TextDocuments();
         documents.listen(server);
     });
 
     test('test #1: Diagnostics for single syntax error', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/single_error.sv`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
-                let collection = result.get(document.uri);
-                assert.equal(collection.length, 1);
+            (result) => {
+                const collection = result.get(document.uri);
+                assert.strictEqual(collection.length, 1);
 
-                //check that every diagnostic is an Error
+                // Check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
+                    if (diagnostic.severity !== DiagnosticSeverity.Error) {
                         assert.fail();
                     }
                 });
             },
-            function(error) {
+            (error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #2: Diagnostics for multiple syntax errors', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/several_error.sv`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'several_error.sv');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
-                let collection = result.get(document.uri);
-                assert.equal(collection.length, 3);
+            (result) => {
+                const collection = result.get(document.uri);
+                assert.strictEqual(collection.length, 3);
 
-                //check that every diagnostic is an Error
+                // Check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
+                    if (diagnostic.severity !== DiagnosticSeverity.Error) {
                         assert.fail();
                     }
                 });
             },
-            function(error) {
+            (error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #3: Diagnostics for correct code', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/correct.sv`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'correct.sv');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
-                let collection = result.get(document.uri);
-                assert.equal(collection.length,0);
+            (result) => {
+                const collection = result.get(document.uri);
+                assert.strictEqual(collection.length, 0);
             },
-            function(error) {
+            (error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #4: Diagnostics for empty document', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/empty.sv`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'empty.sv');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
-                let collection = result.get(document.uri);
-                assert.equal(collection.length,0);
+            (result) => {
+                const collection = result.get(document.uri);
+                assert.strictEqual(collection.length, 0);
             },
-            function(error) {
+            (error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #5: Diagnostics for a document containing unicode characters', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/unicode.sv`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'unicode.sv');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
-                let collection = result.get(document.uri);
-                assert.equal(collection.length, 2);
+            (result) => {
+                const collection = result.get(document.uri);
+                assert.strictEqual(collection.length, 2);
 
-                //check that every diagnostic is an Error
+                // Check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
+                    if (diagnostic.severity !== DiagnosticSeverity.Error) {
                         assert.fail();
                     }
                 });
             },
-            function(error) {
+            (error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #6: Diagnostics for verilog document', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/single_error.v`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'single_error.v');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
-                let collection = result.get(document.uri);
-                assert.equal(collection.length, 1);
+            (result) => {
+                const collection = result.get(document.uri);
+                assert.strictEqual(collection.length, 1);
 
-                //check that every diagnostic is an Error
+                // Check that every diagnostic is an Error
                 collection.forEach((diagnostic: Diagnostic) => {
-                    if (diagnostic.severity != DiagnosticSeverity.Error) {
+                    if (diagnostic.severity !== DiagnosticSeverity.Error) {
                         assert.fail();
                     }
                 });
             },
-            function(error) {
+            (error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #7: Diagnostics for non-Verilog/SystemVerilog document', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/single_error.txt`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'single_error.txt');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            function(result) {
+            (result) => {
                 assert.fail();
             },
-            function(error) {
-                //success
+            (error) => {
+                // Success
             }
         );
     }).timeout(10000);
 
     test('test #8: Diagnostics for invalid document with open document', async () => {
-        let filePath = path.join(__dirname, testFolderLocation, `test-files/ANTLRCompiler.test/single_error.sv`);
-        let uriDoc = Uri.file(filePath);
+        const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
+        const uriDoc = Uri.file(filePath);
 
-        let documentWorkspace = await workspace.openTextDocument(uriDoc);
-        let document: TextDocument = castTextDocument(documentWorkspace);
+        const documentWorkspace = await workspace.openTextDocument(uriDoc);
+        const document: TextDocument = castTextDocument(documentWorkspace);
 
         const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-        while (documents.keys().length == 0)
-            await sleep(10);
+        while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
 
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(undefined).then(
-            function(result) {
+            (result) => {
                 assert.fail();
             },
-            function(error) {
-                //success
+            (error) => {
+                // Success
             }
         );
     }).timeout(10000);
 
     test('test #9: Diagnostics for invalid document without open document', async () => {
-        let documentCompiler = new ANTLRBackend();
+        const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(undefined).then(
-            function(result) {
+            (result) => {
                 assert.fail();
             },
-            function(error) {
-                //success
+            (error) => {
+                // Success
             }
         );
-    }).timeout(10000);//*/
+    }).timeout(10000);
 });
 
 /**
  * Converts a given `document` from vscode.TextDocument to vscode-languageserver.TextDocument
- * 
+ *
  * @param document the document to convert
  * @returns a converted document
  */
@@ -340,14 +307,12 @@ function castTextDocument(document: vscode.TextDocument): TextDocument {
         languageId: document.languageId,
         version: document.version,
         getText(range?: Range): string {
-            if (range)
-                return document.getText(castRange(range));
-            else
-                return document.getText();
+            if (range) return document.getText(castRange(range));
+            return document.getText();
         },
         lineCount: document.lineCount,
         positionAt(offset: number): Position {
-            let position = document.positionAt(offset);
+            const position = document.positionAt(offset);
             return {
                 line: position.line,
                 character: position.character
@@ -361,22 +326,22 @@ function castTextDocument(document: vscode.TextDocument): TextDocument {
 
 /**
  * Converts a given `range` from vscode-languageserver.Range to vscode.Range
- * 
+ *
  * @param document the range to convert
  * @returns a converted range
  */
 function castRange(range: Range) {
-    let startOld = range.start;
-    let endOld = range.end;
+    const startOld = range.start;
+    const endOld = range.end;
 
-    let start = new vscode.Position(startOld.line, startOld.character);
-    let end = new vscode.Position(endOld.line, endOld.character);
+    const start = new vscode.Position(startOld.line, startOld.character);
+    const end = new vscode.Position(endOld.line, endOld.character);
 
     return new vscode.Range(start, end);
 }
 /**
  * Converts a given `position` from vscode-languageserver.Position to vscode.Position
- * 
+ *
  * @param document the position to convert
  * @returns a converted position
  */
