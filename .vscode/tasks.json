@@ -1,5 +1,3 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
 {
     "version": "2.0.0",
     "tasks": [
@@ -32,13 +30,7 @@
                 "clear": false
             },
             "command": "wsl",
-            "args": [
-                "verilator",
-                "-sv",
-                "--language", "1800-2012",
-                "--lint-only",
-                "`wslpath", "'${relativeFile}'`"
-            ],
+            "args": ["verilator", "-sv", "--language", "1800-2012", "--lint-only", "`wslpath", "'${relativeFile}'`"],
             "problemMatcher": {
                 "owner": "systemverilog",
                 "pattern": [
@@ -49,12 +41,12 @@
                         "line": 3,
                         "message": 4
                     }
-                ],
+                ]
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         }
-    ],
+    ]
 }

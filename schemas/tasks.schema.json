@@ -12,11 +12,7 @@
                     "label": "Verilator",
                     "type": "shell",
                     "command": "verilator",
-                    "args": [
-                        "-sv", "--language", "1800-2012",
-                        "--lint-only",
-                        "${relativeFile}"
-                    ],
+                    "args": ["-sv", "--language", "1800-2012", "--lint-only", "${relativeFile}"],
                     "problemMatcher": {
                         "owner": "systemverilog",
                         "pattern": {

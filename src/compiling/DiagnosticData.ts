@@ -1,4 +1,4 @@
-import { DiagnosticSeverity } from "vscode-languageserver";
+import { DiagnosticSeverity } from 'vscode-languageserver';
 
 /** Defines the information needed to create a `Diagnostic` object. */
 export class DiagnosticData {
@@ -17,8 +17,12 @@ export class DiagnosticData {
     @return true if at least one field is `undefined`
 */
 export function isDiagnosticDataUndefined(diagnosticData: DiagnosticData): boolean {
-    if (diagnosticData.line === undefined || diagnosticData.problem === undefined ||
-        diagnosticData.diagnosticSeverity === undefined || diagnosticData.filePath === undefined) {
+    if (
+        diagnosticData.line === undefined ||
+        diagnosticData.problem === undefined ||
+        diagnosticData.diagnosticSeverity === undefined ||
+        diagnosticData.filePath === undefined
+    ) {
         return true;
     }
 

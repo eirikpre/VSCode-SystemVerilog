@@ -1,3 +1,4 @@
+src/compiling/ANTLR/grammar/build
 /.nyc_output/
 /.vscode-test/
 /node_modules/

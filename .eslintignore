@@ -1,0 +1,8 @@
+coverage/
+dist/
+node_modules/
+out/
+src/compiling/ANTLR/grammar
+src/test/index.ts
+src/test/runTest.ts
+src/wip/
