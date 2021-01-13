@@ -1,4 +1,5 @@
-import { TextDocument, createConnection, Diagnostic, DiagnosticSeverity, Range, Position, TextDocuments, DidOpenTextDocumentParams, DidOpenTextDocumentNotification } from 'vscode-languageserver';
+import { createConnection, Diagnostic, DiagnosticSeverity, Position, Range, TextDocuments, DidOpenTextDocumentParams, DidOpenTextDocumentNotification } from 'vscode-languageserver/node'; // prettier-ignore
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as vscode from 'vscode';
 import { Uri, workspace } from 'vscode';
 import * as path from 'path';
@@ -47,11 +48,11 @@ const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
 const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: 'Basic testing text!!!' });
 client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
-let documents: TextDocuments;
+let documents: TextDocuments<TextDocument>;
 
 suite('ANTLRBackend Tests', () => {
     beforeEach(() => {
-        documents = new TextDocuments();
+        documents = new TextDocuments(TextDocument);
         documents.listen(server);
     });
 

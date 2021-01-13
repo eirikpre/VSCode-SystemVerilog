@@ -1,4 +1,5 @@
-import { Connection, TextDocument, Diagnostic, TextDocuments } from 'vscode-languageserver';
+import { Connection, Diagnostic, TextDocuments } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import { DocumentCompiler } from './DocumentCompiler';
 import { VerilatorCompiler } from './VerilatorCompiler';
 import { VCSCompiler } from './VCSCompiler';
@@ -16,14 +17,14 @@ export enum compilerType {
 export class SystemVerilogCompiler {
     compiler: DocumentCompiler;
     connection: Connection;
-    documents: TextDocuments;
+    documents: TextDocuments<TextDocument>;
     workspaceRootPath: string;
     configurations: Map<string, any>;
     compilerConfigurationsKeys: string[];
 
     constructor(
         connection: Connection,
-        documents: TextDocuments,
+        documents: TextDocuments<TextDocument>,
         workspaceRootPath: string,
         configurations: Map<string, any>,
         compilerConfigurationsKeys: string[]

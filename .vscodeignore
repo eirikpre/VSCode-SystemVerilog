@@ -2,17 +2,22 @@
 .nyc_output/
 .vscode/
 .vscode-test/
-resources/**
-!resources/sys_verilog_logo.png
-out/**/*.map
-out/test/
-out/wip/
+build/
+# dist/
+dist/**/*.LICENSE.txt
+dist/**/*.map
+node_modules/
+out/
+# out/test/
+# out/wip/
+resources/*
+!resources/icon.png
 src/
 syntaxes/systemverilog.tmLanguage.yaml
-verilog-examples/**
+verilog-examples/
+.gitignore
 .eslintignore
 .eslintrc
-.gitignore
 .prettierignore
 .prettierrc
 .vscodeignore

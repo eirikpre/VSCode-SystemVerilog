@@ -1,5 +1,5 @@
 import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext, ProgressLocation, Location, Range, Uri } from 'vscode'; // prettier-ignore
-import { LanguageClient, ServerOptions, TransportKind, LanguageClientOptions } from 'vscode-languageclient';
+import { LanguageClient, ServerOptions, TransportKind, LanguageClientOptions } from 'vscode-languageclient/node';
 import * as path from 'path';
 import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
@@ -72,8 +72,10 @@ export function activate(context: ExtensionContext) {
     );
     context.subscriptions.push(
         window.onDidChangeActiveTextEditor((editor) => {
-            indexer.onChange(editor.document);
-            saveIndex();
+            if (editor !== undefined) {
+                indexer.onChange(editor.document);
+                saveIndex();
+            }
         })
     );
     const watcher = workspace.createFileSystemWatcher('**/*.{sv,v,svh,vh}', false, false, false);
@@ -188,7 +190,7 @@ export function activate(context: ExtensionContext) {
     /** Starts the `LanguageClient` */
 
     // Point to the path of the server's module
-    const serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
+    const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
@@ -220,7 +222,11 @@ export function activate(context: ExtensionContext) {
     client.start();
 
     client.onReady().then(() => {
-        client.sendNotification('workspaceRootPath', workspace.workspaceFolders[0].uri.fsPath);
+        try {
+            client.sendNotification('workspaceRootPath', workspace.workspaceFolders[0].uri.fsPath);
+        } catch {
+            // No workspace is open
+        }
 
         // Update `closeWindowProgress` to true when the client is notified by the server
         client.onNotification('closeWindowProgress', () => {

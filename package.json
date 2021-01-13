@@ -11,16 +11,17 @@
     "license": "MIT",
     "categories": [
         "Programming Languages",
-        "Snippets"
+        "Snippets",
+        "Linters",
+        "Formatters"
     ],
     "keywords": [
         "verilog",
         "systemverilog",
-        "syntax",
-        "highlighting",
+        "lsp",
         "hdl"
     ],
-    "icon": "resources/sys_verilog_logo.png",
+    "icon": "resources/icon.png",
     "galleryBanner": {
         "color": "#1e415e",
         "theme": "dark"
@@ -29,8 +30,11 @@
         "type": "git",
         "url": "https://github.com/eirikpre/VSCode-SystemVerilog"
     },
+    "extensionKind": [
+        "workspace"
+    ],
     "engines": {
-        "vscode": "^1.50.1"
+        "vscode": "^1.42.1"
     },
     "activationEvents": [
         "onLanguage:systemverilog",
@@ -38,7 +42,7 @@
         "onLanguage:markdown",
         "workspaceContains:**/*.{sv,v,svh,vh}"
     ],
-    "main": "./out/extension.js",
+    "main": "./dist/client/extension",
     "contributes": {
         "languages": [
             {
@@ -53,7 +57,7 @@
                     ".sv",
                     ".svh"
                 ],
-                "configuration": "./systemverilog-configuration.json"
+                "configuration": "./language-configuration.json"
             },
             {
                 "id": "verilog",
@@ -65,7 +69,7 @@
                     ".v",
                     ".vh"
                 ],
-                "configuration": "./systemverilog-configuration.json"
+                "configuration": "./language-configuration.json"
             }
         ],
         "snippets": [
@@ -386,25 +390,27 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "npm run yj && npm run antlr4ts_compile && tsc -p ./",
+        "vscode:prepublish": "npm run compile && npm run webpack",
+        "compile": "npm run yj && npm run compile:antlr4ts && tsc -p ./",
+        "yj": "npx js-yaml ./syntaxes/systemverilog.tmLanguage.yaml > ./syntaxes/systemverilog.tmLanguage.json",
+        "compile:antlr4ts": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
+        "webpack": "webpack --mode production --config ./build/client.webpack.config.js && webpack --mode production --config ./build/server.webpack.config.js",
+        "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc -watch -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "coverage": "nyc npm test",
-        "antlr4ts_compile": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
-        "lint": "eslint -c .eslintrc --ext .ts src",
+        "lint": "eslint -c ./.eslintrc --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
-        "pretty:check": "prettier --check \"**/*\"",
-        "yj": "npx js-yaml ./syntaxes/systemverilog.tmLanguage.yaml > ./syntaxes/systemverilog.tmLanguage.json"
+        "pretty:check": "prettier --check \"**/*\""
     },
     "devDependencies": {
         "@types/glob": "^7.1.3",
-        "@types/mocha": "^5.2.7",
-        "@types/node": "^12.19.11",
-        "@types/vscode": "^1.50.1",
-        "@typescript-eslint/eslint-plugin": "^4.11.1",
-        "@typescript-eslint/parser": "^4.11.1",
-        "antlr4ts-cli": "^0.5.0-alpha.3",
+        "@types/mocha": "^8.2.0",
+        "@types/node": "^12.19.12",
+        "@types/vscode": "^1.42.1",
+        "@typescript-eslint/eslint-plugin": "^4.13.0",
+        "@typescript-eslint/parser": "^4.13.0",
+        "antlr4ts-cli": "^0.5.0-alpha.4",
         "eslint": "^7.17.0",
         "eslint-config-airbnb-typescript": "^12.0.0",
         "eslint-config-prettier": "^7.1.0",
@@ -412,21 +418,26 @@
         "eslint-plugin-jsx-a11y": "^6.4.1",
         "eslint-plugin-react": "^7.22.0",
         "languages": "0.1.3",
+        "merge-options": "^3.0.4",
         "mocha": "^8.2.1",
         "mocha-multi-reporters": "^1.5.1",
         "nyc": "^15.1.0",
         "prettier": "^2.2.1",
-        "typescript": "^3.9.7",
-        "vscode-test": "^1.4.1"
+        "ts-loader": "^8.0.14",
+        "typescript": "^4.1.3",
+        "vscode-test": "^1.4.1",
+        "webpack": "^5.12.3",
+        "webpack-cli": "^4.3.1"
     },
     "dependencies": {
-        "minimatch": "^3.0.4",
         "antlr4": "^4.9.1",
         "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
         "glob": "^7.1.6",
+        "minimatch": "^3.0.4",
         "uri-js": "^4.4.1",
-        "vscode-languageclient": "^5.2.1",
-        "vscode-languageserver": "^5.2.1"
+        "vscode-languageclient": "^7.0.0",
+        "vscode-languageserver": "^7.0.0",
+        "vscode-languageserver-textdocument": "^1.0.1"
     }
 }

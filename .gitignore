@@ -1,10 +1,11 @@
-src/compiling/ANTLR/grammar/build
 /.nyc_output/
 /.vscode-test/
+/dist/
 /node_modules/
 /out/
 /packages/
 /results.xml
+/src/compiling/ANTLR/grammar/build/
 /syntaxes/systemverilog.tmLanguage.json
 **/.antlr
 *.vsix

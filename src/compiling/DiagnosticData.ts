@@ -1,4 +1,4 @@
-import { DiagnosticSeverity } from 'vscode-languageserver';
+import { DiagnosticSeverity } from 'vscode-languageserver/node';
 
 /** Defines the information needed to create a `Diagnostic` object. */
 export class DiagnosticData {

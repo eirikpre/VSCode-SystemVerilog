@@ -1,4 +1,5 @@
-import { TextDocument, Range, Position } from 'vscode-languageserver';
+import { Range, Position } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 /**
     Check if a given `document` is a SystemVerilog file.

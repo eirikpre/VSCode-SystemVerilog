@@ -17,8 +17,5 @@
     "htmlWhitespaceSensitivity": "strict",
     "endOfLine": "lf",
     "embeddedLanguageFormatting": "auto",
-    "overrides": [
-        { "files": "*.yaml", "options": { "tabWidth": 2 } },
-        { "files": ".vscode/systemverilog.code-workspace", "options": { "parser": "json" } }
-    ]
+    "overrides": [{ "files": "*.yaml", "options": { "tabWidth": 2 } }]
 }
