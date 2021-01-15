@@ -162,13 +162,13 @@ repository:
           '1':
             name: punctuation.definition.directive.systemverilog
           '2':
-            name: keyword.control.directive.systemverilog
+            name: string.regexp.systemverilog
       - match: (`)(ifdef|ifndef|elsif|define|undef|pragma)[ \t\n]+([a-zA-Z_][a-zA-Z0-9_$]*)\b
         captures:
           '1':
             name: punctuation.definition.directive.systemverilog
           '2':
-            name: keyword.control.directive.systemverilog
+            name: string.regexp.systemverilog
           '3':
             name: entity.name.function.preprocessor.systemverilog
       - match: >-
@@ -177,7 +177,7 @@ repository:
           '1':
             name: punctuation.definition.directive.systemverilog
           '2':
-            name: keyword.control.directive.systemverilog
+            name: string.regexp.systemverilog
       - match: (`)([a-zA-Z_][a-zA-Z0-9_$]*)\b
         captures:
           '1':
