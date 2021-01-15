@@ -59,6 +59,13 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ## Release Notes
 See the [changelog](CHANGELOG.md) for more details
 
+### 0.11
+- Syntax Highlighting Overhaul, thanks to `jecassis`
+- Smaller extension footprint, thanks to `jecassis`
+- Support for external formatter, thanks to `jecassis`
+- Documentation upgrade, thanks to `jecassis`
+- Dev update with ESLint, Prettier and tests update, thanks to `jecassis`
+
 ### 0.10
 - Folders outside the workspace can now be included with `systemverilog.includeIndexing`
 - It now saves the indexed database between runs, allowing quickstart on previous workspaces
