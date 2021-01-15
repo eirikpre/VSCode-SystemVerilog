@@ -603,7 +603,7 @@ repository:
               (\.((-?\d+)|\*(-?\d+\$)?)?)?          # precision
               (hh|h|ll|l|j|z|t|L)?                  # length modifier
               [xXhHdDoObBcClLvVmMpPsStTuUzZeEfFgG%] # conversion type
-            name: constant.other.placeholder.systemverilog
+            name: constant.character.format.placeholder.systemverilog
           - match: '%'
             name: invalid.illegal.placeholder.systemverilog
           - include: '#fixme-todo'
