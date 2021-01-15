@@ -313,11 +313,13 @@ repository:
     name: meta.cast.systemverilog
   parameter:
     match: >-
-      [ \t\n]*(localparam|parameter)[ \t\n]+([a-zA-Z_][a-zA-Z0-9_$]*[ \t\n]+)?(?:((?:un)?signed)[ \t\n]+)?(?:(\[[a-zA-Z0-9_:$\-\+` \t\n\[\]]*\])[ \t\n]*)?([a-zA-Z_][a-zA-Z0-9_$]*)(?:[ \t\n]*(\[[a-zA-Z0-9_:$\-\+` \t\n\[\]]*\]))?[ \t\n]*(?==)
+      [ \t\n]*(localparam|parameter)[ \t\n]+([a-zA-Z_][a-zA-Z0-9_$:]*[ \t\n]+)?(?:((?:un)?signed)[ \t\n]+)?(?:(\[[a-zA-Z0-9_:$\-\+` \t\n\[\]]*\])[ \t\n]*)?([a-zA-Z_][a-zA-Z0-9_$]*)(?:[ \t\n]*(\[[a-zA-Z0-9_:$\-\+` \t\n\[\]]*\]))?[ \t\n]*(?==)
     captures:
       '1':
         name: keyword.other.systemverilog
       '2':
+        patterns:
+          - include: "#storage-scope"
         name: storage.type.built-in.systemverilog
       '3':
         name: storage.modifier.systemverilog
