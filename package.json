@@ -390,6 +390,7 @@
         ]
     },
     "scripts": {
+        "install": "rm -rf node_modules",
         "vscode:prepublish": "npm run compile && npm run webpack",
         "compile": "npm run yj && npm run compile:antlr4ts && tsc -p ./",
         "yj": "npx js-yaml ./syntaxes/systemverilog.tmLanguage.yaml > ./syntaxes/systemverilog.tmLanguage.json",
