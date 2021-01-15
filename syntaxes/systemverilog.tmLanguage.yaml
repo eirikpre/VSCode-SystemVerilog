@@ -570,12 +570,16 @@ repository:
     name: meta.scope.systemverilog
   interface-port:
     match: >-
-      [ \t\n]*\b([a-zA-Z_][a-zA-Z0-9_$]*)\.([a-zA-Z_][a-zA-Z0-9_$]*)[ \t\n]+([a-zA-Z_][a-zA-Z0-9_$]*)\b
+      [ \t\n]*\b([a-zA-Z_][a-zA-Z0-9_$]*)(?:\.([a-zA-Z_][a-zA-Z0-9_$]*))?[ \t\n]+([a-zA-Z_][a-zA-Z0-9_$]*)\b
     captures:
       '1':
         name: storage.type.interface.systemverilog
       '2':
         name: support.modport.systemverilog
+      '3':
+        patterns:
+          - include: '#identifiers'
+    name: meta.interface-port.declaration.systemverilog
   strings:
     patterns:
       - begin: '`?"'
