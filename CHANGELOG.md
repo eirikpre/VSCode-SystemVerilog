@@ -2,10 +2,17 @@
 All notable changes to this extension are documented below.
 
 ## [Unreleased]
-- Tree view of module hierarchy, given a top module
-- IntelliSense support
-- Back-end Language Server for Systemverilog
-- Complete syntax highlighting
+- ❌Tree view of module hierarchy, given a top module
+- ❌IntelliSense support
+- 💡 Back-end Language Server for Systemverilog
+- 💡 Complete syntax highlighting
+
+### [0.11.0]
+- Syntax Highlighting Overhaul
+- Smaller extension footprint
+- Support for external formatter
+- Documentation upgrade
+- Dev update with ESLint, Prettier and tests update
 
 ## [0.10.11]
 - added problem matchers
