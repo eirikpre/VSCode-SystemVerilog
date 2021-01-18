@@ -19,7 +19,7 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(152), document.positionAt(354));
 
-        let instance = document.getText(fullRange).trim();
+        let instance = document.getText(fullRange).trim().replace(/\r/g, '');
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
@@ -53,7 +53,7 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(506), document.positionAt(785));
 
-        let instance = document.getText(fullRange).trim();
+        let instance = document.getText(fullRange).trim().replace(/\r/g, '');
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
@@ -87,7 +87,7 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(954), document.positionAt(1071));
 
-        let instance = document.getText(fullRange).trim();
+        let instance = document.getText(fullRange).trim().replace(/\r/g, '');
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
@@ -121,7 +121,7 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(1240), document.positionAt(1407));
 
-        let instance = document.getText(fullRange).trim();
+        let instance = document.getText(fullRange).trim().replace(/\r/g, '');
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
@@ -155,7 +155,7 @@ suite('ModuleInstantiator Tests', () => {
 
         fullRange = new vscode.Range(document.positionAt(1590), document.positionAt(1747));
 
-        let instance = document.getText(fullRange).trim();
+        let instance = document.getText(fullRange).trim().replace(/\r/g, '');
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
