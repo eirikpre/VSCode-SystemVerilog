@@ -8,7 +8,7 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 // "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceRoot}",
+                "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "outFiles": ["${workspaceRoot}/dist/client/**/*.js"],
             "preLaunchTask": {

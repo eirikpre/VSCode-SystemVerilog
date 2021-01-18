@@ -319,7 +319,7 @@ repository:
         name: keyword.other.systemverilog
       '2':
         patterns:
-          - include: "#storage-scope"
+          - include: '#storage-scope'
         name: storage.type.built-in.systemverilog
       '3':
         name: storage.modifier.systemverilog
