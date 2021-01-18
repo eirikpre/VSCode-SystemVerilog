@@ -10,7 +10,7 @@
     b -/--->|            |
             |            |
             --------------
-               ^      ^ 
+               ^      ^
                |      |
               clk   reset
 
@@ -30,12 +30,12 @@ module adder(
   be kept*/
   input        valid,
   output [6:0] c
-  ); 
-  
+  );
+
   reg [6:0] tmp_c;
-  
-  //Reset 
-  always_ff @(posedge reset) 
+
+  //Reset
+  always_ff @(posedge reset)
     tmp_c <= pa_adder::RV_C;
 
   `ifdef VERBOSE_RESET
@@ -44,11 +44,11 @@ module adder(
       $display("Reset asserted!")
     end
   `endif
-   
+
   // Waddition operation
-  always @(posedge clk) 
+  always @(posedge clk)
     if(valid) tmp_c <= a + b;
-  
+
   assign c = tmp_c;
 
 endmodule
@@ -70,12 +70,12 @@ module bar #(
   be kept*/
   input        valid,
   output [6:0] c
-  ); 
-  
+  );
+
   reg [6:0] tmp_c;
-  
-  //Reset 
-  always_ff @(posedge reset) 
+
+  //Reset
+  always_ff @(posedge reset)
     tmp_c <= pa_adder::RV_C;
 
   `ifdef VERBOSE_RESET
@@ -84,11 +84,11 @@ module bar #(
       $display("Reset asserted!")
     end
   `endif
-   
+
   // Waddition operation
-  always @(posedge clk) 
+  always @(posedge clk)
     if(valid) tmp_c <= a + b;
-  
+
   assign c = tmp_c;
 
 endmodule
@@ -97,7 +97,7 @@ endmodule
 // -- Example without parameters, ports in header
 // -------------------------------------------------------
 
-module akker (clk, reset, a, b, valid, c); 
+module akker (clk, reset, a, b, valid, c);
 
   input 	     clk;
   input 	     reset;
@@ -110,9 +110,9 @@ module akker (clk, reset, a, b, valid, c);
   output [6:0] c;
 
   reg [6:0] tmp_c;
-  
-  //Reset 
-  always_ff @(posedge reset) 
+
+  //Reset
+  always_ff @(posedge reset)
     tmp_c <= pa_adder::RV_C;
 
   `ifdef VERBOSE_RESET
@@ -121,11 +121,11 @@ module akker (clk, reset, a, b, valid, c);
       $display("Reset asserted!")
     end
   `endif
-   
+
   // Waddition operation
-  always @(posedge clk) 
+  always @(posedge clk)
     if(valid) tmp_c <= a + b;
-  
+
   assign c = tmp_c;
 
 endmodule
@@ -137,7 +137,7 @@ endmodule
 module accer #(
   parameter     SIZE,
   parameter     SIZE_TWO
-)(clk, reset, a, b, valid, c); 
+)(clk, reset, a, b, valid, c);
 
   input 	     clk;
   input 	     reset;
@@ -150,9 +150,9 @@ module accer #(
   output [6:0] c;
 
   reg [6:0] tmp_c;
-  
-  //Reset 
-  always_ff @(posedge reset) 
+
+  //Reset
+  always_ff @(posedge reset)
     tmp_c <= pa_adder::RV_C;
 
   `ifdef VERBOSE_RESET
@@ -161,11 +161,11 @@ module accer #(
       $display("Reset asserted!")
     end
   `endif
-   
+
   // Waddition operation
-  always @(posedge clk) 
+  always @(posedge clk)
     if(valid) tmp_c <= a + b;
-  
+
   assign c = tmp_c;
 
 endmodule
@@ -177,7 +177,7 @@ endmodule
 module anner #(
   parameter     SIZE = 1,
   parameter logic SIZE_TWO = 4
-)(clk, reset, a, b, valid, c); 
+)(clk, reset, a, b, valid, c);
 
   input 	     clk;
   input 	     reset;
@@ -199,16 +199,16 @@ endmodule
 // ---------------------------------------------------------------
 
 module atter (
-  clk, 
-  reset, 
+  clk,
+  reset,
   //keep
-  a, 
+  a,
   //also this comment 1
-  b, 
+  b,
   // also this comment 2
-  valid, 
+  valid,
   c
-); 
+);
 
   input 	     clk;
   input 	     reset;
@@ -240,7 +240,7 @@ module apper (
   be kept*/
   input        valid,
   output [6:0] c
-  ); 
+  );
 
   input 	     clk;
   input 	     reset;
@@ -271,12 +271,12 @@ module golden(
   be kept*/
   input        valid,
   output [6:0] c
-  ); 
-  
+  );
+
   reg [6:0] tmp_c;
-  
-  //Reset 
-  always_ff @(posedge reset) 
+
+  //Reset
+  always_ff @(posedge reset)
     tmp_c <= pa_adder::RV_C;
 
   `ifdef VERBOSE_RESET
@@ -285,11 +285,11 @@ module golden(
       $display("Reset asserted!")
     end
   `endif
-   
+
   // Waddition operation
-  always @(posedge clk) 
+  always @(posedge clk)
     if(valid) tmp_c <= a + b;
-  
+
   assign c = tmp_c;
 
 endmodule

@@ -11,7 +11,7 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(587), document.positionAt(1143));
+        let fullRange = new vscode.Range(document.positionAt(585), document.positionAt(1129));
 
         const container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
@@ -42,7 +42,7 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(1293), document.positionAt(1899));
+        let fullRange = new vscode.Range(document.positionAt(1278), document.positionAt(1872));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -51,7 +51,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(507), document.positionAt(785));
+        fullRange = new vscode.Range(document.positionAt(506), document.positionAt(785));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -76,7 +76,7 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(2069), document.positionAt(2649));
+        let fullRange = new vscode.Range(document.positionAt(2041), document.positionAt(2611));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -85,7 +85,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(955), document.positionAt(1071));
+        fullRange = new vscode.Range(document.positionAt(954), document.positionAt(1071));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -110,7 +110,7 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(2816), document.positionAt(3447));
+        let fullRange = new vscode.Range(document.positionAt(2777), document.positionAt(3398));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -119,7 +119,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(1241), document.positionAt(1407));
+        fullRange = new vscode.Range(document.positionAt(1240), document.positionAt(1407));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -144,7 +144,7 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(3647), document.positionAt(3992));
+        let fullRange = new vscode.Range(document.positionAt(3597), document.positionAt(3942));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -153,7 +153,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(1591), document.positionAt(1747));
+        fullRange = new vscode.Range(document.positionAt(1590), document.positionAt(1747));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -256,7 +256,7 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(5327), document.positionAt(5883));
+        let fullRange = new vscode.Range(document.positionAt(5269), document.positionAt(5814));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -265,14 +265,14 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(2637), document.positionAt(2855));
+        fullRange = new vscode.Range(document.positionAt(2636), document.positionAt(2856));
 
-        const instance = document.getText(fullRange);
+        const instance = document.getText(fullRange).trim();
 
         let actual_instance;
 
         try {
-            actual_instance = formatInstance('golden', container).replace(/\r\n/g, '\n');
+            actual_instance = formatInstance('golden', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
