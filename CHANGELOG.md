@@ -7,6 +7,9 @@ All notable changes to this extension are documented below.
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.11.1]
+- Rework of typedef regex, #89
+
 ### [0.11.0]
 - Syntax Highlighting Overhaul
 - Smaller extension footprint

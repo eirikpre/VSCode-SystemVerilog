@@ -9,6 +9,16 @@ class driver;
   localparam P1 = pa_Package::PARAMETER;
   localparam P2 = pa_Package::PARAMETER2;
 
+  pa_Package::my_dumb_struct a_struct;
+
+
+  typedef struct packed
+  {
+    logic foo;
+    logic bar;
+  } my_dumb_struct;
+
+
   cat u_cat();
   123 u_123();
   abc u_abc();
