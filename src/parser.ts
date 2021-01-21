@@ -58,7 +58,16 @@ export class SystemVerilogParser {
     );
 
     private r_typedef: RegExp = new RegExp(
-        [/(?<=^\s*)/, /(?<type>typedef)\s+/, /(?<body>[^;]*)/, /(?<name>\b\w+)/, /\s*(\[[^;]*?\])*?/, /\s*(?<end>;)/]
+        [
+            /(?<=^\s*)/,
+            /(?<type>typedef\b)\s*((?!;|\{)[\W\w])+/,
+            // Recursive depth of 3 '{'s
+            /(\{(?<body>\{(\{|[\W\w]+?)\}|[\W\w]+?)\}|[\w\W]+?\})?\s*/,
+            /(?<name>\b\w+\b)/,
+            // Variable dimension
+            /(?:\s*\[[^;]*?\])*?/,
+            /\s*(?<end>;)/
+        ]
             .map((x) => x.source)
             .join(''),
         'mg'

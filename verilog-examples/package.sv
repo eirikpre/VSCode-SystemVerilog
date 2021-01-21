@@ -4,4 +4,14 @@ package pa_Package;
   localparam PARAMETER2 = 2;
 
 
+  typedef struct packed
+  {
+    logic foo;
+    logic bar;
+  } my_dumb_struct;
+
+  my_dumb_struct a_dumb_struct;
+
+  typedef int [7:0] int_8;
+
 endpackage
