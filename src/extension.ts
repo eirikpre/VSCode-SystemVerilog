@@ -78,7 +78,7 @@ export function activate(context: ExtensionContext) {
             }
         })
     );
-    const watcher = workspace.createFileSystemWatcher('**/*.{sv,v,svh,vh}', false, false, false);
+    const watcher = workspace.createFileSystemWatcher('**/*.{sv,v,svh,vh,svi,svp,pkg}', false, false, false);
     context.subscriptions.push(
         watcher.onDidCreate((uri) => {
             indexer.onCreate(uri);

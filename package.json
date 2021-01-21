@@ -40,7 +40,7 @@
         "onLanguage:systemverilog",
         "onLanguage:verilog",
         "onLanguage:markdown",
-        "workspaceContains:**/*.{sv,v,svh,vh}"
+        "workspaceContains:**/*.{sv,v,svh,vh,svi,svp,pkg}"
     ],
     "main": "./dist/client/extension",
     "contributes": {
@@ -55,7 +55,10 @@
                 ],
                 "extensions": [
                     ".sv",
-                    ".svh"
+                    ".svh",
+                    ".svi",
+                    ".svp",
+                    ".pkg"
                 ],
                 "configuration": "./language-configuration.json"
             },
@@ -122,7 +125,7 @@
                     "systemverilog.includeIndexing": {
                         "type": "array",
                         "default": [
-                            "**/*.{sv,v,svh,vh}"
+                            "**/*.{sv,v,svh,vh,svi,svp,pkg}"
                         ],
                         "description": "Files included for indexing (glob pattern)."
                     },

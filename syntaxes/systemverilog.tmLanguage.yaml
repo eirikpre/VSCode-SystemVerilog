@@ -5,6 +5,9 @@ fileTypes:
   - vh
   - sv
   - svh
+  - svi
+  - svp
+  - pkg
 patterns:
   - include: '#comments'
   - include: '#strings'

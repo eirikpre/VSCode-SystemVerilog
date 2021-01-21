@@ -29,7 +29,7 @@ export class VerilatorCompiler extends DocumentCompiler {
     regexCannotFindModule = new RegExp('%Error: ([^:]*):([0-9]+)(:[0-9]+)?: Cannot find(.*): (.*)');
     regexSearchPathNotFound = new RegExp("%Error: ([^:]*):([0-9]+)(:[0-9]+)?: This may be because there's no search path specified with -I<dir>."); // prettier-ignore
     regexLookedIn = new RegExp('%Error: ([^:]*):([0-9]+)(:[0-9]+)?: Looked in:');
-    regexFilesSearchedSource = '%Error: ([^:]*):([0-9]+)(:[0-9]+)?:       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|)$'; // prettier-ignore
+    regexFilesSearchedSource = '%Error: ([^:]*):([0-9]+)(:[0-9]+)?:       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|.svi|.svp|.pkg|)$'; // prettier-ignore
     regexOffendPart = new RegExp(".*'(.*)'.*");
 
     /**
