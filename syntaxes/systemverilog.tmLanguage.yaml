@@ -9,12 +9,12 @@ patterns:
   - include: '#comments'
   - include: '#strings'
   - include: '#parameter'
+  - include: '#keywords'
   - include: '#port-declaration'
   - include: '#module-declaration'
   - include: '#class-declaration'
   - include: '#function-task'
   - include: '#sequence'
-  - include: '#keywords'
   - include: '#all-types'
   - include: '#module-parameters'
   - include: '#module-no-parameters'
@@ -315,7 +315,7 @@ repository:
       \b(and|nand|nor|or|xor|xnor|buf|not|bufif[01]|notif[01]|r?[npc]mos|tran|r?tranif[01]|pullup|pulldown)\b
     name: support.type.systemverilog
   system-tf:
-    match: \$[a-z][a-z0-9$]*\b
+    match: \$[a-z][a-z0-9_$]*\b
     name: support.function.systemverilog
   cast-operator:
     match: '[ \t\n]*([a-zA-Z_][a-zA-Z0-9_$]*)('')(?=\()'
@@ -522,7 +522,7 @@ repository:
   port-declaration:
     patterns:
       - match: >-
-          ,?[ \t\n]*(?:\b(output|input|inout|ref)\b[ \t\n]*)?(?:\b(var|supply[01]|tri|triand|trior|trireg|tri[01]|uwire|wire|wand|wor)\b[ \t\n]*)?(?:\b([a-zA-Z_][a-zA-Z0-9_$]*)(::))?(?:([a-zA-Z_][a-zA-Z0-9_$]*)\b[ \t\n]*)?(?:\b(signed|unsigned)\b[ \t\n]*)?(?:(\[[a-zA-Z0-9_:$\-\+`' \t\n\[\]\(\)]*\])[ \t\n]*)?(?:\b([a-zA-Z_][a-zA-Z0-9_$]*)\b[ \t\n]*)(\[[a-zA-Z0-9_:$\-\+`' \t\n\[\]\(\)]*\])?(?:[ \t\n]*(,|;))?
+          ,?[ \t\n]*(?:\b(output|input|inout|ref)\b[ \t\n]*)?(?:\b(var|supply[01]|tri|triand|trior|trireg|tri[01]|uwire|wire|wand|wor)\b[ \t\n]*)?(?:\b([a-zA-Z_][a-zA-Z0-9_$]*)(::))?(?:([a-zA-Z_][a-zA-Z0-9_$]*)\b[ \t\n]*)?(?:\b(signed|unsigned)\b[ \t\n]*)?(?:(\[[a-zA-Z0-9_:$\-\+`' \t\n\[\]\(\)]*\])[ \t\n]*)?(?:\b([a-zA-Z_][a-zA-Z0-9_$]*)\b[ \t\n]*)(\[[a-zA-Z0-9_:$\-\+`' \t\n\[\]\(\)]*\])?[ \t\n]*(?=,|;|=|\)|$)
         captures:
           '1':
             name: support.type.direction.systemverilog
@@ -549,17 +549,7 @@ repository:
           '9':
             patterns:
               - include: '#selects'
-          '10':
-            name: punctuation.terminator.port.systemverilog
         name: meta.port.declaration.systemverilog
-      # - match: ',?\s*\b([a-zA-Z_][a-zA-Z0-9_$]*)\b(?:\s*(,))?'
-      #   captures:
-      #     '1':
-      #       patterns:
-      #         - include: '#identifiers'
-      #     '2':
-      #       name: punctuation.terminator.port.systemverilog
-      #   name: meta.port.declaration.systemverilog
   base-grammar:
     patterns:
       - include: '#all-types'
@@ -669,10 +659,6 @@ repository:
       - include: '#system-tf'
       - match: \bvirtual\b
         name: keyword.control.systemverilog
-      # - match: '\.([a-zA-Z_][a-zA-Z0-9_$]*)[ \t\n]*'
-      #   captures:
-      #     '1':
-      #       name: support.function.port.implicit.systemverilog
       - include: '#identifiers'
     name: meta.port.binding.systemverilog
   parameters:
