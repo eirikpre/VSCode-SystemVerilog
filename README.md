@@ -47,7 +47,6 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 
 ## Known Issues
 - Initial indexation might hog CPU/RAM when looking through files in very large workspaces
-- `randcase` is not matching with `endcase` brackets properly
 
 ## Future
 - Tree view of module hierarchy

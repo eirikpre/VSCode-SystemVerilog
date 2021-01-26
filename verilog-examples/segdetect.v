@@ -9,14 +9,14 @@ module segdetect( CLOCK, RESET, C, Z );
                   S2  = 3'b010,
                   S3  = 3'b011,
                   S4  = 3'b100,
-            		  S5  = 3'b101,   
+            		  S5  = 3'b101,
                   S6  = 3'b111;
 
   always @ (posedge CLOCK or posedge RESET) // Create state memory
     if (RESET==1) Sreg <= S0; else Sreg <= Snext;
 
   always @ (C, Sreg) begin  // Next-state logic
-    case (Sreg)
+    randcase (Sreg)
       S0:     if (C==0)  Snext = S0;
               else       Snext = S1;
       S1:     if (C==0)  Snext = S1;
