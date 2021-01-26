@@ -29,8 +29,8 @@ module ram8 (
   input  wire write,
   input  wire addr,
   output wire wdata,
-  reg    wire rdata
 );
   // something here
+  reg [1:0]  rdata [1:0];
 
 endmodule
