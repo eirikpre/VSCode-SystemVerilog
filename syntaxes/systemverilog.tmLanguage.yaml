@@ -703,6 +703,7 @@ repository:
       - include: '#constants'
       - include: '#operators'
       - include: '#cast-operator'
+      - include: '#storage-scope'
       - match: '[a-zA-Z_][a-zA-Z0-9_$]*'
         name: variable.other.identifier.systemverilog
     name: meta.brackets.select.systemverilog
