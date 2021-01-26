@@ -26,7 +26,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             if (results.length === 0) {
                 await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word).then(
                     (symbols: DocumentSymbol[]) => {
-                        getDocumentSymbols(results, symbols, word, document.uri);
+                        getDocumentSymbols(results, symbols, word, range, document.uri);
                     },
                     (reason: any) => {
                         console.log(reason); // eslint-disable-line no-console
@@ -63,7 +63,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                                 await commands
                                     .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
                                     .then((symbols) => {
-                                        getDocumentSymbols(results, symbols, word, uri, match_package[1]);
+                                        getDocumentSymbols(results, symbols, word, range, uri, match_package[1]);
                                     });
                             }
                         });
@@ -93,6 +93,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                                                         results,
                                                         symbols,
                                                         word,
+                                                        range,
                                                         x.location.uri,
                                                         container
                                                     );
@@ -108,7 +109,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 }
 
 // Retrieves locations from the hierarchical DocumentSymbols
-function getDocumentSymbols(results: Location[], entries, word: string, uri: Uri, containerName?: string): void {
+function getDocumentSymbols(results: Location[], entries, word: string, range: Range, uri: Uri, containerName?: string): void {
     if (!entries) {
         return;
     }
@@ -122,14 +123,16 @@ function getDocumentSymbols(results: Location[], entries, word: string, uri: Uri
                     });
                 }
             } else {
-                results.push({
-                    uri,
-                    range: entry.range
-                });
+                if (range.start.line !== entry.range.start.line) {
+                    results.push({
+                        uri,
+                        range: entry.range
+                    });
+                }
             }
         }
         if (entry.children.length > 0) {
-            getDocumentSymbols(results, entry.children, word, uri);
+            getDocumentSymbols(results, entry.children, word, range, uri);
         }
     }
 }

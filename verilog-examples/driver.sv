@@ -19,8 +19,8 @@ class driver;
   } my_dumb_struct;
 
 
-  cat u_cat();
-  123 u_123();
+  cov_101 cov_101();
+  a23 u_123();
   abc u_abc();
 
   //used to count the number of transactions
