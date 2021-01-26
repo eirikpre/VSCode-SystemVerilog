@@ -198,7 +198,7 @@ repository:
           '1':
             name: punctuation.definition.directive.systemverilog
           '2':
-            name: entity.name.function.preprocessor.systemverilog
+            name: variable.other.constant.preprocessor.systemverilog
     name: meta.preprocessor.systemverilog
   keywords:
     patterns:
