@@ -109,7 +109,14 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 }
 
 // Retrieves locations from the hierarchical DocumentSymbols
-function getDocumentSymbols(results: Location[], entries, word: string, range: Range, uri: Uri, containerName?: string): void {
+function getDocumentSymbols(
+    results: Location[],
+    entries,
+    word: string,
+    range: Range,
+    uri: Uri,
+    containerName?: string
+): void {
     if (!entries) {
         return;
     }
@@ -122,13 +129,11 @@ function getDocumentSymbols(results: Location[], entries, word: string, range: R
                         range: entry.range
                     });
                 }
-            } else {
-                if (range.start.line !== entry.range.start.line) {
-                    results.push({
-                        uri,
-                        range: entry.range
-                    });
-                }
+            } else if (range.start.line !== entry.range.start.line) {
+                results.push({
+                    uri,
+                    range: entry.range
+                });
             }
         }
         if (entry.children.length > 0) {
