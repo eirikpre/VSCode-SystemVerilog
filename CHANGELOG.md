@@ -7,7 +7,7 @@ All notable changes to this extension are documented below.
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
-### [0.11.2]
+### [0.11.2 - 0.11.3]
 - Syntax highlighting hotfixes
 
 ### [0.11.1]
