@@ -55,6 +55,19 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - Back-end Language server for Systemverilog
 - Update workspace state to save to [storagePath](https://code.visualstudio.com/api/advanced-topics/remote-extensions#persisting-extension-data-or-state)
 
+## Contributing
+- If you want to contribute with the project please fork this repository, clone it, make changes (preferably in a branch other than master) and finally create a Pull Request (more details [here](https://guides.github.com/activities/forking/)).
+- To debug the extension locally first install the required dependencies (in the repository's root directory):
+```
+npm install
+```
+- Then compile the project at least once (this will generate the SystemVerilog lexer and parser in `src\compiling\ANTLR\grammar\build`):
+```
+npm run compile
+```
+- Finally, run the "Client + Server" run configuration:
+![Debug configuration](resources/client_server_configuration.png)
+
 ## Release Notes
 See the [changelog](CHANGELOG.md) for more details
 
