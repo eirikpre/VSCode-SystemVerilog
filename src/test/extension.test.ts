@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as definitionProvider from '../providers/DefintionProvider';
+import * as definitionProvider from '../providers/DefinitionProvider';
 
 const testFolderLocation = '../../verilog-examples';
 
