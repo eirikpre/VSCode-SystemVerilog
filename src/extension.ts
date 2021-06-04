@@ -1,7 +1,7 @@
 import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext, ProgressLocation, Location, Range, Uri } from 'vscode'; // prettier-ignore
 import { LanguageClient, ServerOptions, TransportKind, LanguageClientOptions } from 'vscode-languageclient/node';
 import * as path from 'path';
-import { SystemVerilogDefinitionProvider } from './providers/DefintionProvider';
+import { SystemVerilogDefinitionProvider } from './providers/DefinitionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
 import { SystemVerilogFormatProvider } from './providers/FormatProvider';
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
