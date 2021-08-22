@@ -34,6 +34,11 @@ export class SystemVerilogIndexer {
         this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
     }
 
+    public initialize() {
+        const settings = workspace.getConfiguration();
+        this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
+        this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
+    }
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
         Looks up all the `symbols` that it exist on the queried files,
@@ -46,9 +51,7 @@ export class SystemVerilogIndexer {
         this.building = true;
         this.symbolsCount = 0;
         this.statusbar.text = 'SystemVerilog: Indexing..';
-        const settings = workspace.getConfiguration();
-        this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
-        this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
+        this.initialize();
 
         return await window
             .withProgress(

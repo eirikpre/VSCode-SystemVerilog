@@ -6,6 +6,7 @@ import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolP
 import { SystemVerilogFormatProvider } from './providers/FormatProvider';
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
+import { SystemVerilogReferenceProvider } from './providers/ReferenceProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexer } from './indexer';
@@ -43,6 +44,7 @@ export function activate(context: ExtensionContext) {
     const hoverProvider = new SystemVerilogHoverProvider();
     const moduleInstantiator = new SystemVerilogModuleInstantiator();
     const formatProvider = new SystemVerilogFormatProvider(outputChannel);
+    const referenceProvider = new SystemVerilogReferenceProvider(indexer);
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
@@ -51,6 +53,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
     context.subscriptions.push(languages.registerDocumentRangeFormattingEditProvider(selector, formatProvider));
     context.subscriptions.push(languages.registerDocumentFormattingEditProvider(selector, formatProvider));
+    context.subscriptions.push(languages.registerReferenceProvider(selector, referenceProvider));
 
     const build_handler = () => {
         indexer.build_index().then((_) => saveIndex());
