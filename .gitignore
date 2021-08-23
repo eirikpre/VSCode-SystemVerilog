@@ -9,3 +9,4 @@
 /syntaxes/systemverilog.tmLanguage.json
 **/.antlr
 *.vsix
+.DS_Store
