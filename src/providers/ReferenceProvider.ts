@@ -8,6 +8,7 @@ import { resolve } from 'vscode-languageserver/lib/node/files';
 
 export class SystemVerilogReferenceProvider implements ReferenceProvider {
     public indexer: SystemVerilogIndexer;
+    public definitionProvider: SystemVerilogDefinitionProvider;
     public results: Location[];
 
     constructor(indexer: SystemVerilogIndexer) {
@@ -33,24 +34,8 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             //TODO: remove this
             //this.results.push(new Location(document.uri, position))
 
-            var definitionProvider = new SystemVerilogDefinitionProvider();
-            const defLocation = await new Promise<Location>((resolve, reject) => {
-                definitionProvider.provideDefinition(document, position, token)
-                .then((res: Definition) => {
-                    var defLocation: Location;
-                    if (typeof res == typeof Location) {
-                        defLocation = res as Location;
-                    } else if (res[0] != null) {
-                        defLocation = res[0] as Location;
-                    } else {
-                        defLocation = new Location(document.uri, position);
-                    }
-                    //TODO: remove this
-                    //this.results.push(defLocation);
-
-                    resolve(defLocation);
-                });
-            });
+            this.definitionProvider = new SystemVerilogDefinitionProvider();
+            const defLocation = await this.getDefinitionLocation(document, position, token);
 
             const parser = new SystemVerilogParser();
             var indexer = new SystemVerilogIndexer(null, parser, null);
@@ -63,39 +48,78 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
                     break;
                 }
                 for (const uri of subset) {
-                    const locations = await this.processFile(uri, word);
-                    for(const loc of locations) {
+                    const locations = await this.processFile(uri, word, token, defLocation);
+                    for (const loc of locations) {
                         this.results.push(loc);
                     }
                 }
             }
-            
+
             resolve(this.results);
-                    
+
             //return refAtPos ? (await findReferences(refAtPos.ref)).map(({ location }) => location) : [];
         });
     }
 
-    public async processFile(uri: Uri, symbol: string): Promise<Location[]> {
+    public async getDefinitionLocation(
+        document: TextDocument,
+        position: Position,
+        token: CancellationToken
+    ): Promise<Location> {
+        const res = await this.definitionProvider.provideDefinition(document, position, token);
+        var defLocation: Location;
+        if (typeof res == typeof Location) {
+            defLocation = res as Location;
+        } else if (res[0] != null) {
+            defLocation = res[0] as Location;
+        } else {
+            defLocation = new Location(document.uri, position);
+        }
+        return defLocation;
+    }
+
+    public async processFile(
+        uri: Uri,
+        symbol: string,
+        token: CancellationToken,
+        defLocation: Location
+    ): Promise<Location[]> {
         const document = await workspace.openTextDocument(uri);
-        return new Promise<Location[]>(resolve => {
+        const allLocations = await new Promise<Location[]>((resolve) => {
             let text = document.getText();
-            let regex = /\btest\b/g;
-            let regex2 = new RegExp('\\b'+symbol+'\\b', 'g');
+            let regex = new RegExp('\\b' + symbol + '\\b', 'g');
             let match;
             let results: Location[] = [];
             while ((match = regex.exec(text)) !== null) {
                 let foundLocation = new Location(
                     document.uri,
-                    new Range(
-                        document.positionAt(match.index),
-                        document.positionAt(match.index + regex.lastIndex)
-                    )
-                )
-                //TODO check against defLocation
+                    new Range(document.positionAt(match.index), document.positionAt(match.index + regex.lastIndex))
+                );
+
                 results.push(foundLocation);
             }
             resolve(results);
         });
+
+        let validLocations = [];
+        for (const location of allLocations) {
+            const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
+            if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
+                validLocations.push(location);
+            }
+        }
+
+        return validLocations;
+    }
+
+    public isLocationShallowEqual(location1: Location, location2: Location): Boolean {
+        if (location1.uri.path === location2.uri.path) {
+            // If the start location is the same. we know the end location must also match
+            return (
+                location1.range.start.line === location2.range.start.line &&
+                location1.range.start.character === location2.range.start.character
+            );
+        }
+        return false;
     }
 }
