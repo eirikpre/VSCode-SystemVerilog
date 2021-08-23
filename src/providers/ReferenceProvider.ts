@@ -7,13 +7,9 @@ import { Integer_covergroup_expressionContext } from '../compiling/ANTLR/grammar
 import { resolve } from 'vscode-languageserver/lib/node/files';
 
 export class SystemVerilogReferenceProvider implements ReferenceProvider {
-    public indexer: SystemVerilogIndexer;
     public definitionProvider: SystemVerilogDefinitionProvider;
     public results: Location[];
-
-    constructor(indexer: SystemVerilogIndexer) {
-        this.indexer = indexer;
-    }
+    public includeDeclaration: Boolean;
 
     public async provideReferences(
         document: TextDocument,
@@ -26,6 +22,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             const word = document.getText(range);
             let cancelled = false;
             this.results = [];
+            this.includeDeclaration = options.includeDeclaration;
 
             if (!range) {
                 return this.results;
@@ -104,6 +101,10 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         let validLocations = [];
         for (const location of allLocations) {
             const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
+            // don't include the definition in the list when it is not requested
+            if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
+                continue;
+            }
             if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
                 validLocations.push(location);
             }
@@ -115,10 +116,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
     public isLocationShallowEqual(location1: Location, location2: Location): Boolean {
         if (location1.uri.path === location2.uri.path) {
             // If the start location is the same. we know the end location must also match
-            return (
-                location1.range.start.line === location2.range.start.line &&
-                location1.range.start.character === location2.range.start.character
-            );
+            return location1.range.start.isEqual(location2.range.start);
         }
         return false;
     }
