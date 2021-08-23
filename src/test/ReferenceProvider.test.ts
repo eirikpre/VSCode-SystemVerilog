@@ -1,4 +1,4 @@
-import { Range, Position } from 'vscode-languageserver/node';
+import { Range, Position, CancellationToken } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as vscode from 'vscode';
 import { Uri, workspace } from 'vscode';
@@ -7,15 +7,27 @@ import * as assert from 'assert';
 import { ANTLRBackend } from '../compiling/ANTLRBackend';
 import { SystemVerilogReferenceProvider } from '../providers/ReferenceProvider';
 
-const testFolderLocation = '../../src/test';
+const rootFolderLocation = '../../';
 
-suite('Macro Replacement Tests', () => {
-    test('test #1: Macro replacement/definition removal for text without macro definitions', async () => {
-        const uri = vscode.Uri.file("verilog-examples/environment.sv");
-        const input_location = new vscode.Location(uri[0], new vscode.Position(13,2));
+suite('ReferenceProvider Tests', () => {
+    test('test #1: find references of post_test() task from definition', async () => {
+        const filepath = path.join(__dirname, rootFolderLocation, "verilog-examples/environment.sv");
+        const uri = vscode.Uri.file(filepath);
+        const input_location = new vscode.Location(uri, new vscode.Position(44, 7));
         const expected_locations = [
-            new vscode.Location(uri[0], new vscode.Position(13,2)),
-            new vscode.Location(uri[0], new vscode.Position(13,2)) 
+            new vscode.Location(uri, new vscode.Position(44,7)),
+            new vscode.Location(uri, new vscode.Position(59,4)) 
+        ]
+        await referenceProviderTest(input_location, expected_locations);
+    }).timeout(10000);
+
+    test('test #2: find references of post_test() task from call', async () => {
+        const filepath = path.join(__dirname, rootFolderLocation, "verilog-examples/environment.sv");
+        const uri = vscode.Uri.file(filepath);
+        const input_location = new vscode.Location(uri, new vscode.Position(59,4));
+        const expected_locations = [
+            new vscode.Location(uri, new vscode.Position(44,7)),
+            new vscode.Location(uri, new vscode.Position(59,4)) 
         ]
         await referenceProviderTest(input_location, expected_locations);
     }).timeout(10000);
@@ -31,7 +43,8 @@ async function referenceProviderTest(input_location: vscode.Location, expected_l
 
     const referenceProvider = new SystemVerilogReferenceProvider();
     const document = await workspace.openTextDocument(input_location.uri);
-    const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, null);
+    let token = new vscode.CancellationTokenSource().token;
+    const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, token);
 
     assert (expected_locations.length === references.length);
 
