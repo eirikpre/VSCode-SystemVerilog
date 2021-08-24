@@ -29,9 +29,6 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
                 resolve(this.results);
             }
 
-            //TODO: remove this
-            //this.results.push(new Location(document.uri, position))
-
             this.definitionProvider = new SystemVerilogDefinitionProvider();
             const defLocation = await this.getDefinitionLocation(document, position, token);
 
@@ -55,7 +52,6 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
 
             resolve(this.results);
 
-            //return refAtPos ? (await findReferences(refAtPos.ref)).map(({ location }) => location) : [];
         });
     }
 
@@ -110,7 +106,6 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
                 continue;
             }
-            //TODO: check if location is inside a comment
             if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
                 validLocations.push(location);
             }

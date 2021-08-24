@@ -1,4 +1,3 @@
-import { start } from 'repl';
 import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
