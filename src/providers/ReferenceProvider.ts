@@ -5,6 +5,7 @@ import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
 import { Integer_covergroup_expressionContext } from '../compiling/ANTLR/grammar/build/SystemVerilogParser';
 import { resolve } from 'vscode-languageserver/lib/node/files';
+import { isUndefined } from 'util';
 
 export class SystemVerilogReferenceProvider implements ReferenceProvider {
     public definitionProvider: SystemVerilogDefinitionProvider;
@@ -25,7 +26,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             this.includeDeclaration = options.includeDeclaration;
 
             if (!range) {
-                return this.results;
+                resolve(this.results);
             }
 
             //TODO: remove this
@@ -90,7 +91,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             while ((match = regex.exec(text)) !== null) {
                 let foundLocation = new Location(
                     document.uri,
-                    new Range(document.positionAt(match.index), document.positionAt(match.index + regex.lastIndex))
+                    new Range(document.positionAt(match.index), document.positionAt(match.index + symbol.length))
                 );
 
                 results.push(foundLocation);
@@ -101,10 +102,15 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         let validLocations = [];
         for (const location of allLocations) {
             const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
+            if(thisDefLocation == undefined) {
+                // we found a symbol in a comment probably
+                continue;
+            }
             // don't include the definition in the list when it is not requested
             if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
                 continue;
             }
+            //TODO: check if location is inside a comment
             if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
                 validLocations.push(location);
             }

@@ -1,3 +1,4 @@
+import { start } from 'repl';
 import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
@@ -13,8 +14,13 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             const results: Location[] = [];
 
             if (!range) {
-                return results;
+                resolve(results);
             }
+
+            // don't attempt to find a reference for a symbol in a comment
+            await isLineInsideComments().then((inside) => {
+                if(inside) resolve(results);
+            });
 
             // Port
             await findPortInModule();
@@ -46,6 +52,29 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             resolve(results);
+
+            async function isLineInsideComments(): Promise<Boolean> {
+                //is line commented out with a single line comment (//)?
+                var isSingleComment = /^\s*\/\/.*/.test(line);
+                if(isSingleComment) {
+                    return true;
+                }
+                // only look at text before symbol. If we see a begin comment, an end comment
+                // must be implied and we can ignore looking for one
+                const text = document.getText(new Range(new Position(0, 0), range.start));
+                const startComment = /\/\*/g
+                const endComment = /\*\//g
+                startComment.test(text)
+                endComment.test(text)
+
+                // If there is begin comment (/*) that is not yet closed,
+                // we know the symbol must be commented out.
+                if(startComment.lastIndex > endComment.lastIndex) {
+                    // we must be within a block comment
+                    return true;
+                }
+                return false;
+            }
 
             async function findInPackage() {
                 const regex_package = '\\b(\\w+)\\s*::\\s*(word)';

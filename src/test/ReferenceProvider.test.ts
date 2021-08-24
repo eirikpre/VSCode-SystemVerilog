@@ -32,6 +32,19 @@ suite('ReferenceProvider Tests', () => {
         await referenceProviderTest(input_location, expected_locations);
     }).timeout(10000);
 
+    test('test #3: find references from definition across files', async () => {
+        const driver = path.join(__dirname, rootFolderLocation, "verilog-examples/driver.sv");
+        const environment = path.join(__dirname, rootFolderLocation, "verilog-examples/environment.sv");
+        const driver_uri = vscode.Uri.file(driver);
+        const environment_uri = vscode.Uri.file(environment);
+        const input_location = new vscode.Location(driver_uri, new vscode.Position(7, 6));
+        const expected_locations = [
+            new vscode.Location(driver_uri, new vscode.Position(7,6)),
+            new vscode.Location(environment_uri, new vscode.Position(51,4)) 
+        ]
+        await referenceProviderTest(input_location, expected_locations);
+    }).timeout(10000);
+
 });
 
 /**
