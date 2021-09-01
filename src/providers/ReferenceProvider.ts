@@ -1,11 +1,7 @@
 import { ReferenceProvider, TextDocument, Range, Position, workspace, Location, CancellationToken, Definition, Uri, SymbolInformation, commands } from 'vscode'; // prettier-ignore
 import { SystemVerilogDefinitionProvider } from './DefinitionProvider';
-import { SystemVerilogSymbol } from '../symbol';
 import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
-import { Integer_covergroup_expressionContext } from '../compiling/ANTLR/grammar/build/SystemVerilogParser';
-import { resolve } from 'vscode-languageserver/lib/node/files';
-import { isUndefined } from 'util';
 
 export class SystemVerilogReferenceProvider implements ReferenceProvider {
     public definitionProvider: SystemVerilogDefinitionProvider;

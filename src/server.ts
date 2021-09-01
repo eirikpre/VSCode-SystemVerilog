@@ -30,7 +30,6 @@ const backend: ANTLRBackend = new ANTLRBackend();
 connection.onInitialize((_params: InitializeParams) => ({
     capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,
-        referencesProvider: true
         // Tell the client that this server supports code completion.
         // completionProvider: {
         //     resolveProvider: true
