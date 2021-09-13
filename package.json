@@ -155,7 +155,8 @@
                         "type": "string",
                         "enum": [
                             "Verilator",
-                            "VCS"
+                            "VCS",
+                            "Verible"
                         ],
                         "default": "Verilator",
                         "description": "Select the compiler type from the drop down list."
