@@ -1,0 +1,6 @@
+foo_error.sv:6:5: syntax error, rejected "input" (syntax-error).
+foo_error.sv:13:3: syntax error, rejected "always" (syntax-error).
+foo_error.sv:16:13: syntax error, rejected "<=" (syntax-error).
+foo_error.sv:17:13: syntax error, rejected "<=" (syntax-error).
+foo_error.sv:18:3: syntax error, rejected "end" (syntax-error).
+foo_error.sv:21:1: syntax error, rejected "endmodule" (syntax-error).

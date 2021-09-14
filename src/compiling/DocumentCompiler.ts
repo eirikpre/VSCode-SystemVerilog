@@ -55,10 +55,30 @@ export abstract class DocumentCompiler {
 
             const args = [];
 
-            if (this.configurations.has(this.compilerConfigurationsKeys[2])) {
+            if (this.configurations.get(this.compilerConfigurationsKeys[0])
+                == "Verilator" && this.configurations.has(this.compilerConfigurationsKeys[2])) {
                 args.push(this.configurations.get(this.compilerConfigurationsKeys[2]));
-            } else {
+            } else if (this.configurations.get(this.compilerConfigurationsKeys[0])
+                == "Verilator") {
                 reject(new Error(`'${this.compilerConfigurationsKeys[2]}' configuration is undefined.`));
+                return;
+            }
+
+            if (this.configurations.get(this.compilerConfigurationsKeys[0])
+                == "VCS" && this.configurations.has(this.compilerConfigurationsKeys[3])) {
+                args.push(this.configurations.get(this.compilerConfigurationsKeys[3]));
+            } else if (this.configurations.get(this.compilerConfigurationsKeys[0])
+                == "VCS") {
+                reject(new Error(`'${this.compilerConfigurationsKeys[3]}' configuration is undefined.`));
+                return;
+            }
+
+            if (this.configurations.get(this.compilerConfigurationsKeys[0])
+                == "Verible" && this.configurations.has(this.compilerConfigurationsKeys[4])) {
+                args.push(this.configurations.get(this.compilerConfigurationsKeys[4]));
+            } else if (this.configurations.get(this.compilerConfigurationsKeys[0])
+                == "Verible") {
+                reject(new Error(`'${this.compilerConfigurationsKeys[4]}' configuration is undefined.`));
                 return;
             }
 

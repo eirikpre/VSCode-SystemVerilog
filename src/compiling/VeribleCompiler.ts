@@ -34,31 +34,47 @@ export class VeribleCompiler extends DocumentCompiler {
             return;
         }
 
-        const regexError = new RegExp(`(.*)-\\[(.*)\\] (.*)"?${documentFilePath}"?, ([0-9]+)(.*)`);
+        const regexError = new RegExp(`^(.+):(\\d+):(\\d+): (.+)(\\(syntax-error\\)).*$`);
+        const regexInfo = new RegExp(`^(.+):(\\d+):(\\d+): (.+)(\\[Style.*)$`);
 
         stdout = stdout.replace(/\r\n/g, '\n').trim();
 
-        const errors = stdout.split(/\n\n/g);
+        const errors = stdout.split(/\n/g);
 
         const visitedDocuments = new Map<string, boolean>();
 
         for (let i = 0; i < errors.length; i++) {
-            const error = this.formatError(errors[i]);
+            const error = errors[i];
             const diagnosticData: DiagnosticData = new DiagnosticData();
             let matches;
 
             if ((matches = regexError.exec(error))) {
-                diagnosticData.filePath = documentFilePath;
-                diagnosticData.line = parseInt(matches[4], 10) - 1;
-                diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity(matches[1]);
+                diagnosticData.filePath = matches[1];
+                diagnosticData.line = parseInt(matches[2], 10) - 1;
+                diagnosticData.charPosition = parseInt(matches[3], 10) - 1;
+                diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity('Error');
 
                 // Format Diagnostic's problem
                 const problem = [];
 
                 // remove preceding/trailing special characters
-                problem.push(`[${matches[2].replace(/^\W+|\W+$/g, '')}]: `);
-                problem.push(`${matches[3].replace(/^\W+|\W+$/g, '')}. `);
-                problem.push(`${matches[5].replace(/^\W+|\W+$/g, '')}.`);
+                problem.push(matches[4]);
+
+                diagnosticData.problem = problem.join('').trim();
+            }
+
+            if ((matches = regexInfo.exec(error))) {
+                diagnosticData.filePath = matches[1];
+                diagnosticData.line = parseInt(matches[2], 10) - 1;
+                diagnosticData.charPosition = parseInt(matches[3], 10) - 1;
+                diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity('Info');
+
+                // Format Diagnostic's problem
+                const problem = [];
+
+                // remove preceding/trailing special characters
+                problem.push(matches[4]);
+                problem.push(matches[5]);
 
                 diagnosticData.problem = problem.join('').trim();
             }
@@ -75,23 +91,4 @@ export class VeribleCompiler extends DocumentCompiler {
         }
     }
 
-    /**
-        Formats an error by removing new line characters, and cleaning up multiple space characters.
-
-        @param error the error output to format
-        @returns the formatted error
-    */
-    formatError(error: string): string {
-        error = error.trim();
-
-        let regex = new RegExp('( +)?,( +)?\n', 'g'); // eslint-disable-line no-control-regex
-        error = error.replace(regex, ', ');
-
-        regex = new RegExp('( +)?\n( +)?', 'g'); // eslint-disable-line no-control-regex
-        error = error.replace(regex, '. ');
-
-        error = error.replace(/ +/g, ' ');
-
-        return error.trim();
-    }
 }
