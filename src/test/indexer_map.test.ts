@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as path from 'path';
-import { window, workspace, Uri, StatusBarAlignment, SymbolKind, Location, Range } from 'vscode';
+import { window, workspace, Uri, StatusBarAlignment, Location, Range } from 'vscode';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
 import { SystemVerilogIndexer } from '../indexer';

@@ -34,12 +34,11 @@
         "workspace"
     ],
     "engines": {
-        "vscode": "^1.52.0"
+        "vscode": "^1.56.0"
     },
     "activationEvents": [
         "onLanguage:systemverilog",
         "onLanguage:verilog",
-        "onLanguage:markdown",
         "workspaceContains:**/*.{sv,v,svh,vh}"
     ],
     "main": "./dist/client/extension",
@@ -392,53 +391,51 @@
     "scripts": {
         "vscode:prepublish": "npm run compile && npm run webpack",
         "compile": "npm run yj && npm run compile:antlr4ts && tsc -p ./",
-        "yj": "npx js-yaml ./syntaxes/systemverilog.tmLanguage.yaml > ./syntaxes/systemverilog.tmLanguage.json",
-        "compile:antlr4ts": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
+        "yj": "js-yaml ./syntaxes/systemverilog.tmLanguage.yaml > ./syntaxes/systemverilog.tmLanguage.json",
+        "compile:antlr4ts": "antlr4ts -visitor -Xexact-output-dir ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
         "webpack": "webpack --mode production --config ./build/client.webpack.config.js && webpack --mode production --config ./build/server.webpack.config.js",
         "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc -watch -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "coverage": "nyc npm test",
-        "lint": "eslint -c ./.eslintrc --ext .ts ./src",
+        "lint": "eslint -c ./.eslintrc.json --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
         "pretty:check": "prettier --check \"**/*\""
     },
     "devDependencies": {
-        "@types/glob": "^7.1.3",
-        "@types/mocha": "^8.2.0",
-        "@types/node": "^12.19.15",
-        "@types/vscode": "^1.52.0",
-        "@typescript-eslint/eslint-plugin": "^4.14.2",
-        "@typescript-eslint/parser": "^4.14.2",
+        "@types/glob": "^7.2.0",
+        "@types/mocha": "^9.0.0",
+        "@types/node": "^14.17.32",
+        "@types/vscode": "^1.56.0",
+        "@typescript-eslint/eslint-plugin": "^5.2.0",
+        "@typescript-eslint/parser": "^5.2.0",
         "antlr4ts-cli": "^0.5.0-alpha.4",
-        "eslint": "^7.19.0",
-        "eslint-plugin-react-hooks": "^4",
-        "eslint-config-airbnb-typescript": "^12.0.0",
-        "eslint-config-prettier": "^7.2.0",
-        "eslint-plugin-import": "^2.22.1",
-        "eslint-plugin-jsx-a11y": "^6.4.1",
-        "eslint-plugin-react": "^7.22.0",
+        "eslint": "^8.1.0",
+        "eslint-config-airbnb-base": "14.2.1",
+        "eslint-config-airbnb-typescript": "^14.0.1",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-import": "^2.25.2",
+        "js-yaml": "^4.1.0",
         "languages": "0.1.3",
         "merge-options": "^3.0.4",
-        "mocha": "^8.2.1",
+        "mocha": "^9.1.3",
         "mocha-multi-reporters": "^1.5.1",
         "nyc": "^15.1.0",
-        "prettier": "^2.2.1",
-        "ts-loader": "^8.0.14",
-        "typescript": "^4.1.3",
-        "vscode-test": "^1.5.0",
-        "webpack": "^5.19.0",
-        "webpack-cli": "^4.5.0"
+        "prettier": "^2.4.1",
+        "ts-loader": "^9.2.6",
+        "typescript": "^4.4.4",
+        "vscode-test": "^1.6.1",
+        "webpack": "^5.60.0",
+        "webpack-cli": "^4.9.1"
     },
     "dependencies": {
-        "antlr4": "^4.9.1",
         "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
-        "glob": "^7.1.6",
+        "glob": "^7.2.0",
         "minimatch": "^3.0.4",
         "uri-js": "^4.4.1",
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",
-        "vscode-languageserver-textdocument": "^1.0.1"
+        "vscode-languageserver-textdocument": "^1.0.2"
     }
 }

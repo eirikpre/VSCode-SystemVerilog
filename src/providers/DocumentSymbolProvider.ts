@@ -5,7 +5,7 @@ import { SystemVerilogSymbol } from '../symbol';
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     private parser: SystemVerilogParser;
     private precision: string;
-    private depth: number = -1;
+    private depth = -1;
 
     constructor(parser) {
         this.parser = parser;

@@ -20,6 +20,7 @@ class TestStream extends Duplex {
         this.emit('data', chunk);
         done();
     }
+
     _read(_size: number) {}
 }
 /* eslint-enable no-underscore-dangle */

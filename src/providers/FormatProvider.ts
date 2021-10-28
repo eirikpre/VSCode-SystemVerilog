@@ -3,7 +3,8 @@ import * as cp from 'child_process';
 import { dirname } from 'path';
 
 export class SystemVerilogFormatProvider
-    implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
+    implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider
+{
     private outputChannel: vscode.OutputChannel;
 
     private getWorkspaceFolder(): string | undefined {

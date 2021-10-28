@@ -1,4 +1,4 @@
-import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
     public provideDefinition(
@@ -6,6 +6,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
         position: Position,
         token: CancellationToken
     ): Promise<Definition> {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise<Definition>(async (resolve, _reject) => {
             const range = document.getWordRangeAtPosition(position);
             const line = document.lineAt(position.line).text;
@@ -80,24 +81,23 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                             .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${container}`)
                             .then((res: SymbolInformation[]) =>
                                 Promise.all(
-                                    res.map(
-                                        async (x) =>
-                                            await commands
-                                                .executeCommand(
-                                                    'vscode.executeDocumentSymbolProvider',
+                                    res.map(async (x) =>
+                                        commands
+                                            .executeCommand(
+                                                'vscode.executeDocumentSymbolProvider',
+                                                x.location.uri,
+                                                word
+                                            )
+                                            .then((symbols) => {
+                                                getDocumentSymbols(
+                                                    results,
+                                                    symbols,
+                                                    word,
+                                                    range,
                                                     x.location.uri,
-                                                    word
-                                                )
-                                                .then((symbols) => {
-                                                    getDocumentSymbols(
-                                                        results,
-                                                        symbols,
-                                                        word,
-                                                        range,
-                                                        x.location.uri,
-                                                        container
-                                                    );
-                                                })
+                                                    container
+                                                );
+                                            })
                                     )
                                 )
                             );

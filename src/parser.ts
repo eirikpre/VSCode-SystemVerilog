@@ -2,10 +2,12 @@ import { TextDocument, Location, Range } from 'vscode';
 import { SystemVerilogSymbol } from './symbol';
 
 export class SystemVerilogParser {
-    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert|disable)/;
+    private illegalMatches =
+        /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert|disable)/;
+
     private comment = /(?:\/\/.*$)?/;
 
-    private r_decl_block: RegExp = new RegExp(
+    private r_decl_block = new RegExp(
         [
             '(?<=^\\s*',
             /(?<type>module|program|interface|package|primitive|config|property)\s+/,
@@ -17,14 +19,14 @@ export class SystemVerilogParser {
             /(?<ports>\s*\([\W\w]*?\))?/,
             /\s*;/,
             /(?<body>[\W\w]*?)/,
-            /(?<end>end\1)/
+            /(?<end>end\1)/ // eslint-disable-line no-useless-backreference
         ]
             .map((x) => (typeof x === 'string' ? x : x.source))
             .join(''),
         'mg'
     );
 
-    private r_decl_class: RegExp = new RegExp(
+    private r_decl_class = new RegExp(
         [
             '(?<=^\\s*(virtual\\s+)?',
             /(?<type>class)\s+/,
@@ -40,7 +42,7 @@ export class SystemVerilogParser {
         'mg'
     );
 
-    private r_decl_method: RegExp = new RegExp(
+    private r_decl_method = new RegExp(
         [
             '(?<=^\\s*(virtual|local|extern|pure\\s+virtual)?\\s*',
             /(?<type>(function|task))\s+/,
@@ -57,7 +59,7 @@ export class SystemVerilogParser {
         'mg'
     );
 
-    private r_typedef: RegExp = new RegExp(
+    private r_typedef = new RegExp(
         [
             /(?<=^\s*)/,
             /(?<type>typedef\b)\s*((?!;|\{)[\W\w])+/,
@@ -73,7 +75,7 @@ export class SystemVerilogParser {
         'mg'
     );
 
-    private r_instantiation: RegExp = new RegExp(
+    private r_instantiation = new RegExp(
         [
             '(?<=^\\s*',
             /(?:(?<modifier>virtual|static|automatic|rand|randc|pure virtual)\s+)?/,
@@ -97,14 +99,14 @@ export class SystemVerilogParser {
         'mg'
     );
 
-    private r_assert: RegExp = new RegExp(
+    private r_assert = new RegExp(
         [/(?<=^\s*(?<name>\w+)\s*:\s*)/, /(?<type>assert\b)/]
             .map((x) => (typeof x === 'string' ? x : x.source))
             .join(''),
         'mg'
     );
 
-    private r_define: RegExp = new RegExp(
+    private r_define = new RegExp(
         [
             /(?<=^\s*)/,
             /`(?<type>define)\s+/,
@@ -118,7 +120,7 @@ export class SystemVerilogParser {
         'mg'
     );
 
-    private r_label: RegExp = new RegExp(
+    private r_label = new RegExp(
         [
             /\b(?<type>begin)\b/,
             /\s*:\s*/,
@@ -126,14 +128,14 @@ export class SystemVerilogParser {
             // Matches up to 5 nested begin/ends
             // This is the only way to do it with RegExp without balancing groups
             /(?<body>(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b[\w\W]+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?)/,
-            /\bend\b(\s*:\s*\1)?/
+            /\bend\b(\s*:\s*\1)?/ // eslint-disable-line no-useless-backreference
         ]
             .map((x) => x.source)
             .join(''),
         'mg'
     );
 
-    private r_ports: RegExp = new RegExp(
+    private r_ports = new RegExp(
         [
             /(?<!^(?:\/\/|`|\n).*?)/,
             '(?<=',
@@ -158,7 +160,7 @@ export class SystemVerilogParser {
             /(?:automatic\s+)?/,
             /(?<name>\w+)/,
             /[\w\W.]*?/,
-            /(end\1)/
+            /(end\1)/ // eslint-disable-line no-useless-backreference
         ]
             .map((x) => x.source)
             .join(''),
@@ -198,12 +200,12 @@ export class SystemVerilogParser {
     */
     public get_all_recursive(
         document: TextDocument,
-        precision: string = 'full',
-        maxDepth: number = -1,
+        precision = 'full',
+        maxDepth = -1,
         text?: string,
-        offset: number = 0,
+        offset = 0,
         parent?: string,
-        depth: number = 0
+        depth = 0
     ): Array<SystemVerilogSymbol> {
         let symbols: Array<SystemVerilogSymbol> = [];
         const sub_blocks: Array<RegExpMatchArray> = [];

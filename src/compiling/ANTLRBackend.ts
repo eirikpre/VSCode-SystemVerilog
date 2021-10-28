@@ -84,7 +84,7 @@ export class ANTLRBackend {
         @param error_count The number of errors found in the file, used to filter out some messages
         @returns The appropriate user facing error message
     */
-    public getImprovedMessage(parser_error: any, uri: string, error_count: Number): string {
+    public getImprovedMessage(parser_error: any, uri: string, error_count: number): string {
         let out: string = parser_error.msg;
         if (parser_error.msg.startsWith('extraneous input')) {
             out = `extraneous input "${parser_error.offendingSymbol.text}"`;

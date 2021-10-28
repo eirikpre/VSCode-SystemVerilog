@@ -46,7 +46,6 @@ function isPortSymbol(symbol: string): boolean {
 
     let exists = false;
 
-    // eslint-disable-next-line no-param-reassign
     symbol = symbol.trim();
     ports_key_symbols.forEach((key) => {
         if (symbol === key) {

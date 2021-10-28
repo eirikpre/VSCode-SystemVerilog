@@ -117,7 +117,7 @@ export function activate(context: ExtensionContext) {
 
     function loadIndex(): void {
         const symbols: Array<any> = context.workspaceState.get('symbols');
-        let num_symbols: number = 0;
+        let num_symbols = 0;
         if (symbols) {
             symbols.forEach((entry) => {
                 // Hack because typecasting didn't work

@@ -9,7 +9,8 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
      * and the entry's value is a list of the symbols that exist in the file
      */
     public indexer: SystemVerilogIndexer;
-    public NUM_FILES: number = 250;
+
+    public NUM_FILES = 250;
 
     constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
@@ -30,7 +31,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             } else {
                 const pattern = new RegExp(`.*${query.replace(" ", "").split("").map((c) => c).join(".*")}.*`, 'i'); // prettier-ignore
                 const results = new Array<SystemVerilogSymbol>();
-                let exactMatch: Boolean = false;
+                let exactMatch = false;
                 if (query.startsWith('¤')) {
                     exactMatch = true;
                     query = query.substr(1);
