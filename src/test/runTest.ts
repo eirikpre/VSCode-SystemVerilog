@@ -9,7 +9,10 @@ async function main() {
 
         // The path to the extension test script
         // Passed to --extensionTestsPath
-        const extensionTestsPath = path.resolve(__dirname, './index');
+        const extensionTestsPath = path.resolve(
+            __dirname,
+            `./index${typeof process.argv[2] !== 'undefined' ? process.argv[2] : ''}`
+        );
 
         // Download VS Code, unzip it and run the integration test
         await runTests({ extensionDevelopmentPath, extensionTestsPath });

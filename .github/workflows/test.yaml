@@ -31,13 +31,18 @@ jobs:
         run: npm ci --production=false --unsafe-perm
       - name: Run quality checks
         run: |
+          npm run compile:antlr4ts
           npm run lint
           npm run pretty:check
       - name: Run tests and collect coverage
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: npx nyc npm test
+          run: npm run coverage
           working-directory: ./
           options: ''
       - name: Check bundle
-        run: npm run webpack
+        run: |
+          npm run webpack
+      - name: Verify files
+        run: |
+          ls -l dist/client/extension.js dist/server/server.js coverage/index.html
