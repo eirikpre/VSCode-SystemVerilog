@@ -143,7 +143,7 @@ export abstract class DocumentCompiler {
             if (filteredUris.length === 1) {
                 const uri = filteredUris[0];
 
-                const document: TextDocument = this.documents.get(uri);
+                const document: TextDocument = this.documents.get(uri); // eslint-disable-line @typescript-eslint/no-unused-vars
 
                 const range: Range = getLineRange(
                     diagnosticData.line,

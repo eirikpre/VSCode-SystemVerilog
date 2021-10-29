@@ -1,6 +1,6 @@
 import { createConnection, TextDocuments, Diagnostic, ProposedFeatures, InitializeParams, TextDocumentPositionParams, CompletionItem, TextDocumentSyncKind } from 'vscode-languageserver/node'; // prettier-ignore
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
+import { SystemVerilogCompiler, CompilerType } from './compiling/SystemVerilogCompiler';
 import { ANTLRBackend } from './compiling/ANTLRBackend';
 
 // Create a connection for the server, using Node's IPC as a transport.
@@ -135,6 +135,7 @@ function verifyDocument(uri: string) {
             .getDiagnostics(documents.get(uri))
             .then((diagnosticCollection: Map<string, Diagnostic[]>) => {
                 // Send the computed diagnostics to VSCode for each document
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 for (const [uri, diagnostics] of diagnosticCollection.entries()) {
                     connection.sendDiagnostics({ uri, diagnostics });
                 }
@@ -193,8 +194,8 @@ async function compile(document: TextDocument): Promise<void> {
     // remove existing Diagnostics for the targeted document
     connection.sendDiagnostics({ uri: document.uri, diagnostics: [] });
 
-    // convert string to enum type `compilerType`
-    const type: compilerType = <compilerType>compilerType[<string>configurations.get(compilerConfigurationsKeys[0])];
+    // convert string to enum type `CompilerType`
+    const type: CompilerType = <CompilerType>CompilerType[<string>configurations.get(compilerConfigurationsKeys[0])];
 
     documentCompiler
         .validateTextDocument(document, type)

@@ -208,7 +208,7 @@ export class SystemVerilogParser {
         depth = 0
     ): Array<SystemVerilogSymbol> {
         let symbols: Array<SystemVerilogSymbol> = [];
-        const sub_blocks: Array<RegExpMatchArray> = [];
+        const subBlocks: Array<RegExpMatchArray> = [];
 
         if (!text) {
             text = document.getText();
@@ -225,7 +225,7 @@ export class SystemVerilogParser {
                     break;
                 } else if (match.index === 0 && parent !== undefined) {
                     continue; // eslint-disable-line no-continue
-                } else if (sub_blocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
+                } else if (subBlocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
                     continue; // eslint-disable-line no-continue
                 }
 
@@ -253,7 +253,7 @@ export class SystemVerilogParser {
                 }
 
                 if (match.groups.body) {
-                    sub_blocks.push(match);
+                    subBlocks.push(match);
                 }
             }
         }
@@ -261,8 +261,8 @@ export class SystemVerilogParser {
         // Recursively expand the sub-blocks
         if (depth !== maxDepth) {
             // eslint-disable-next-line guard-for-in
-            for (const i in sub_blocks) {
-                const match = sub_blocks[i];
+            for (const i in subBlocks) {
+                const match = subBlocks[i];
                 const sub = this.get_all_recursive(
                     document,
                     precision,
@@ -283,19 +283,19 @@ export class SystemVerilogParser {
             const symbols: Array<SystemVerilogSymbol> = [];
             // eslint-disable-next-line no-constant-condition
             while (true) {
-                const match_ports: RegExpMatchArray = this.r_ports.exec(text);
-                if (match_ports == null) {
+                const matchPorts: RegExpMatchArray = this.r_ports.exec(text);
+                if (matchPorts == null) {
                     break;
                 }
                 const symbolInfo = new SystemVerilogSymbol(
-                    match_ports.groups.name,
-                    match_ports.groups.type,
+                    matchPorts.groups.name,
+                    matchPorts.groups.type,
                     parent,
                     new Location(
                         document.uri,
                         new Range(
-                            document.positionAt(match_ports.index + offset),
-                            document.positionAt(match_ports.index + match_ports[0].length + offset)
+                            document.positionAt(matchPorts.index + offset),
+                            document.positionAt(matchPorts.index + matchPorts[0].length + offset)
                         )
                     )
                 );

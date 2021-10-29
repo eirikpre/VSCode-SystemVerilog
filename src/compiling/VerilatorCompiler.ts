@@ -191,7 +191,7 @@ export class VerilatorCompiler extends DocumentCompiler {
                     }
                     break;
 
-                case CannotFindModuleState.FilesSearched:
+                case CannotFindModuleState.FilesSearched: // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     if (!(matches = regexFilesSearched.exec(error))) {
                         state = CannotFindModuleState.End;
                     }

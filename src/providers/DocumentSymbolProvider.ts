@@ -37,13 +37,14 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
             resolve(this.parser.get_all_recursive(document, this.precision, this.depth));
-            // resolve(show_SymbolKinds(document.uri));
+            // resolve(showSymbolKinds(document.uri));
         });
     }
 }
 
 // Function to easily show all the SymbolKind icons
-function show_SymbolKinds(uri: Uri): Array<SymbolInformation> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function showSymbolKinds(uri: Uri): Array<SymbolInformation> {
     // prettier-ignore
     return new Array<SymbolInformation>(
         new SymbolInformation("File",          SymbolKind.File,          "", new Location(uri, new Position(0,0))),

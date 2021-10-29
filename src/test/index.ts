@@ -2,7 +2,7 @@
 // By default the test runner in use is Mocha-based.
 
 import * as path from 'path';
-import * as Mocha from 'mocha'; // eslint-disable-line import/no-extraneous-dependencies
+import * as Mocha from 'mocha';
 import * as glob from 'glob';
 
 export function run(): Promise<void> {

@@ -9,7 +9,7 @@ import { VCSCompiler } from '../compiling/VCSCompiler';
 import { getPathFromUri } from '../utils/common';
 
 const testFolderLocation = '../../src/test/test-files/VCSCompiler.test';
-const file_path_placeholder = 'FILEPATH_PLACEHOLDER';
+const filePathPlaceholder = 'FILEPATH_PLACEHOLDER';
 
 let diagnosticCollection: Map<string, Diagnostic[]>;
 const documentCompiler = new VCSCompiler(undefined, undefined, undefined, undefined, undefined);
@@ -68,7 +68,7 @@ suite('VCSCompiler Tests', () => {
 
 function stderrSetUp(stdout, rootPath) {
     // Replace file_path_holder in stdout
-    const regex = new RegExp(file_path_placeholder, 'g');
+    const regex = new RegExp(filePathPlaceholder, 'g');
     return stdout.replace(regex, rootPath);
 }
 

@@ -133,23 +133,23 @@ suite('indexer_map Tests', () => {
         assert.strictEqual(indexer.mostRecentSymbols.length, 5);
 
         const recentSymbols = new Array<SystemVerilogSymbol>();
-        const symbolInfo_1 = new SystemVerilogSymbol('symbolInfo_1', 'module', 'parent_module', undefined);
-        const symbolInfo_2 = new SystemVerilogSymbol('symbolInfo_2', 'logic', 'parent_logic', undefined);
-        const symbolInfo_3 = new SystemVerilogSymbol('symbolInfo_3', 'function', 'parent_function', undefined);
-        const symbolInfo_4 = indexer.mostRecentSymbols[0];
-        const symbolInfo_5 = indexer.mostRecentSymbols[1];
+        const symbolInfo1 = new SystemVerilogSymbol('symbolInfo1', 'module', 'parent_module', undefined);
+        const symbolInfo2 = new SystemVerilogSymbol('symbolInfo2', 'logic', 'parent_logic', undefined);
+        const symbolInfo3 = new SystemVerilogSymbol('symbolInfo3', 'function', 'parent_function', undefined);
+        const symbolInfo4 = indexer.mostRecentSymbols[0];
+        const symbolInfo5 = indexer.mostRecentSymbols[1];
 
-        recentSymbols.push(symbolInfo_1);
-        recentSymbols.push(symbolInfo_2);
-        recentSymbols.push(symbolInfo_3);
+        recentSymbols.push(symbolInfo1);
+        recentSymbols.push(symbolInfo2);
+        recentSymbols.push(symbolInfo3);
 
         indexer.updateMostRecentSymbols(recentSymbols);
         assert.strictEqual(indexer.mostRecentSymbols.length, 5);
-        assert.strictEqual(indexer.mostRecentSymbols[0], symbolInfo_1);
-        assert.strictEqual(indexer.mostRecentSymbols[1], symbolInfo_2);
-        assert.strictEqual(indexer.mostRecentSymbols[2], symbolInfo_3);
-        assert.strictEqual(indexer.mostRecentSymbols[3], symbolInfo_4);
-        assert.strictEqual(indexer.mostRecentSymbols[4], symbolInfo_5);
+        assert.strictEqual(indexer.mostRecentSymbols[0], symbolInfo1);
+        assert.strictEqual(indexer.mostRecentSymbols[1], symbolInfo2);
+        assert.strictEqual(indexer.mostRecentSymbols[2], symbolInfo3);
+        assert.strictEqual(indexer.mostRecentSymbols[3], symbolInfo4);
+        assert.strictEqual(indexer.mostRecentSymbols[4], symbolInfo5);
     });
 });
 
@@ -159,13 +159,13 @@ suite('indexer_map Tests', () => {
 async function setUp() {
     const document = await workspace.openTextDocument(uri);
 
-    const settings = workspace.getConfiguration();
+    const settings = workspace.getConfiguration(); // eslint-disable-line @typescript-eslint/no-unused-vars
     const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 0);
 
     parser = new SystemVerilogParser();
     indexer = new SystemVerilogIndexer(statusBar, parser, window.createOutputChannel('SystemVerilog'));
-    docProvider = new SystemVerilogDocumentSymbolProvider(parser);
-    symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
+    docProvider = new SystemVerilogDocumentSymbolProvider(parser); // eslint-disable-line @typescript-eslint/no-unused-vars
+    symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     symbols = new Map<string, Array<SystemVerilogSymbol>>();
 
@@ -175,62 +175,62 @@ async function setUp() {
     );
 
     // File_1
-    const file_1 = path.join(__dirname, testFolderLocation, 'test-files', 'file_1.v');
+    const file1 = path.join(__dirname, testFolderLocation, 'test-files', 'file_1.v');
 
-    const list_1 = new Array<SystemVerilogSymbol>();
-    // Add SystemVerilogSymbol objects to list_1
-    const list_1_SymbolInfo_1 = new SystemVerilogSymbol('list_1_SymbolInfo_1', 'module', undefined, location);
-    const list_1_SymbolInfo_2 = new SystemVerilogSymbol('list_1_SymbolInfo_2', 'logic', undefined, location);
-    const list_1_SymbolInfo_3 = new SystemVerilogSymbol('list_1_SymbolInfo_3', 'function', undefined, location);
-    const list_1_SymbolInfo_4 = new SystemVerilogSymbol('list_1_SymbolInfo_4', 'interface', undefined, location);
+    const list1 = new Array<SystemVerilogSymbol>();
+    // Add SystemVerilogSymbol objects to list1
+    const list1SymbolInfo1 = new SystemVerilogSymbol('list_1_SymbolInfo_1', 'module', undefined, location);
+    const list1SymbolInfo2 = new SystemVerilogSymbol('list_1_SymbolInfo_2', 'logic', undefined, location);
+    const list1SymbolInfo3 = new SystemVerilogSymbol('list_1_SymbolInfo_3', 'function', undefined, location);
+    const list1SymbolInfo4 = new SystemVerilogSymbol('list_1_SymbolInfo_4', 'interface', undefined, location);
 
-    list_1.push(list_1_SymbolInfo_1);
-    list_1.push(list_1_SymbolInfo_2);
-    list_1.push(list_1_SymbolInfo_3);
-    list_1.push(list_1_SymbolInfo_4);
+    list1.push(list1SymbolInfo1);
+    list1.push(list1SymbolInfo2);
+    list1.push(list1SymbolInfo3);
+    list1.push(list1SymbolInfo4);
 
     // File_2
-    const file_2 = path.join(__dirname, testFolderLocation, 'test-files', 'file_2.v');
+    const file2 = path.join(__dirname, testFolderLocation, 'test-files', 'file_2.v');
 
-    const list_2 = new Array<SystemVerilogSymbol>();
-    // Add SystemVerilogSymbol objects to list_1
-    const list_2_SymbolInfo_1 = new SystemVerilogSymbol('list_2_SymbolInfo_1', 'logic', undefined, location);
-    const list_2_SymbolInfo_2 = new SystemVerilogSymbol('list_2_SymbolInfo_2', 'logic', undefined, location);
-    const list_2_SymbolInfo_3 = new SystemVerilogSymbol('list_2_SymbolInfo_3', 'import', undefined, location);
+    const list2 = new Array<SystemVerilogSymbol>();
+    // Add SystemVerilogSymbol objects to list1
+    const list2SymbolInfo1 = new SystemVerilogSymbol('list_2_SymbolInfo_1', 'logic', undefined, location);
+    const list2SymbolInfo2 = new SystemVerilogSymbol('list_2_SymbolInfo_2', 'logic', undefined, location);
+    const list2SymbolInfo3 = new SystemVerilogSymbol('list_2_SymbolInfo_3', 'import', undefined, location);
 
-    list_2.push(list_2_SymbolInfo_1);
-    list_2.push(list_2_SymbolInfo_2);
-    list_2.push(list_2_SymbolInfo_3);
+    list2.push(list2SymbolInfo1);
+    list2.push(list2SymbolInfo2);
+    list2.push(list2SymbolInfo3);
 
     // File_3
-    const file_3 = path.join(__dirname, testFolderLocation, 'test-files', 'file_3.v');
+    const file3 = path.join(__dirname, testFolderLocation, 'test-files', 'file_3.v');
 
-    const list_3 = new Array<SystemVerilogSymbol>();
-    // Add SystemVerilogSymbol objects to list_1
-    const list_3_SymbolInfo_1 = new SystemVerilogSymbol('list_3_SymbolInfo_1', 'logic', undefined, location);
-    const list_3_SymbolInfo_2 = new SystemVerilogSymbol('list_3_SymbolInfo_2', 'logic', undefined, location);
-    const list_3_SymbolInfo_3 = new SystemVerilogSymbol('list_3_SymbolInfo_3', 'module', undefined, location);
-    const list_3_SymbolInfo_4 = new SystemVerilogSymbol('list_3_SymbolInfo_4', 'module', undefined, location);
-    const list_3_SymbolInfo_5 = new SystemVerilogSymbol('list_3_SymbolInfo_5', 'module', undefined, location);
-    const list_3_SymbolInfo_6 = new SystemVerilogSymbol('list_3_SymbolInfo_6', 'import', undefined, location);
+    const list3 = new Array<SystemVerilogSymbol>();
+    // Add SystemVerilogSymbol objects to list1
+    const list3SymbolInfo1 = new SystemVerilogSymbol('list_3_SymbolInfo_1', 'logic', undefined, location);
+    const list3SymbolInfo2 = new SystemVerilogSymbol('list_3_SymbolInfo_2', 'logic', undefined, location);
+    const list3SymbolInfo3 = new SystemVerilogSymbol('list_3_SymbolInfo_3', 'module', undefined, location);
+    const list3SymbolInfo4 = new SystemVerilogSymbol('list_3_SymbolInfo_4', 'module', undefined, location);
+    const list3SymbolInfo5 = new SystemVerilogSymbol('list_3_SymbolInfo_5', 'module', undefined, location);
+    const list3SymbolInfo6 = new SystemVerilogSymbol('list_3_SymbolInfo_6', 'import', undefined, location);
 
-    list_3.push(list_3_SymbolInfo_1);
-    list_3.push(list_3_SymbolInfo_2);
-    list_3.push(list_3_SymbolInfo_3);
-    list_3.push(list_3_SymbolInfo_4);
-    list_3.push(list_3_SymbolInfo_5);
-    list_3.push(list_3_SymbolInfo_6);
+    list3.push(list3SymbolInfo1);
+    list3.push(list3SymbolInfo2);
+    list3.push(list3SymbolInfo3);
+    list3.push(list3SymbolInfo4);
+    list3.push(list3SymbolInfo5);
+    list3.push(list3SymbolInfo6);
 
     // File_4
-    const file_4 = path.join(__dirname, testFolderLocation, 'test-files', 'file_4.v');
+    const file4 = path.join(__dirname, testFolderLocation, 'test-files', 'file_4.v');
 
-    const list_4 = new Array<SystemVerilogSymbol>();
+    const list4 = new Array<SystemVerilogSymbol>();
 
     // Map the lists to the files
-    symbols.set(file_1, list_1);
-    symbols.set(file_2, list_2);
-    symbols.set(file_3, list_3);
-    symbols.set(file_4, list_4);
+    symbols.set(file1, list1);
+    symbols.set(file2, list2);
+    symbols.set(file3, list3);
+    symbols.set(file4, list4);
 }
 
 /**  

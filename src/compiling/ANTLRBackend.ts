@@ -31,9 +31,9 @@ export class ANTLRBackend {
             // Get document text
             const text = document.getText();
             // Perform macro replacements
-            const new_text = this.macroReplace(text);
+            const newText = this.macroReplace(text);
             // Create the lexer and parser
-            const inputStream = CharStreams.fromString(new_text);
+            const inputStream = CharStreams.fromString(newText);
             const lexer = new SystemVerilogLexer(inputStream);
             const tokenStream = new CommonTokenStream(lexer);
             const parser = new SystemVerilogParser(tokenStream);
@@ -103,12 +103,12 @@ export class ANTLRBackend {
         @returns The text with macro definitions removed and their uses replaced with the text they represent
     */
     public macroReplace(text: string): string {
-        const defines_with_text: [[string, string][], string] = this.extract_defines(text.replace(/\r\n/g, '\n'));
-        const defines: [string, string][] = defines_with_text[0];
-        const new_text: string = defines_with_text[1];
+        const definesWithText: [[string, string][], string] = this.extract_defines(text.replace(/\r\n/g, '\n'));
+        const defines: [string, string][] = definesWithText[0];
+        const newText: string = definesWithText[1];
 
-        const newer_text: string = this.remove_ifdef_ifndef(new_text);
-        return this.replace_defines(newer_text, defines);
+        const newerText: string = this.remove_ifdef_ifndef(newText);
+        return this.replace_defines(newerText, defines);
     }
 
     /**
@@ -126,31 +126,31 @@ export class ANTLRBackend {
         @returns The array of macro labels and the text they represent, and the full text with the macro definitions removed
     */
     private extract_defines(text: string): [[string, string][], string] {
-        let current_index: number = text.indexOf('`define');
+        let currentIndex: number = text.indexOf('`define');
         const defines: [string, string][] = [];
-        let new_text: string;
-        if (current_index === -1) {
-            new_text = text;
+        let newText: string;
+        if (currentIndex === -1) {
+            newText = text;
         } else {
-            new_text = text.slice(0, current_index);
+            newText = text.slice(0, currentIndex);
         }
-        while (current_index !== -1) {
-            const label: string = text.slice(current_index).split(' ', 2)[1];
-            let temp_index: number = text.indexOf('\n', current_index);
-            while (temp_index !== -1 && text.charAt(temp_index - 1) === '\\') {
-                temp_index = text.indexOf('\n', temp_index + 1);
+        while (currentIndex !== -1) {
+            const label: string = text.slice(currentIndex).split(' ', 2)[1];
+            let tempIndex: number = text.indexOf('\n', currentIndex);
+            while (tempIndex !== -1 && text.charAt(tempIndex - 1) === '\\') {
+                tempIndex = text.indexOf('\n', tempIndex + 1);
             }
-            let value: string = text.slice(text.indexOf(label, current_index) + label.length + 1, temp_index);
+            let value: string = text.slice(text.indexOf(label, currentIndex) + label.length + 1, tempIndex);
             value = value.replace('\\\n', '\n');
             defines.push([label, value]);
-            current_index = text.indexOf('`define', current_index + 1);
-            if (current_index === -1) {
-                new_text = new_text.concat(text.slice(temp_index + 1));
+            currentIndex = text.indexOf('`define', currentIndex + 1);
+            if (currentIndex === -1) {
+                newText = newText.concat(text.slice(tempIndex + 1));
             } else {
-                new_text = new_text.concat(text.slice(temp_index + 1, current_index));
+                newText = newText.concat(text.slice(tempIndex + 1, currentIndex));
             }
         }
-        return [defines, new_text];
+        return [defines, newText];
     }
 
     /**
@@ -160,12 +160,12 @@ export class ANTLRBackend {
         @returns The full text, with macro uses replaced with the text they represent
     */
     private replace_defines(text: string, defines: [string, string][]): string {
-        let new_text: string = text;
+        let newText: string = text;
         defines.forEach((define) => {
-            while (new_text.indexOf(`\`${define[0]}`) !== -1) {
-                new_text = new_text.replace(`\`${define[0]}`, define[1]);
+            while (newText.indexOf(`\`${define[0]}`) !== -1) {
+                newText = newText.replace(`\`${define[0]}`, define[1]);
             }
         });
-        return new_text;
+        return newText;
     }
 }

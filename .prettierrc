@@ -19,6 +19,7 @@
     "embeddedLanguageFormatting": "auto",
     "overrides": [
         { "files": "*.yaml", "options": { "tabWidth": 2 } },
+        { "files": "*.json", "options": { "printWidth": 130 } },
         { "files": "*.md", "options": { "tabWidth": 2 } }
     ]
 }

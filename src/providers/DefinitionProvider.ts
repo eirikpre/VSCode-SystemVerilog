@@ -49,11 +49,11 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             resolve(results);
 
             async function findInPackage() {
-                const regex_package = '\\b(\\w+)\\s*::\\s*(word)';
-                const match_package = line.match(regex_package.replace('word', word));
-                if (match_package && line.indexOf(word, match_package.index) === range.start.character) {
+                const regexPackage = '\\b(\\w+)\\s*::\\s*(word)';
+                const matchPackage = line.match(regexPackage.replace('word', word));
+                if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
                     await commands
-                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${match_package[1]}`, token)
+                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${matchPackage[1]}`, token)
                         .then((ws_symbols: SymbolInformation[]) => {
                             if (ws_symbols.length && ws_symbols[0].location) {
                                 return ws_symbols[0].location.uri;
@@ -64,7 +64,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                                 await commands
                                     .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
                                     .then((symbols) => {
-                                        getDocumentSymbols(results, symbols, word, range, uri, match_package[1]);
+                                        getDocumentSymbols(results, symbols, word, range, uri, matchPackage[1]);
                                     });
                             }
                         });
@@ -72,9 +72,9 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             async function findPortInModule() {
-                const regex_port = '\\.word\\s*\\(';
-                const match_port = line.match(regex_port.replace('word', word));
-                if (match_port && match_port.index === range.start.character - 1) {
+                const regexPort = '\\.word\\s*\\(';
+                const matchPort = line.match(regexPort.replace('word', word));
+                if (matchPort && matchPort.index === range.start.character - 1) {
                     const container = moduleFromPort(document, range);
                     if (container) {
                         await commands
@@ -152,10 +152,10 @@ export function moduleFromPort(document, range): string {
         else if (text[i] === '(') depthParathesis -= 1;
 
         if (depthParathesis === -1) {
-            const match_param = text.slice(0, i).match(/(\w+)\s*#\s*$/);
-            const match_simple = text.slice(0, i).match(/(\w+)\s+(\w+)\s*$/);
-            if (match_param) return match_param[1];
-            if (match_simple) return match_simple[1];
+            const matchParam = text.slice(0, i).match(/(\w+)\s*#\s*$/);
+            const matchSimple = text.slice(0, i).match(/(\w+)\s+(\w+)\s*$/);
+            if (matchParam) return matchParam[1];
+            if (matchSimple) return matchSimple[1];
         }
     }
 }

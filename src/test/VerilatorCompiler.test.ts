@@ -9,7 +9,7 @@ import { VerilatorCompiler } from '../compiling/VerilatorCompiler';
 import { getPathFromUri } from '../utils/common';
 
 const testFolderLocation = '../../src/test/test-files/VerilatorCompiler.test';
-const file_path_placeholder = 'FILEPATH_PLACEHOLDER';
+const filePathPlaceholder = 'FILEPATH_PLACEHOLDER';
 
 let diagnosticCollection: Map<string, Diagnostic[]>;
 const documentCompiler = new VerilatorCompiler(undefined, undefined, undefined, undefined, undefined);
@@ -143,7 +143,7 @@ suite('VerilatorCompiler Tests', () => {
 
 function stderrSetUp(stderr, rootPath) {
     // Replace file_path_holder in stderr
-    const regex = new RegExp(file_path_placeholder, 'g');
+    const regex = new RegExp(filePathPlaceholder, 'g');
     return stderr.replace(regex, rootPath);
 }
 

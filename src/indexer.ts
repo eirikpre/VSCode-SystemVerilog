@@ -18,13 +18,11 @@ export class SystemVerilogIndexer {
     public statusbar: StatusBarItem;
     public parser: SystemVerilogParser;
     public symbolsCount = 0;
-
     public NUM_FILES = 250;
     public parallelProcessing: number;
     public filesGlob: string = undefined;
     public exclude: GlobPattern = undefined;
     public forceFastIndexing = false;
-
     public outputChannel: OutputChannel;
 
     constructor(statusbar: StatusBarItem, parser: SystemVerilogParser, channel: OutputChannel) {

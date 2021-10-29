@@ -25,7 +25,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         @return an array of matching SystemVerilogSymbol
     */
     public provideWorkspaceSymbols(query: string, _token: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             if (query === undefined || query.length === 0) {
                 resolve(this.indexer.mostRecentSymbols);
             } else {

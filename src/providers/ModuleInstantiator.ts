@@ -10,7 +10,7 @@ import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
  * COMPLETE: processing is finished.
  * --------------------------------------------
  */
-enum processingState {
+enum ProcessingState {
     INITIAL = 1,
     PARAMETERS = 2,
     PORTS = 3,
@@ -20,8 +20,8 @@ enum processingState {
 /**
  * Key symbols
  */
-const ports_key_symbols = ['input', 'output', 'inout'];
-const parameter_key_symbol = 'parameter';
+const portsKeySymbols = ['input', 'output', 'inout'];
+const parameterKeySymbol = 'parameter';
 
 /**
  * Space padding
@@ -31,7 +31,7 @@ const padding = ' '.repeat(workspace.getConfiguration(null, null).get('editor.ta
 /**
  * Non-breaking white space
  */
-const non_breaking_space = '\xa0';
+const nonBreakingSpace = '\xa0';
 
 /**
     Checks if symbol is a port.
@@ -47,7 +47,7 @@ function isPortSymbol(symbol: string): boolean {
     let exists = false;
 
     symbol = symbol.trim();
-    ports_key_symbols.forEach((key) => {
+    portsKeySymbols.forEach((key) => {
         if (symbol === key) {
             exists = true;
             return false;
@@ -70,7 +70,7 @@ function isParameterSymbol(symbol: string): boolean {
 
     symbol = symbol.trim();
 
-    return symbol === parameter_key_symbol;
+    return symbol === parameterKeySymbol;
 }
 
 /**
@@ -84,7 +84,7 @@ function isEmptyKey(key: string): boolean {
         return true;
     }
 
-    const regex = new RegExp(non_breaking_space, 'g');
+    const regex = new RegExp(nonBreakingSpace, 'g');
     key = key.replace(regex, '');
     key = key.replace(/ +|\r\n|\n|\r/g, '');
 
@@ -98,7 +98,7 @@ function isEmptyKey(key: string): boolean {
     @param container the module's container
     @return true, if the module is parameterized
 */
-function moduleIsParameterized(symbol: string, container: string): boolean {
+function isModuleParameterized(symbol: string, container: string): boolean {
     if (isEmptyKey(symbol) || isEmptyKey(container)) {
         return false;
     }
@@ -225,10 +225,10 @@ export function formatInstance(symbol: string, container: string): string {
         return undefined;
     }
 
-    const original_container = container;
+    const originalContainer = container;
     container = cleanUpContainer(container);
 
-    const isParameterized = moduleIsParameterized(symbol, original_container);
+    const isParameterized = isModuleParameterized(symbol, originalContainer);
 
     const maxLength = findMaxLength(container, isParameterized);
     container = parseContainer(symbol, container, isParameterized, maxLength);
@@ -248,7 +248,7 @@ function cleanUpContainer(container: string): string {
     }
 
     // Replace white space with non-breaking white space
-    container = container.replace(/ /g, ` ${non_breaking_space} `);
+    container = container.replace(/ /g, ` ${nonBreakingSpace} `);
 
     // Surround ',' '=' '(' ')' '//' '/*' with whitespace
     container = container.replace(/,/g, ' , ');
@@ -260,13 +260,13 @@ function cleanUpContainer(container: string): string {
 
     // Surround key symbols with space
     let regex;
-    ports_key_symbols.forEach((key) => {
+    portsKeySymbols.forEach((key) => {
         regex = new RegExp(key, 'g');
         container = container.replace(regex, ` ${key} `);
     });
 
-    regex = new RegExp(parameter_key_symbol, 'g');
-    container = container.replace(regex, ` ${parameter_key_symbol} `);
+    regex = new RegExp(parameterKeySymbol, 'g');
+    container = container.replace(regex, ` ${parameterKeySymbol} `);
 
     // Replace multiple white spaces with a single whitespace
     container = container.replace(/  +/g, ' ');
@@ -295,7 +295,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
     let lastParameter;
     let passedEqualSign = false;
 
-    let state = processingState.INITIAL;
+    let state = ProcessingState.INITIAL;
 
     for (let i = 0; i < keys.length; i++) {
         if (keys[i] === undefined) {
@@ -309,17 +309,17 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
         // Block comment
         else if (keys[i] === '/*') {
             i = getBlockComment(keys, output, i);
-        } else if (state === processingState.INITIAL) {
+        } else if (state === ProcessingState.INITIAL) {
             if (keys[i] === '(') {
                 if (moduleIsParameterized) {
-                    state = processingState.PARAMETERS;
+                    state = ProcessingState.PARAMETERS;
                 } else {
-                    state = processingState.PORTS;
+                    state = ProcessingState.PORTS;
                 }
             }
-        } else if (state === processingState.PARAMETERS) {
+        } else if (state === ProcessingState.PARAMETERS) {
             if (keys[i] === ')') {
-                state = processingState.PORTS;
+                state = ProcessingState.PORTS;
             } else if (keys[i] === ',' && lastParameter) {
                 maxLength = Math.max(lastParameter.length, maxLength);
                 lastParameter = undefined;
@@ -331,14 +331,14 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
                     lastParameter = keys[i].trim();
                 }
             }
-        } else if (state === processingState.PORTS) {
+        } else if (state === ProcessingState.PORTS) {
             if (lastParameter) {
                 maxLength = Math.max(lastParameter.length, maxLength);
                 lastParameter = undefined;
             }
 
             if (keys[i] === ')') {
-                state = processingState.COMPLETE;
+                state = ProcessingState.COMPLETE;
             } else if (keys[i] === ',' && lastPort) {
                 maxLength = Math.max(lastPort.length, maxLength);
                 lastPort = undefined;
@@ -349,14 +349,14 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
 
         // Last item
         if (i >= keys.length - 1) {
-            if (state === processingState.PARAMETERS && lastParameter) {
+            if (state === ProcessingState.PARAMETERS && lastParameter) {
                 maxLength = Math.max(lastParameter.length, maxLength);
-            } else if (state === processingState.PORTS && lastPort) {
+            } else if (state === ProcessingState.PORTS && lastPort) {
                 maxLength = Math.max(lastPort.length, maxLength);
             }
         }
 
-        if (state === processingState.COMPLETE) {
+        if (state === ProcessingState.COMPLETE) {
             if (lastPort) {
                 maxLength = Math.max(lastPort.length, maxLength);
             }
@@ -392,7 +392,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
 
     let passedEqualSign = false;
 
-    let state = processingState.INITIAL;
+    let state = ProcessingState.INITIAL;
 
     for (let i = 0; i < keys.length; i++) {
         if (keys[i] === undefined) {
@@ -406,17 +406,17 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
         // Block comment
         else if (keys[i] === '/*') {
             i = getBlockComment(keys, output, i);
-        } else if (state === processingState.INITIAL) {
+        } else if (state === ProcessingState.INITIAL) {
             if (keys[i] === '(') {
                 if (moduleIsParameterized) {
-                    state = processingState.PARAMETERS;
+                    state = ProcessingState.PARAMETERS;
                 } else {
-                    state = processingState.PORTS;
+                    state = ProcessingState.PORTS;
                 }
             }
-        } else if (state === processingState.PARAMETERS) {
+        } else if (state === ProcessingState.PARAMETERS) {
             if (keys[i] === ')') {
-                state = processingState.PORTS;
+                state = ProcessingState.PORTS;
             } else if (keys[i] === ',' && lastParameter) {
                 // Set with default value if it exists
                 if (passedEqualSign) {
@@ -445,7 +445,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                     lastParameter = keys[i].trim();
                 }
             }
-        } else if (state === processingState.PORTS) {
+        } else if (state === ProcessingState.PORTS) {
             if (lastParameter) {
                 // Set with default value if it exists
                 if (passedEqualSign) {
@@ -467,7 +467,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
             }
 
             if (keys[i] === ')') {
-                state = processingState.COMPLETE;
+                state = ProcessingState.COMPLETE;
             } else if (keys[i] === ',' && lastPort) {
                 output.push(
                     `${padding}.${lastPort}${' '.repeat(maxLength - lastPort.length)}${' '.repeat(4)}(${lastPort})`
@@ -482,7 +482,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
 
         // Last item
         if (i >= keys.length - 1) {
-            if (state === processingState.PARAMETERS && lastParameter) {
+            if (state === ProcessingState.PARAMETERS && lastParameter) {
                 // Set with default value if it exists
                 if (passedEqualSign) {
                     output.push(
@@ -497,7 +497,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                     );
                     output.push(`${lastParameter})\n`);
                 }
-            } else if (state === processingState.PORTS && lastPort) {
+            } else if (state === ProcessingState.PORTS && lastPort) {
                 output.push(
                     `${padding}.${lastPort}${' '.repeat(maxLength - lastPort.length)}${' '.repeat(4)}(${lastPort})`
                 );
@@ -505,7 +505,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
             }
         }
 
-        if (state === processingState.COMPLETE) {
+        if (state === ProcessingState.COMPLETE) {
             if (lastPort) {
                 output.push(
                     `${padding}.${lastPort}${' '.repeat(maxLength - lastPort.length)}${' '.repeat(4)}(${lastPort})`
@@ -545,7 +545,7 @@ function getSingleComment(keys: string[], output: string[], i: number): number {
         return undefined;
     }
 
-    const regex = new RegExp(non_breaking_space, 'g');
+    const regex = new RegExp(nonBreakingSpace, 'g');
 
     output.push(padding + keys[i].replace(regex, ' '));
 
@@ -582,7 +582,7 @@ function getBlockComment(keys: string[], output: string[], i: number): number {
         return undefined;
     }
 
-    const regex = new RegExp(non_breaking_space, 'g');
+    const regex = new RegExp(nonBreakingSpace, 'g');
 
     output.push(padding + keys[i].replace(regex, ' '));
 

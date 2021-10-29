@@ -52,15 +52,15 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerDocumentRangeFormattingEditProvider(selector, formatProvider));
     context.subscriptions.push(languages.registerDocumentFormattingEditProvider(selector, formatProvider));
 
-    const build_handler = () => {
+    const buildHandler = () => {
         indexer.build_index().then((_) => saveIndex());
     };
-    const instantiate_handler = () => {
+    const instantiateHandler = () => {
         moduleInstantiator.instantiateModule();
     };
 
-    context.subscriptions.push(commands.registerCommand('systemverilog.build_index', build_handler));
-    context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
+    context.subscriptions.push(commands.registerCommand('systemverilog.build_index', buildHandler));
+    context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateHandler));
     context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
 
     // Background Processes
@@ -117,7 +117,7 @@ export function activate(context: ExtensionContext) {
 
     function loadIndex(): void {
         const symbols: Array<any> = context.workspaceState.get('symbols');
-        let num_symbols = 0;
+        let numSymbols = 0;
         if (symbols) {
             symbols.forEach((entry) => {
                 // Hack because typecasting didn't work
@@ -139,12 +139,12 @@ export function activate(context: ExtensionContext) {
                             )
                         )
                     );
-                    num_symbols += 1;
+                    numSymbols += 1;
                 });
                 indexer.symbols.set(entry[0], syms);
-                indexer.symbolsCount = num_symbols;
+                indexer.symbolsCount = numSymbols;
             });
-            statusBar.text = `SystemVerilog: ${num_symbols} indexed objects`;
+            statusBar.text = `SystemVerilog: ${numSymbols} indexed objects`;
         } else {
             throw new Error('Could not load index');
         }

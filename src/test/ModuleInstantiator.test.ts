@@ -23,18 +23,18 @@ suite('ModuleInstantiator Tests', () => {
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
-        let actual_instance;
+        let actualInstance;
 
         try {
-            actual_instance = formatInstance('adder', container).trim();
+            actualInstance = formatInstance('adder', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Replace multiple space with a single space
-        actual_instance = actual_instance.replace(/ +/g, ' ');
+        actualInstance = actualInstance.replace(/ +/g, ' ');
 
-        assert.strictEqual(actual_instance, instance);
+        assert.strictEqual(actualInstance, instance);
     });
 
     test('test #2: formatInstance with parameters', async () => {
@@ -57,18 +57,18 @@ suite('ModuleInstantiator Tests', () => {
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
-        let actual_instance;
+        let actualInstance;
 
         try {
-            actual_instance = formatInstance('bar', container).trim();
+            actualInstance = formatInstance('bar', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Replace multiple space with a single space
-        actual_instance = actual_instance.replace(/ +/g, ' ');
+        actualInstance = actualInstance.replace(/ +/g, ' ');
 
-        assert.strictEqual(actual_instance, instance);
+        assert.strictEqual(actualInstance, instance);
     });
 
     test('test #3: formatInstance without parameters, ports in header', async () => {
@@ -91,18 +91,18 @@ suite('ModuleInstantiator Tests', () => {
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
-        let actual_instance;
+        let actualInstance;
 
         try {
-            actual_instance = formatInstance('akker', container).trim();
+            actualInstance = formatInstance('akker', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Replace multiple space with a single space
-        actual_instance = actual_instance.replace(/ +/g, ' ');
+        actualInstance = actualInstance.replace(/ +/g, ' ');
 
-        assert.strictEqual(actual_instance, instance);
+        assert.strictEqual(actualInstance, instance);
     });
 
     test('test #4: formatInstance with parameters, ports in header', async () => {
@@ -125,18 +125,18 @@ suite('ModuleInstantiator Tests', () => {
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
-        let actual_instance;
+        let actualInstance;
 
         try {
-            actual_instance = formatInstance('accer', container).trim();
+            actualInstance = formatInstance('accer', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Replace multiple white spaces with a single space
-        actual_instance = actual_instance.replace(/ +/g, ' ');
+        actualInstance = actualInstance.replace(/ +/g, ' ');
 
-        assert.strictEqual(actual_instance, instance);
+        assert.strictEqual(actualInstance, instance);
     });
 
     test('test #5: formatInstance with defaulted parameters.', async () => {
@@ -159,35 +159,35 @@ suite('ModuleInstantiator Tests', () => {
         // Replace multiple space with a single space
         instance = instance.replace(/ +/g, ' ');
 
-        let actual_instance;
+        let actualInstance;
 
         try {
-            actual_instance = formatInstance('anner', container).trim();
+            actualInstance = formatInstance('anner', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Replace multiple white spaces with a single space
-        actual_instance = actual_instance.replace(/ +/g, ' ');
+        actualInstance = actualInstance.replace(/ +/g, ' ');
 
-        assert.strictEqual(actual_instance, instance);
+        assert.strictEqual(actualInstance, instance);
     });
 
     test('test #6: empty and undefined container/symbol scenarios', async () => {
-        let actual_instance;
+        let actualInstance;
 
         // Empty container with valid symbol
         try {
-            actual_instance = formatInstance('bar', '');
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance('bar', '');
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Undefined container with valid symbol
         try {
-            actual_instance = formatInstance('bar', undefined);
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance('bar', undefined);
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
@@ -204,48 +204,48 @@ suite('ModuleInstantiator Tests', () => {
 
         // Empty symbol with valid container
         try {
-            actual_instance = formatInstance('', container);
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance('', container);
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Undefined symbol with valid container
         try {
-            actual_instance = formatInstance(undefined, container);
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance(undefined, container);
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Empty symbol and container
         try {
-            actual_instance = formatInstance('', '');
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance('', '');
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Undefined symbol and container
         try {
-            actual_instance = formatInstance(undefined, undefined);
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance(undefined, undefined);
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Valid symbol and null container
         try {
-            actual_instance = formatInstance('bar', null);
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance('bar', null);
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
         // Null symbol and container
         try {
-            actual_instance = formatInstance(null, null);
-            assert.strictEqual(actual_instance, undefined);
+            actualInstance = formatInstance(null, null);
+            assert.strictEqual(actualInstance, undefined);
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
@@ -269,14 +269,14 @@ suite('ModuleInstantiator Tests', () => {
 
         const instance = document.getText(fullRange).trim();
 
-        let actual_instance;
+        let actualInstance;
 
         try {
-            actual_instance = formatInstance('golden', container).trim();
+            actualInstance = formatInstance('golden', container).trim();
         } catch (error) {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
-        assert.strictEqual(actual_instance, instance);
+        assert.strictEqual(actualInstance, instance);
     });
 });
