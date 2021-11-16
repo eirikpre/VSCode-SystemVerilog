@@ -393,7 +393,7 @@
         "vscode:prepublish": "npm run compile && npm run webpack",
         "compile": "npm run yj && npm run compile:antlr4ts && tsc -p ./",
         "yj": "npx js-yaml ./syntaxes/systemverilog.tmLanguage.yaml > ./syntaxes/systemverilog.tmLanguage.json",
-        "compile:antlr4ts": "antlr4ts -visitor ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
+        "compile:antlr4ts": "antlr4ts -visitor -Xexact-output-dir ./src/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build",
         "webpack": "webpack --mode production --config ./build/client.webpack.config.js && webpack --mode production --config ./build/server.webpack.config.js",
         "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc -watch -p ./",
