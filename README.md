@@ -72,8 +72,6 @@ npm install
 ```
 npm run compile
 ```
-NOTE: depending on your system setup, it may be required to copy some files in order for the build to succeed: 
-`mv src/compiling/ANTLR/grammar/build/src/compiling/ANTLR/grammar/SystemVerilog* src/compiling/ANTLR/grammar/build/.`
 
 - Finally, run the "Client + Server" run configuration:
 ![Debug configuration](resources/client_server_configuration.png)
