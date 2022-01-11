@@ -36,9 +36,16 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on glob
 - `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
 - `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
-- `systemverilog.launchConfiguration`: _String_, Command to run when launching verilator
+- `systemverilog.launchConfigurationVerilator`: _String_, Command to run when launching verilator
   * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
   * If not in path, replace _verilator_ with the appropriate command
+- `systemverilog.launchConfigurationVCS`: _String_, Command to run when launching VCS
+  * Default: _vcs_
+  * If not in path, replace _vcs_ with the appropriate command
+- `systemverilog.launchConfigurationVerible`: _String_, Command to run when launching Verible
+  * Default: _verible-verilog-lint_
+  * If not in path, replace _verible-verilog-lint_ with the appropriate command
+- `systemverilog.excludeCompiling`: _String_, Files excluded from compiling when saved based on glob
 - `systemverilog.compileOnSave`: _Boolean_, Compile files when saved
   * Default: *true*
 - `systemverilog.compilerType`: _String_, Dropdown list to select a compiler type
@@ -65,6 +72,7 @@ npm install
 ```
 npm run compile
 ```
+
 - Finally, run the "Client + Server" run configuration:
 ![Debug configuration](resources/client_server_configuration.png)
 

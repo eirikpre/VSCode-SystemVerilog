@@ -155,15 +155,31 @@
                         "type": "string",
                         "enum": [
                             "Verilator",
-                            "VCS"
+                            "VCS",
+                            "Verible"
                         ],
                         "default": "Verilator",
                         "description": "Select the compiler type from the drop down list."
                     },
-                    "systemverilog.launchConfiguration": {
+                    "systemverilog.excludeCompiling": {
+                        "type": "string",
+                        "default": "",
+                        "description": "Files excluded from compiling (glob pattern)."
+                    },
+                    "systemverilog.launchConfigurationVerilator": {
                         "type": "string",
                         "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
-                        "description": "Launch command for running the compiler."
+                        "description": "Launch command for running Verilator as the compiler."
+                    },
+                    "systemverilog.launchConfigurationVCS": {
+                        "type": "string",
+                        "default": "vcs",
+                        "description": "Launch command for running VCS as the compiler."
+                    },
+                    "systemverilog.launchConfigurationVerible": {
+                        "type": "string",
+                        "default": "verible-verilog-lint",
+                        "description": "Launch command for running Verible as the compiler."
                     },
                     "systemverilog.formatCommand": {
                         "type": "string",
@@ -376,6 +392,22 @@
                 "owner": "Verible",
                 "source": "systemverilog",
                 "severity": "warning",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "^(.+?):(\\d+):(\\d+):\\s+(.+?)\\s+\\[(Style:\\s+[-\\w]+)\\]\\s+\\[([-\\w]+)\\]$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                ]
+            },
+            {
+                "name": "verible-info",
+                "owner": "Verible",
+                "source": "systemverilog",
+                "severity": "info",
                 "fileLocation": "autoDetect",
                 "pattern": [
                     {
