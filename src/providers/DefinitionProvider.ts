@@ -17,10 +17,10 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             // don't attempt to find a reference for a symbol in a comment
-            await isLineInsideComments().then((inside) => {
-                if(inside) resolve(results);
-            });
-
+            let inside = await isLineInsideComments();
+            if(inside) {
+                resolve(results);
+            }
             // Port
             await findPortInModule();
 
@@ -29,25 +29,20 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // Lookup all symbols in the current document
             if (results.length === 0) {
-                await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word).then(
-                    (symbols: DocumentSymbol[]) => {
-                        getDocumentSymbols(results, symbols, word, range, document.uri);
-                    },
-                    (reason: any) => {
-                        console.log(reason); // eslint-disable-line no-console
-                    }
-                );
+                try {
+                    let symbols: DocumentSymbol[] = await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word);
+                    getDocumentSymbols(results, symbols, word, range, document.uri);
+                } catch(reason) {
+                    console.log(reason); // eslint-disable-line no-console
+                }
             }
 
             // Look up all indexed symbols
             if (results.length === 0) {
-                await commands
-                    .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
-                    .then((res: SymbolInformation[]) => {
-                        if (res.length !== 0) {
-                            res.map((x) => results.push(x.location));
-                        }
-                    });
+                let res: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
+                if (res.length !== 0) {
+                    res.map((x) => results.push(x.location));
+                }
             }
 
             resolve(results);

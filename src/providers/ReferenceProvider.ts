@@ -25,13 +25,17 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
                 resolve(this.results);
             }
 
+            // Get the original definition of the symbol 'Location' so we can compare against other symbols we find
             this.definitionProvider = new SystemVerilogDefinitionProvider();
             const defLocation = await this.getDefinitionLocation(document, position, token);
 
             const parser = new SystemVerilogParser();
             var indexer = new SystemVerilogIndexer(null, parser, null);
             indexer.initialize();
+            // Fins all systemVerilog files that could contain references to the symbol of interest
             const uris = await indexer.find_files(token);
+
+            // For each file in the workspace
             for (let fileNumber = 0; fileNumber < uris.length; fileNumber += indexer.parallelProcessing) {
                 const subset = uris.slice(fileNumber, fileNumber + indexer.parallelProcessing);
                 if (token.isCancellationRequested) {
@@ -39,6 +43,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
                     break;
                 }
                 for (const uri of subset) {
+                    // Find any tokens symbols (word) that that reference back to the Location we found above
                     const locations = await this.processFile(uri, word, token, defLocation);
                     for (const loc of locations) {
                         this.results.push(loc);
@@ -51,6 +56,9 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         });
     }
 
+    // Get the Location of the word at a given Postition
+    // This function is used to get the Location of the word under the suer's cursor
+    // when getting references.
     public async getDefinitionLocation(
         document: TextDocument,
         position: Position,
@@ -68,24 +76,31 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         return defLocation;
     }
 
+    // Read the given uri (file) and search for a symbol (word) that may be 
+    // declared at the original Location. If the declared Location matches
+    // when we do a reverse search for the symbol's location, we know we have found
+    // a reference of the symbol.
     public async processFile(
         uri: Uri,
         symbol: string,
         token: CancellationToken,
         defLocation: Location
     ): Promise<Location[]> {
+        // Read the document into memory
         const document = await workspace.openTextDocument(uri);
+        // Find all references to the word `symbol`
         const allLocations = await new Promise<Location[]>((resolve) => {
             let text = document.getText();
             let regex = new RegExp('\\b' + symbol + '\\b', 'g');
             let match;
             let results: Location[] = [];
+            // Iterate through the document and find all Words that match `symbol`
             while ((match = regex.exec(text)) !== null) {
                 let foundLocation = new Location(
                     document.uri,
                     new Range(document.positionAt(match.index), document.positionAt(match.index + symbol.length))
                 );
-
+                // Push the found Location onto the list.
                 results.push(foundLocation);
             }
             resolve(results);
@@ -93,6 +108,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
 
         let validLocations = [];
         for (const location of allLocations) {
+            // Get the definition (i.e. declaration) of the found symbol Locations
             const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
             if(thisDefLocation == undefined) {
                 // we found a symbol in a comment probably
@@ -103,6 +119,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
                 continue;
             }
             if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
+                // The declaration of the symbol matches hte original Location the user requested.
                 validLocations.push(location);
             }
         }
@@ -110,6 +127,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         return validLocations;
     }
 
+    // We can't compare Location objects with `==` we have to compare the properties using this function
     public isLocationShallowEqual(location1: Location, location2: Location): Boolean {
         if (location1.uri.path === location2.uri.path) {
             // If the start location is the same. we know the end location must also match
