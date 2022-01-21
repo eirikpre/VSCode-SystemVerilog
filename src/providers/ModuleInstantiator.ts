@@ -292,8 +292,8 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
     const output = [];
     let maxLength = 0;
 
-    let lastPort;
-    let lastParameter;
+    let lastPort: string = undefined;
+    let lastParameter: string = undefined;
     let passedEqualSign = false;
 
     let state = processingState.INITIAL;
@@ -387,9 +387,9 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
     const output = [];
     const keys = container.split(' ');
 
-    let lastPort;
-    let lastParameter;
-    let lastParameterDefault;
+    let lastPort: string = undefined;
+    let lastParameter: string = undefined;
+    let lastParameterDefault: string = undefined;
 
     let passedEqualSign = false;
 
