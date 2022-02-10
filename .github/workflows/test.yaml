@@ -1,0 +1,25 @@
+name: Test Extension
+on: [push, pull_request]
+
+jobs:
+  test_os:
+    name: Test
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install npm dependencies
+        run: npm install
+      - name: Compile Antlr
+        run: npm run compile
+      - name: Run headless test
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm test
