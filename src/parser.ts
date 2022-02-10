@@ -2,7 +2,7 @@ import { TextDocument, Location, Range } from 'vscode';
 import { SystemVerilogSymbol } from './symbol';
 
 export class SystemVerilogParser {
-    private illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert|disable)/;
+    private illegalMatches = /(?!\breturn\b|\bbegin\b|\bend\b|\belse\b|\bjoin\b|\bfork\b|\bfor\b|\bif\b|\bvirtual\b|\bstatic\b|\bautomatic\b|\bgenerate\b|\bassign\b|\binitial\b|\bassert\b|\bdisable\b)/;
     private comment = /(?:\/\/.*$)?/;
 
     private r_decl_block: RegExp = new RegExp(
