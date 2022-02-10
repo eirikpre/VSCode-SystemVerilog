@@ -8,6 +8,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - Go to symbol in document (`Ctrl+Shift+O`)
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages) (`Ctrl+T`)
 - Go to definition (_works for module/interface/program/class/package names and for ports too!_) (`Ctrl+LeftClick`)
+- Find references (_works for module/interface/program/class/package names and for ports too!_) (`Ctrl+LeftClick`)
 - Quick-start on already indexed workspaces
 - Code snippets for many common blocks
 - Instantiate module from already indexed module
@@ -22,6 +23,9 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 
 ### Go To Definition
 ![Go To Definition Example](resources/goToDef_demo.gif)
+
+### Find References
+![Find References Example](resources/find_references.gif)
 
 ### Module Instantiation
 ![Module Instantiation Example](resources/moduleInit_demo.gif)
