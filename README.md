@@ -58,6 +58,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 
 ## Known Issues
 - Initial indexation might hog CPU/RAM when looking through files in very large workspaces
+- The Find References feature is sometimes slow when the workspace has many large files
 
 ## Future
 - Tree view of module hierarchy
