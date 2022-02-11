@@ -55,6 +55,8 @@ suite('ReferenceProvider Tests', () => {
 async function referenceProviderTest(input_location: vscode.Location, expected_locations: vscode.Location[]) {
 
     const referenceProvider = new SystemVerilogReferenceProvider();
+    const folder = path.join(__dirname, rootFolderLocation, "verilog-examples");
+    workspace.updateWorkspaceFolders(0,0,{uri: vscode.Uri.file(folder)})
     const document = await workspace.openTextDocument(input_location.uri);
     let token = new vscode.CancellationTokenSource().token;
     const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, token);

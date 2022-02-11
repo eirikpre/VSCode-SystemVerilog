@@ -32,7 +32,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             const parser = new SystemVerilogParser();
             var indexer = new SystemVerilogIndexer(null, parser, null);
             indexer.initialize();
-            // Fins all systemVerilog files that could contain references to the symbol of interest
+            // Finds all systemVerilog files that could contain references to the symbol of interest
             const uris = await indexer.find_files(token);
 
             // For each file in the workspace
