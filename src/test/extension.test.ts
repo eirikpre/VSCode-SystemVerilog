@@ -35,8 +35,8 @@ suite('Extension Tests', () => {
         const document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        const symbolPosition = document.positionAt(334); // assign return_true
-                                                         //        ^
+        const symbolPosition = new vscode.Position(15,9); // assign return_true
+                                                          //        ^
 
         let defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
         let tokenSource = new CancellationTokenSource();

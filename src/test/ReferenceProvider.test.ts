@@ -61,8 +61,17 @@ async function referenceProviderTest(input_location: vscode.Location, expected_l
 
     assert (expected_locations.length === references.length);
 
-    for (let index = 0; index < references.length; index++) {
-        assert(expected_locations[index].uri.path === references[index].uri.path);
-        assert(expected_locations[index].range.start.isEqual(references[index].range.start));
+    // depending on the modify date of the file, they may be accessed in different order, so we need to accoutn for that
+    for (let i = 0; i < expected_locations.length; i++) {
+        let found = false;
+        for (let j = 0; j < references.length; j++) {
+            if(
+                (expected_locations[i].uri.path === references[j].uri.path)
+                && (expected_locations[i].range.start.isEqual(references[j].range.start))
+             ) {
+                found = true;
+            }
+        }
+        assert(found === true)
     }
 }
