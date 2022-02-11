@@ -6,6 +6,8 @@ import * as path from 'path';
 import * as assert from 'assert';
 import { ANTLRBackend } from '../compiling/ANTLRBackend';
 import { SystemVerilogReferenceProvider } from '../providers/ReferenceProvider';
+import { SystemVerilogParser } from '../parser';
+import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 
 const rootFolderLocation = '../../';
 
@@ -54,7 +56,12 @@ suite('ReferenceProvider Tests', () => {
  */
 async function referenceProviderTest(input_location: vscode.Location, expected_locations: vscode.Location[]) {
 
+    const selector: vscode.DocumentSelector = [
+        { scheme: 'file', language: 'systemverilog' },
+        { scheme: 'file', language: 'verilog' }
+    ];
     const referenceProvider = new SystemVerilogReferenceProvider();
+    vscode.languages.registerReferenceProvider(selector, referenceProvider)
     const folder = path.join(__dirname, rootFolderLocation, "verilog-examples");
     workspace.updateWorkspaceFolders(0,0,{uri: vscode.Uri.file(folder)})
     const document = await workspace.openTextDocument(input_location.uri);

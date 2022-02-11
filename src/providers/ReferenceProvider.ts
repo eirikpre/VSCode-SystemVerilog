@@ -1,4 +1,4 @@
-import { ReferenceProvider, TextDocument, Range, Position, workspace, Location, CancellationToken, Definition, Uri, SymbolInformation, commands } from 'vscode'; // prettier-ignore
+import { ReferenceProvider, TextDocument, Range, Position, workspace, Location, CancellationToken, Definition, Uri, SymbolInformation, commands, languages } from 'vscode'; // prettier-ignore
 import { SystemVerilogDefinitionProvider } from './DefinitionProvider';
 import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
@@ -34,6 +34,8 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             indexer.initialize();
             // Finds all systemVerilog files that could contain references to the symbol of interest
             const uris = await indexer.find_files(token);
+
+            //TODO: It might be possible to use the already registered symbolProvider here instead of creating a new one
 
             // For each file in the workspace
             for (let fileNumber = 0; fileNumber < uris.length; fileNumber += indexer.parallelProcessing) {
