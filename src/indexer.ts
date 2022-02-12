@@ -20,7 +20,7 @@ export class SystemVerilogIndexer {
     public symbolsCount: number = 0;
 
     public NUM_FILES: number = 250;
-    public parallelProcessing: number;
+    public parallelProcessing: number = 1;
     public filesGlob: string = undefined;
     public exclude: GlobPattern = undefined;
     public forceFastIndexing: Boolean = false;
@@ -125,7 +125,7 @@ export class SystemVerilogIndexer {
                     if (total_files >= 100 * this.parallelProcessing) {
                         return this.parser.get_all_recursive(doc, 'declaration', 0);
                     }
-                    return this.parser.get_all_recursive(doc, 'declaration', 1);
+                    return this.parser.get_all_recursive(doc, 'full', 1);
                 })
             );
         })

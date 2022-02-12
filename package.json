@@ -133,7 +133,7 @@
                     },
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
-                        "default": true,
+                        "default": false,
                         "description": "Force indexing to use fast regular expression parsing."
                     },
                     "systemverilog.enableIncrementalIndexing": {
@@ -430,6 +430,7 @@
         "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc -watch -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
+        "clean": "npx rimraf dist && npx rimraf out && npx rimraf .vscode-test",
         "coverage": "nyc npm test",
         "lint": "eslint -c ./.eslintrc --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",

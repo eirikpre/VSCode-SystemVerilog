@@ -5,6 +5,8 @@ import { CancellationToken, CancellationTokenSource } from 'vscode-languageclien
 import * as definitionProvider from '../providers/DefinitionProvider';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 import { SystemVerilogParser } from '../parser';
+import { SystemVerilogIndexer } from '../indexer';
+import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
 
 const examplesFolderLocation = '../../verilog-examples';
 const testFolderLocation = '../../src/test/test-files';
@@ -45,8 +47,15 @@ suite('Extension Tests', () => {
                                                           //        ^
 
         const parser = new SystemVerilogParser();
+        const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+        const outputChannel = vscode.window.createOutputChannel('SystemVerilog');
+        const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
+        const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
         const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
-        vscode.languages.registerDocumentSymbolProvider(selector, docProvider)
+        vscode.languages.registerDocumentSymbolProvider(selector, docProvider);
+        vscode.languages.registerWorkspaceSymbolProvider(symProvider);
+        await indexer.build_index();
+
         let defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
         let tokenSource = new CancellationTokenSource();
         const definition: vscode.Definition = await defProvider.provideDefinition(document, symbolPosition, tokenSource.token)

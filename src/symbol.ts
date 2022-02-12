@@ -31,6 +31,8 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'parameter':
         case 'localparam':
             return SymbolKind.Constant;
+        case 'potential_reference':
+            return SymbolKind.Key;
         case 'package':
         case 'program':
         case 'import':

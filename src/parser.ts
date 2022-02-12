@@ -1,4 +1,4 @@
-import { TextDocument, Location, Range } from 'vscode';
+import { TextDocument, Location, Range, Position } from 'vscode';
 import { SystemVerilogSymbol } from './symbol';
 
 export class SystemVerilogParser {
@@ -104,6 +104,15 @@ export class SystemVerilogParser {
         'mg'
     );
 
+    private r_potential_reference: RegExp = new RegExp(
+        [
+            /\b(?<name>\w+)\b/
+        ]
+            .map((x) => (typeof x === 'string' ? x : x.source))
+            .join(''),
+        'mg'
+    );
+
     private r_define: RegExp = new RegExp(
         [
             /(?<=^\s*)/,
@@ -173,7 +182,8 @@ export class SystemVerilogParser {
         this.r_define,
         this.r_label,
         this.r_instantiation,
-        this.r_assert
+        this.r_assert,
+        this.r_potential_reference
     ];
 
     public readonly declaration_parse = [
@@ -221,37 +231,43 @@ export class SystemVerilogParser {
                 const match: RegExpMatchArray = regexes[i].exec(text);
                 if (match == null) {
                     break;
-                } else if (match.index === 0 && parent !== undefined) {
+                }
+                const type = match.groups.type ? match.groups.type : 'potential_reference';
+                if (match.index === 0 && parent !== undefined) {
                     continue; // eslint-disable-line no-continue
-                } else if (sub_blocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
+                } else if (type != 'potential_reference' && sub_blocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
                     continue; // eslint-disable-line no-continue
                 }
 
-                const symbolInfo = new SystemVerilogSymbol(
-                    match.groups.name,
-                    match.groups.type,
-                    parent,
-                    new Location(
-                        document.uri,
-                        new Range(
-                            document.positionAt(match.index + offset),
-                            document.positionAt(match.index + match[0].length + offset)
-                        )
+                const location = new Location(
+                    document.uri,
+                    new Range(
+                        document.positionAt(match.index + offset),
+                        document.positionAt(match.index + match[0].length + offset)
                     )
                 );
-                symbols.push(symbolInfo);
+                const isCommented = this.isSymbolInsideComment(document, location);
+                if(!isCommented) {
+                    const symbolInfo = new SystemVerilogSymbol(
+                        match.groups.name,
+                        type,
+                        parent,
+                        location
+                    );
+                    symbols.push(symbolInfo);
 
-                if (match.groups.ports && precision === 'full') {
-                    this.get_ports(
-                        document,
-                        match.groups.ports,
-                        offset + match.index + match[0].indexOf(match.groups.ports),
-                        match.groups.name
-                    ).then((out) => symbols.push(...out)); // eslint-disable-line @typescript-eslint/no-loop-func
-                }
+                    if (match.groups.ports && precision === 'full') {
+                        this.get_ports(
+                            document,
+                            match.groups.ports,
+                            offset + match.index + match[0].indexOf(match.groups.ports),
+                            match.groups.name
+                        ).then((out) => symbols.push(...out)); // eslint-disable-line @typescript-eslint/no-loop-func
+                    }
 
-                if (match.groups.body) {
-                    sub_blocks.push(match);
+                    if (match.groups.body) {
+                        sub_blocks.push(match);
+                    }
                 }
             }
         }
@@ -274,6 +290,32 @@ export class SystemVerilogParser {
             }
         }
         return symbols;
+    }
+
+    // We don't want to provide symbols for text that is comemnted.
+    // The easiest way to do this is to remove comments from the text before parsing
+    private isSymbolInsideComment(document: TextDocument, location: Location): Boolean {
+
+        const line = document.lineAt(location.range.start).text;
+
+        //is line commented out with a single line comment (//)?
+        var isSingleComment = /^\s*\/\/.*/.test(line);
+        if(isSingleComment) {
+            return true;
+        }
+        // only look at text before symbol. If we see a begin comment, an end comment
+        // must be implied and we can ignore looking for one
+        const text = document.getText(new Range(new Position(0, 0), location.range.start));
+        const lastStartComment = text.lastIndexOf('/*');
+        const lastEndComment = text.lastIndexOf('*/');
+
+        // If there is begin comment (/*) that is not yet closed,
+        // we know the symbol must be commented out.
+        if(lastStartComment > lastEndComment) {
+            // we must be within a block comment
+            return true;
+        }
+        return false;
     }
 
     private get_ports(document: TextDocument, text: string, offset, parent): Thenable<Array<SystemVerilogSymbol>> {

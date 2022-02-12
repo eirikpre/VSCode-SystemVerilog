@@ -29,29 +29,25 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             this.definitionProvider = new SystemVerilogDefinitionProvider();
             const defLocation = await this.getDefinitionLocation(document, position, token);
 
-            const parser = new SystemVerilogParser();
-            var indexer = new SystemVerilogIndexer(null, parser, null);
-            indexer.initialize();
-            // Finds all systemVerilog files that could contain references to the symbol of interest
-            const uris = await indexer.find_files(token);
-
-            //TODO: It might be possible to use the already registered symbolProvider here instead of creating a new one
+            // Get all symbols in the worksace that match `word`
+            let all_symbols: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¬¤${word}`, token);
+            if (all_symbols.length !== 0) {
+                all_symbols.map((x) => this.results.push(x.location));
+            }
 
             // For each file in the workspace
-            for (let fileNumber = 0; fileNumber < uris.length; fileNumber += indexer.parallelProcessing) {
-                const subset = uris.slice(fileNumber, fileNumber + indexer.parallelProcessing);
-                if (token.isCancellationRequested) {
-                    cancelled = true;
+            
+            for (const symbol of all_symbols) {
+                // Find any tokens symbols (word) that that reference back to the Location we found above
+                const defined = await this.isLocationDefinedByDefinition(symbol.location, token, defLocation);
+                if(defined) {
+                    this.results.push(symbol.location);
+                }
+                if(token.isCancellationRequested) {
                     break;
                 }
-                for (const uri of subset) {
-                    // Find any tokens symbols (word) that that reference back to the Location we found above
-                    const locations = await this.processFile(uri, word, token, defLocation);
-                    for (const loc of locations) {
-                        this.results.push(loc);
-                    }
-                }
             }
+            
 
             resolve(this.results);
 
@@ -78,55 +74,35 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         return defLocation;
     }
 
-    // Read the given uri (file) and search for a symbol (word) that may be 
-    // declared at the original Location. If the declared Location matches
+    // Find the definition of the symbol at `location`. If the declared Location matches
     // when we do a reverse search for the symbol's location, we know we have found
     // a reference of the symbol.
-    public async processFile(
-        uri: Uri,
-        symbol: string,
+    public async isLocationDefinedByDefinition(
+        location: Location,
         token: CancellationToken,
-        defLocation: Location
-    ): Promise<Location[]> {
+        defLocation: Location // The definition we are testing against
+    ): Promise<boolean> {
         // Read the document into memory
-        const document = await workspace.openTextDocument(uri);
+        const document = await workspace.openTextDocument(location.uri);
         // Find all references to the word `symbol`
-        const allLocations = await new Promise<Location[]>((resolve) => {
-            let text = document.getText();
-            let regex = new RegExp('\\b' + symbol + '\\b', 'g');
-            let match;
-            let results: Location[] = [];
-            // Iterate through the document and find all Words that match `symbol`
-            while ((match = regex.exec(text)) !== null) {
-                let foundLocation = new Location(
-                    document.uri,
-                    new Range(document.positionAt(match.index), document.positionAt(match.index + symbol.length))
-                );
-                // Push the found Location onto the list.
-                results.push(foundLocation);
-            }
-            resolve(results);
-        });
 
         let validLocations = [];
-        for (const location of allLocations) {
-            // Get the definition (i.e. declaration) of the found symbol Locations
-            const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
-            if(thisDefLocation == undefined) {
-                // we found a symbol in a comment probably
-                continue;
-            }
-            // don't include the definition in the list when it is not requested
-            if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
-                continue;
-            }
-            if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
-                // The declaration of the symbol matches hte original Location the user requested.
-                validLocations.push(location);
-            }
+        // Get the definition (i.e. declaration) of the found symbol Locations
+        const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
+        if(thisDefLocation == undefined) {
+            // we found a symbol in a comment probably
+            return false;
+        }
+        // don't include the definition in the list when it is not requested
+        if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
+            return false;
+        }
+        if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
+            // The declaration of the symbol matches hte original Location the user requested.
+            return true
         }
 
-        return validLocations;
+        return false;
     }
 
     // We can't compare Location objects with `==` we have to compare the properties using this function

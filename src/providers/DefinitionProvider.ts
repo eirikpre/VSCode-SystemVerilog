@@ -1,4 +1,4 @@
-import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { DefinitionProvider, TextDocument, Position, SymbolKind, CancellationToken, Definition, Range, Location, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
     public provideDefinition(
@@ -56,14 +56,12 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 // only look at text before symbol. If we see a begin comment, an end comment
                 // must be implied and we can ignore looking for one
                 const text = document.getText(new Range(new Position(0, 0), range.start));
-                const startComment = /\/\*/g
-                const endComment = /\*\//g
-                startComment.test(text)
-                endComment.test(text)
+                const lastStartComment = text.lastIndexOf('/*');
+                const lastEndComment = text.lastIndexOf('*/');
 
                 // If there is begin comment (/*) that is not yet closed,
                 // we know the symbol must be commented out.
-                if(startComment.lastIndex > endComment.lastIndex) {
+                if(lastStartComment > lastEndComment) {
                     // we must be within a block comment
                     return true;
                 }
@@ -144,7 +142,7 @@ function getDocumentSymbols(
         return;
     }
     for (const entry of entries) {
-        if (entry.name === word) {
+        if (entry.name === word && entry.kind != SymbolKind.Key) {
             if (containerName) {
                 if (entry.containerName === containerName) {
                     results.push({

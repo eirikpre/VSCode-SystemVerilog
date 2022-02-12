@@ -8,6 +8,8 @@ import { ANTLRBackend } from '../compiling/ANTLRBackend';
 import { SystemVerilogReferenceProvider } from '../providers/ReferenceProvider';
 import { SystemVerilogParser } from '../parser';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
+import { SystemVerilogIndexer } from '../indexer';
+import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
 
 const rootFolderLocation = '../../';
 
@@ -61,9 +63,20 @@ async function referenceProviderTest(input_location: vscode.Location, expected_l
         { scheme: 'file', language: 'verilog' }
     ];
     const referenceProvider = new SystemVerilogReferenceProvider();
-    vscode.languages.registerReferenceProvider(selector, referenceProvider)
     const folder = path.join(__dirname, rootFolderLocation, "verilog-examples");
     workspace.updateWorkspaceFolders(0,0,{uri: vscode.Uri.file(folder)})
+
+    const parser = new SystemVerilogParser();
+    const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+    const outputChannel = vscode.window.createOutputChannel('SystemVerilog');
+    const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
+    const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
+    const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
+    vscode.languages.registerDocumentSymbolProvider(selector, docProvider);
+    vscode.languages.registerWorkspaceSymbolProvider(symProvider);
+    await indexer.build_index();
+
+
     const document = await workspace.openTextDocument(input_location.uri);
     let token = new vscode.CancellationTokenSource().token;
     const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, token);
