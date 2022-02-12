@@ -62,9 +62,7 @@ async function referenceProviderTest(input_location: vscode.Location, expected_l
         { scheme: 'file', language: 'systemverilog' },
         { scheme: 'file', language: 'verilog' }
     ];
-    const referenceProvider = new SystemVerilogReferenceProvider();
-    const folder = path.join(__dirname, rootFolderLocation, "verilog-examples");
-    workspace.updateWorkspaceFolders(0,0,{uri: vscode.Uri.file(folder)})
+    const document = await workspace.openTextDocument(input_location.uri);
 
     const parser = new SystemVerilogParser();
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
@@ -77,7 +75,7 @@ async function referenceProviderTest(input_location: vscode.Location, expected_l
     await indexer.build_index();
 
 
-    const document = await workspace.openTextDocument(input_location.uri);
+    const referenceProvider = new SystemVerilogReferenceProvider();
     let token = new vscode.CancellationTokenSource().token;
     const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, token);
 
