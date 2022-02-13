@@ -17,7 +17,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             // don't attempt to find a reference for a symbol in a comment
-            let inside = await isLineInsideComments();
+            const inside = await isLineInsideComments();
             if(inside) {
                 resolve(results);
             }
@@ -30,7 +30,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             // Lookup all symbols in the current document
             if (results.length === 0) {
                 try {
-                    let symbols: DocumentSymbol[] = await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word);
+                    const symbols: DocumentSymbol[] = await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word);
                     getDocumentSymbols(results, symbols, word, range, document.uri);
                 } catch(reason) {
                     console.log(reason); // eslint-disable-line no-console
@@ -39,7 +39,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // Look up all indexed symbols
             if (results.length === 0) {
-                let res: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
+                const res: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
                 if (res.length !== 0) {
                     res.map((x) => results.push(x.location));
                 }
@@ -48,8 +48,9 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             resolve(results);
 
             async function isLineInsideComments(): Promise<Boolean> {
+                /* eslint-disable spaced-comment */
                 //is line commented out with a single line comment (//)?
-                var isSingleComment = /^\s*\/\/.*/.test(line);
+                const isSingleComment = /^\s*\/\/.*/.test(line);
                 if(isSingleComment) {
                     return true;
                 }
@@ -142,7 +143,7 @@ function getDocumentSymbols(
         return;
     }
     for (const entry of entries) {
-        if (entry.name === word && entry.kind != SymbolKind.Key) {
+        if (entry.name === word && entry.kind !== SymbolKind.Key) {
             if (containerName) {
                 if (entry.containerName === containerName) {
                     results.push({

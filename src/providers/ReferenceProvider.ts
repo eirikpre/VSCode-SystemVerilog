@@ -17,8 +17,8 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         return new Promise<Location[]>(async (resolve, _reject) => {
             const range = document.getWordRangeAtPosition(position);
             const word = document.getText(range);
-            let cancelled = false;
             this.results = [];
+            let promises: Promise<Location>[] = [];
             this.includeDeclaration = options.includeDeclaration;
 
             if (!range) {
@@ -30,21 +30,20 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             const defLocation = await this.getDefinitionLocation(document, position, token);
 
             // Get all symbols in the worksace that match `word`
-            let all_symbols: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¬¤${word}`, token);
+            const all_symbols: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¬¤${word}`, token);
 
             // For each file in the workspace
-            
             for (const symbol of all_symbols) {
                 // Find any tokens symbols (word) that that reference back to the Location we found above
-                const defined = await this.isLocationDefinedByDefinition(symbol.location, token, defLocation);
-                if(defined) {
-                    this.results.push(symbol.location);
-                }
-                if(token.isCancellationRequested) {
-                    break;
-                }
+                promises.push(this.isLocationDefinedByDefinition(symbol.location, token, defLocation));
             }
-            
+            // Run all promises in parallel
+            this.results = await Promise.all(promises);
+
+            // filter out undefined locations (i.e. non references)
+            this.results = this.results.filter(function(x) {
+                return x !== undefined;
+            });
 
             resolve(this.results);
 
@@ -78,28 +77,27 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         location: Location,
         token: CancellationToken,
         defLocation: Location // The definition we are testing against
-    ): Promise<boolean> {
+    ): Promise<Location> {
         // Read the document into memory
         const document = await workspace.openTextDocument(location.uri);
         // Find all references to the word `symbol`
 
-        let validLocations = [];
         // Get the definition (i.e. declaration) of the found symbol Locations
         const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
         if(thisDefLocation == undefined) {
             // we found a symbol in a comment probably
-            return false;
+            return undefined;
         }
         // don't include the definition in the list when it is not requested
         if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
-            return false;
+            return undefined;
         }
         if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
             // The declaration of the symbol matches hte original Location the user requested.
-            return true
+            return location
         }
 
-        return false;
+        return undefined;
     }
 
     // We can't compare Location objects with `==` we have to compare the properties using this function

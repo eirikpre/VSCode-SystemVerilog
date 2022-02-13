@@ -23,3 +23,13 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
           run: npm test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm dependencies
+        run: npm install
+      - name: Compile Antlr
+        run: npm run compile
+      - name: RunLint
+        run: npm run lint

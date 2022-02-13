@@ -235,7 +235,7 @@ export class SystemVerilogParser {
                 const type = match.groups.type ? match.groups.type : 'potential_reference';
                 if (match.index === 0 && parent !== undefined) {
                     continue; // eslint-disable-line no-continue
-                } else if (type != 'potential_reference' && sub_blocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
+                } else if (type !== 'potential_reference' && sub_blocks.some((b) => match.index >= b.index && match.index < b.index + b[0].length)) {
                     continue; // eslint-disable-line no-continue
                 }
 
@@ -298,8 +298,9 @@ export class SystemVerilogParser {
 
         const line = document.lineAt(location.range.start).text;
 
+        /* eslint-disable spaced-comment */
         //is line commented out with a single line comment (//)?
-        var isSingleComment = /^\s*\/\/.*/.test(line);
+        const isSingleComment = /^\s*\/\/.*/.test(line);
         if(isSingleComment) {
             return true;
         }
