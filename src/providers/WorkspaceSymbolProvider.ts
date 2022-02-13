@@ -44,12 +44,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                if(!ignorePotentialReferences || symbol.type != 'potential_reference') {
+                                if(!ignorePotentialReferences || symbol.type !== 'potential_reference') {
                                     results.push(symbol);
                                 }
                             }
                         } else if (symbol.name.match(pattern)) {
-                            if(!ignorePotentialReferences || symbol.type != 'potential_reference') {
+                            if(!ignorePotentialReferences || symbol.type !== 'potential_reference') {
                                 results.push(symbol);
                             }
                         }
@@ -70,10 +70,11 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         const sorted = results.sort((a,b) => {
             if(a.location.range.end.isAfter(b.location.range.end)) {
                 return -1;
-             } else if(a.location.range.end.isBefore(b.location.range.end)) {
+            }
+            if(a.location.range.end.isBefore(b.location.range.end)) {
                 return 1;
-             }
-             return 0;
+            }
+            return 0;
         });
         // Filter out duplicates that were found to be 'potential_reference's
         const new_results = sorted.filter((value, index, self) =>

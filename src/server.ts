@@ -2,7 +2,7 @@ import { createConnection, TextDocuments, Diagnostic, ProposedFeatures, Initiali
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
 import { ANTLRBackend } from './compiling/ANTLRBackend';
-
+let globToRegExp = require('glob-to-regexp');
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -121,9 +121,8 @@ function updateConfigurationsSettings(): Promise<any> {
 documents.onDidSave((saveEvent) => {
     if (configurations.get(compilerConfigurationsKeys[1])) {
         let doCompile = true;
-        if (configurations.get(compilerConfigurationsKeys[7])) { //excludeCompiling
-            var globToRegExp = require('glob-to-regexp');
-            var re = globToRegExp(configurations.get(compilerConfigurationsKeys[7]));
+        if (configurations.get(compilerConfigurationsKeys[7])) { // excludeCompiling
+            let re = globToRegExp(configurations.get(compilerConfigurationsKeys[7]));
             if(re.test(saveEvent.document.uri)) {
                 doCompile = false;
             }

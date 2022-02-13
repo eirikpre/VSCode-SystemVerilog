@@ -1,10 +1,7 @@
-import { Range, Position, CancellationToken } from 'vscode-languageserver/node';
-import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as vscode from 'vscode';
-import { Uri, workspace } from 'vscode';
+import { workspace } from 'vscode';
 import * as path from 'path';
 import * as assert from 'assert';
-import { ANTLRBackend } from '../compiling/ANTLRBackend';
 import { SystemVerilogReferenceProvider } from '../providers/ReferenceProvider';
 import { SystemVerilogParser } from '../parser';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';

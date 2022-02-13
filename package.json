@@ -468,6 +468,7 @@
         "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
         "glob": "^7.1.6",
+        "glob-to-regexp": "^0.4.1",
         "minimatch": "^3.0.4",
         "uri-js": "^4.4.1",
         "vscode-languageclient": "^7.0.0",

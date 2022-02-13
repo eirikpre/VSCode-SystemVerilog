@@ -18,7 +18,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             const range = document.getWordRangeAtPosition(position);
             const word = document.getText(range);
             this.results = [];
-            let promises: Promise<Location>[] = [];
+            const promises: Promise<Location>[] = [];
             this.includeDeclaration = options.includeDeclaration;
 
             if (!range) {
@@ -41,9 +41,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             this.results = await Promise.all(promises);
 
             // filter out undefined locations (i.e. non references)
-            this.results = this.results.filter(function(x) {
-                return x !== undefined;
-            });
+            this.results = this.results.filter(x => x !== undefined);
 
             resolve(this.results);
 
@@ -59,10 +57,10 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         token: CancellationToken
     ): Promise<Location> {
         const res = await this.definitionProvider.provideDefinition(document, position, token);
-        var defLocation: Location;
-        if (typeof res == typeof Location) {
+        let defLocation: Location;
+        if (typeof res === typeof Location) {
             defLocation = res as Location;
-        } else if (res[0] != null) {
+        } else if (res[0] !== null) {
             defLocation = res[0] as Location;
         } else {
             defLocation = new Location(document.uri, position);
@@ -84,7 +82,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
 
         // Get the definition (i.e. declaration) of the found symbol Locations
         const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
-        if(thisDefLocation == undefined) {
+        if(thisDefLocation === undefined) {
             // we found a symbol in a comment probably
             return undefined;
         }

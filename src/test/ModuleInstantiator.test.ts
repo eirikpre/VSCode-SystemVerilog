@@ -1,8 +1,9 @@
+import os = require('os');
 import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { formatInstance } from '../providers/ModuleInstantiator';
-import os = require('os')
+
 const testFolderLocation = '../../src/test';
 
 suite('ModuleInstantiator Tests', () => {
@@ -72,7 +73,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple space with a single space
         actual_instance = actual_instance.replace(/ +/g, ' ');
-        if(os.platform() == 'win32') {
+        if(os.platform() === 'win32') {
             actual_instance = actual_instance.replace(/\n/g, '\r\n');
             actual_instance = actual_instance.replace(/\r\r/g, '\r');
         }
@@ -111,7 +112,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple space with a single space
         actual_instance = actual_instance.replace(/ +/g, ' ');
-        if(os.platform() == 'win32') {
+        if(os.platform() === 'win32') {
             actual_instance = actual_instance.replace(/\n/g, '\r\n');
             actual_instance = actual_instance.replace(/\r\r/g, '\r');
         }
@@ -150,7 +151,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple white spaces with a single space
         actual_instance = actual_instance.replace(/ +/g, ' ');
-        if(os.platform() == 'win32') {
+        if(os.platform() === 'win32') {
             actual_instance = actual_instance.replace(/\n/g, '\r\n');
             actual_instance = actual_instance.replace(/\r\r/g, '\r');
         }
@@ -189,7 +190,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple white spaces with a single space
         actual_instance = actual_instance.replace(/ +/g, ' ');
-        if(os.platform() == 'win32') {
+        if(os.platform() === 'win32') {
             actual_instance = actual_instance.replace(/\n/g, '\r\n');
             actual_instance = actual_instance.replace(/\r\r/g, '\r');
         }
@@ -302,7 +303,7 @@ suite('ModuleInstantiator Tests', () => {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
-         if(os.platform() == 'win32') {
+         if(os.platform() === 'win32') {
              actual_instance = actual_instance.replace(/\n/g, '\r\n');
              actual_instance = actual_instance.replace(/\r\r/g, '\r');
          }
