@@ -3,9 +3,9 @@ import { getPathFromUri } from '../utils/common';
 
 suite('Utils Common Tests', () => {
     test('test #1: getPathFromUri-file', async () => {
-        let rootPath = 'c:/home/users/workspace';
-        let expectedPath = 'c:/home/users/workspace/directory/design.sv';
-        let uri = 'file:///c%3A/home/users/workspace/directory/design.sv';
+        const rootPath = 'c:/home/users/workspace';
+        const expectedPath = 'c:/home/users/workspace/directory/design.sv';
+        const uri = 'file:///c%3A/home/users/workspace/directory/design.sv';
 
         assert.strictEqual(expectedPath, getPathFromUri(uri, rootPath));
 
@@ -13,19 +13,19 @@ suite('Utils Common Tests', () => {
 
     test('test #2: getPathFromUri-windows', async () => {
 
-        let rootPath = 'c:\\home\\users\\workspace';
-        let expectedPath = 'c:\\home\\users\\workspace\\directory\\design.sv';
-        let uri = 'c:\\home\\users\\workspace\\directory\\design.sv';
-        let got = getPathFromUri(uri, rootPath);
+        const rootPath = 'c:\\home\\users\\workspace';
+        const expectedPath = 'c:\\home\\users\\workspace\\directory\\design.sv';
+        const uri = 'c:\\home\\users\\workspace\\directory\\design.sv';
+        const got = getPathFromUri(uri, rootPath);
         assert.strictEqual(expectedPath, got);
 
     });
 
     test('test #3: getPathFromUri-linux', async () => {
 
-        let rootPath = '/home/users/workspace';
-        let expectedPath = '/home/users/workspace/directory/design.sv';
-        let uri = 'file:///home/users/workspace/directory/design.sv';
+        const rootPath = '/home/users/workspace';
+        const expectedPath = '/home/users/workspace/directory/design.sv';
+        const uri = 'file:///home/users/workspace/directory/design.sv';
 
         assert.strictEqual(expectedPath, getPathFromUri(uri, rootPath));
     });

@@ -73,9 +73,8 @@ async function referenceProviderTest(input_location: vscode.Location, expected_l
 
 
     const referenceProvider = new SystemVerilogReferenceProvider();
-    let token = new vscode.CancellationTokenSource().token;
-    const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, token);
-    console.log(references.length)
+    const token = new vscode.CancellationTokenSource();
+    const references = await referenceProvider.provideReferences(document, input_location.range.start, { includeDeclaration: true }, token.token);
     assert (expected_locations.length === references.length);
 
     // depending on the modify date of the file, they may be accessed in different order, so we need to accoutn for that

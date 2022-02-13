@@ -56,8 +56,8 @@ suite('Extension Tests', () => {
         vscode.languages.registerWorkspaceSymbolProvider(symProvider);
         await indexer.build_index();
 
-        let defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
-        let tokenSource = new CancellationTokenSource();
+        const defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
+        const tokenSource = new CancellationTokenSource();
         const definition: vscode.Definition = await defProvider.provideDefinition(document, symbolPosition, tokenSource.token)
 
         if ("length" in definition) {
@@ -74,8 +74,8 @@ suite('Extension Tests', () => {
         // Range of the module in the document
         const symbolPosition = new vscode.Position(8,2);
 
-        let defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
-        let tokenSource = new CancellationTokenSource();
+        const defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
+        const tokenSource = new CancellationTokenSource();
         const definition: vscode.Definition = await defProvider.provideDefinition(document, symbolPosition, tokenSource.token)
 
         if ("length" in definition) {

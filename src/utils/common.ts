@@ -16,10 +16,10 @@ export function getPathFromUri(uri: string, rootPath: string): string {
     
     const lUri = decodeURIComponent(uri); // convert hexadecimal characters to ASCII
     // don't parse if it is a windows path starting with a single letter followed by a colon
-    const dontParseUri = new RegExp(`^\[a-zA-Z]:.*`);
+    const dontParseUri = new RegExp(`^[a-zA-Z]:.*`);
     let parsedPath = null;
     let windowsPath = false;
-    if ((matches = dontParseUri.exec(lUri)) != null && matches.length == 1) {
+    if ((matches = dontParseUri.exec(lUri)) !== null && matches.length === 1) {
         parsedPath = uri.replace(/\\/g, '/');;
         windowsPath = true;
     } else {
@@ -33,7 +33,7 @@ export function getPathFromUri(uri: string, rootPath: string): string {
     const lRootPath = rootPath.replace(/\\/g, '/');
     const regex = new RegExp(`/?${lRootPath}(.*)`);
     if ((matches = regex.exec(parsedPath)) != null && matches.length > 1) {
-        let foundPath = lRootPath + matches[1];
+        const foundPath = lRootPath + matches[1];
         if(windowsPath) {
             return foundPath.replace(/\//g, '\\');
         }

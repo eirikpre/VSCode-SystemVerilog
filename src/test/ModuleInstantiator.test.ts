@@ -1,4 +1,4 @@
-import os = require('os');
+import * as os from 'os';
 import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -34,7 +34,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple space with a single space
         actual_instance = actual_instance.replace(/ +/g, ' ');
-        if(os.platform() == 'win32') {
+        if(os.platform() === 'win32') {
             actual_instance = actual_instance.replace(/\n/g, '\r\n');
             actual_instance = actual_instance.replace(/\r\r/g, '\r');
         }
