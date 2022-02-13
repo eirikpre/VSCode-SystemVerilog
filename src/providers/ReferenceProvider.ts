@@ -31,9 +31,6 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
 
             // Get all symbols in the worksace that match `word`
             let all_symbols: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¬¤${word}`, token);
-            if (all_symbols.length !== 0) {
-                all_symbols.map((x) => this.results.push(x.location));
-            }
 
             // For each file in the workspace
             
