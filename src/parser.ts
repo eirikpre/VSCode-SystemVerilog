@@ -313,7 +313,7 @@ export class SystemVerilogParser {
         if(isSingleComment) {
             return true;
         }
-        if(commentStart.length == 0) {
+        if(commentStart.length === 0) {
             return false;
         }
         // only look at text before symbol. If we see a begin comment, an end comment

@@ -9,7 +9,7 @@ import { Position, TextDocument } from 'vscode';
     @return the path
 */
 export function regexGetIndexes(document: TextDocument, input: string, regex: RegExp, offset: number): Array<Position> {
-    let indexes = [];
+    const indexes = [];
     let match: RegExpExecArray= null;
     while((match = regex.exec(input)) !== null) {
         indexes.push(document.positionAt(match.index + offset));
