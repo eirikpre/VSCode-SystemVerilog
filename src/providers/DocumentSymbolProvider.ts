@@ -36,7 +36,9 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
-            resolve(this.parser.get_all_recursive(document, this.precision, this.depth));
+            const symbols = this.parser.get_all_recursive(document, this.precision, this.depth);
+            const important_symbols = symbols.filter(x => x.type !== 'potential_reference');
+            resolve(important_symbols);
             // resolve(show_SymbolKinds(document.uri));
         });
     }
