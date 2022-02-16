@@ -1,4 +1,21 @@
 import * as uriJs from 'uri-js';
+import { Position, TextDocument } from 'vscode';
+
+/**
+    Get the indexs of the given regex in the given document
+
+    @param uri the uri
+    @param rootPath the root path
+    @return the path
+*/
+export function regexGetIndexes(document: TextDocument, input: string, regex: RegExp, offset: number): Array<Position> {
+    let indexes = [];
+    let match: RegExpExecArray= null;
+    while((match = regex.exec(input)) !== null) {
+        indexes.push(document.positionAt(match.index + offset));
+    }
+    return indexes;
+}
 
 /**
     Get path from a given `uri`

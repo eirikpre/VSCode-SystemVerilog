@@ -32,16 +32,18 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             // Get all symbols in the worksace that match `word`
             const all_symbols: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¬¤${word}`, token);
 
-            // For each file in the workspace
-            for (const symbol of all_symbols) {
-                // Find any tokens symbols (word) that that reference back to the Location we found above
-                promises.push(this.isLocationDefinedByDefinition(symbol.location, token, defLocation));
-            }
-            // Run all promises in parallel
-            this.results = await Promise.all(promises);
+            if(defLocation !== undefined) {
+                // For each file in the workspace
+                for (const symbol of all_symbols) {
+                    // Find any tokens symbols (word) that that reference back to the Location we found above
+                    promises.push(this.isLocationDefinedByDefinition(symbol.location, token, defLocation));
+                }
+                // Run all promises in parallel
+                this.results = await Promise.all(promises);
 
-            // filter out undefined locations (i.e. non references)
-            this.results = this.results.filter(x => x !== undefined);
+                // filter out undefined locations (i.e. non references)
+                this.results = this.results.filter(x => x !== undefined);
+            }
 
             resolve(this.results);
 
@@ -99,7 +101,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
     }
 
     // We can't compare Location objects with `==` we have to compare the properties using this function
-    public isLocationShallowEqual(location1: Location, location2: Location): Boolean {
+    private isLocationShallowEqual(location1: Location, location2: Location): Boolean {
         if (location1.uri.path === location2.uri.path) {
             // If the start location is the same. we know the end location must also match
             return location1.range.start.isEqual(location2.range.start);

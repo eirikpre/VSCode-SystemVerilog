@@ -176,6 +176,7 @@ export class SystemVerilogIndexer {
                     workspace.getConfiguration().get('systemverilog.excludeIndexing').toString()
                 )
             ) {
+                this.outputChannel.appendLine('SystemVerilog Indexing...');
                 return this.processFile(document.uri);
             }
         });

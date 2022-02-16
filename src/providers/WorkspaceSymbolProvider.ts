@@ -1,4 +1,4 @@
-import { WorkspaceSymbolProvider, CancellationToken } from 'vscode';
+import { WorkspaceSymbolProvider, CancellationToken, SymbolKind } from 'vscode';
 import { SystemVerilogIndexer } from '../indexer';
 import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
@@ -44,12 +44,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                if(!ignorePotentialReferences || symbol.type !== 'potential_reference') {
+                                if(!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
                                     results.push(symbol);
                                 }
                             }
                         } else if (symbol.name.match(pattern)) {
-                            if(!ignorePotentialReferences || symbol.type !== 'potential_reference') {
+                            if(!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
                                 results.push(symbol);
                             }
                         }

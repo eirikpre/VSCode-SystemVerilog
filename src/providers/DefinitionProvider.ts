@@ -1,4 +1,5 @@
 import { DefinitionProvider, TextDocument, Position, SymbolKind, CancellationToken, Definition, Range, Location, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { regexGetIndexes } from '../utils/common';
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
     public provideDefinition(
@@ -17,7 +18,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             // don't attempt to find a reference for a symbol in a comment
-            const inside = await isLineInsideComments();
+            const inside = isLineInsideComments();
             if(inside) {
                 resolve(results);
             }
@@ -47,7 +48,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             resolve(results);
 
-            async function isLineInsideComments(): Promise<Boolean> {
+            function isLineInsideComments(): Boolean {
                 /* eslint-disable spaced-comment */
                 //is line commented out with a single line comment (//)?
                 const isSingleComment = /^\s*\/\/.*/.test(line);
@@ -57,8 +58,14 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 // only look at text before symbol. If we see a begin comment, an end comment
                 // must be implied and we can ignore looking for one
                 const text = document.getText(new Range(new Position(0, 0), range.start));
-                const lastStartComment = text.lastIndexOf('/*');
-                const lastEndComment = text.lastIndexOf('*/');
+                // Get the locations of begin and end comment blocks
+                const commentStart = regexGetIndexes(document, text, /(?<!\/)\/\*/g, 0);
+                const commentEnd = regexGetIndexes(document, text, /\*\//g, 0);
+
+                // only look at text before symbol. If we see a begin comment, an end comment
+                // must be implied and we can ignore looking for one
+                const lastStartComment = commentStart.find(x => x.isBeforeOrEqual(range.start));
+                const lastEndComment = commentEnd.find(x => x.isBeforeOrEqual(range.start));
 
                 // If there is begin comment (/*) that is not yet closed,
                 // we know the symbol must be commented out.

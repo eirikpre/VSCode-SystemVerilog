@@ -1,5 +1,6 @@
 import { TextDocument, Location, Range, Position } from 'vscode';
 import { SystemVerilogSymbol } from './symbol';
+import { regexGetIndexes } from './utils/common';
 
 export class SystemVerilogParser {
     private illegalMatches = /(?!\breturn\b|\bbegin\b|\bend\b|\belse\b|\bjoin\b|\bfork\b|\bfor\b|\bif\b|\bvirtual\b|\bstatic\b|\bautomatic\b|\bgenerate\b|\bassign\b|\binitial\b|\bassert\b|\bdisable\b)/;
@@ -224,6 +225,14 @@ export class SystemVerilogParser {
 
         const regexes = this.translate_precision(precision);
 
+        // Get the locations of begin and end comment blocks
+        let blockCommentStartLocations: Array<Position> = [];
+        let blockCommentEndLocations: Array<Position> = [];
+        if(precision === 'full') {
+            blockCommentStartLocations = regexGetIndexes(document, text, /(?<!\/)\/\*/g, offset);
+            blockCommentEndLocations = regexGetIndexes(document, text, /\*\//g, offset);
+        }
+
         // Find blocks
         for (let i = 0; i < regexes.length; i++) {
             // eslint-disable-next-line no-constant-condition
@@ -246,7 +255,7 @@ export class SystemVerilogParser {
                         document.positionAt(match.index + match[0].length + offset)
                     )
                 );
-                const isCommented = this.isSymbolInsideComment(document, location);
+                const isCommented = this.isSymbolInsideComment(document, location, blockCommentStartLocations, blockCommentEndLocations);
                 if(!isCommented) {
                     const symbolInfo = new SystemVerilogSymbol(
                         match.groups.name,
@@ -294,7 +303,7 @@ export class SystemVerilogParser {
 
     // We don't want to provide symbols for text that is comemnted.
     // The easiest way to do this is to remove comments from the text before parsing
-    private isSymbolInsideComment(document: TextDocument, location: Location): Boolean {
+    private isSymbolInsideComment(document: TextDocument, location: Location, commentStart: Array<Position>, commentEnd: Array<Position>): Boolean {
 
         const line = document.lineAt(location.range.start).text;
 
@@ -304,11 +313,14 @@ export class SystemVerilogParser {
         if(isSingleComment) {
             return true;
         }
+        if(commentStart.length == 0) {
+            return false;
+        }
         // only look at text before symbol. If we see a begin comment, an end comment
         // must be implied and we can ignore looking for one
-        const text = document.getText(new Range(new Position(0, 0), location.range.start));
-        const lastStartComment = text.lastIndexOf('/*');
-        const lastEndComment = text.lastIndexOf('*/');
+        const lastStartComment = commentStart.find(x => x.isBeforeOrEqual(location.range.start));
+        const lastEndComment = commentEnd.find(x => x.isBeforeOrEqual(location.range.start));
+        
 
         // If there is begin comment (/*) that is not yet closed,
         // we know the symbol must be commented out.
