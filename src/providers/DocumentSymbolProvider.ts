@@ -11,7 +11,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         this.parser = parser;
         const settings = workspace.getConfiguration();
         this.precision = settings.get('systemverilog.documentSymbolsPrecision');
-        if(this.precision == 'full') {
+        if(this.precision === 'full') {
             this.precision = 'full_no_references';
         } else if (this.precision !== 'full') {
             this.depth = 1;
