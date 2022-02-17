@@ -11,7 +11,9 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         this.parser = parser;
         const settings = workspace.getConfiguration();
         this.precision = settings.get('systemverilog.documentSymbolsPrecision');
-        if (this.precision !== 'full') {
+        if(this.precision == 'full') {
+            this.precision = 'full_no_references';
+        } else if (this.precision !== 'full') {
             this.depth = 1;
         }
     }
@@ -37,8 +39,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
             const symbols = this.parser.get_all_recursive(document, this.precision, this.depth);
-            const important_symbols = symbols.filter(x => x.type !== 'potential_reference');
-            resolve(important_symbols);
+            resolve(symbols);
             // resolve(show_SymbolKinds(document.uri));
         });
     }

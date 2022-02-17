@@ -187,6 +187,18 @@ export class SystemVerilogParser {
         this.r_potential_reference
     ];
 
+    // Used to save time in DocumentSymbolProvider, because references are not needed in that mode
+    public readonly full_parse_no_references = [
+        this.r_decl_block,
+        this.r_decl_class,
+        this.r_decl_method,
+        this.r_typedef,
+        this.r_define,
+        this.r_label,
+        this.r_instantiation,
+        this.r_assert
+    ];
+
     public readonly declaration_parse = [
         this.r_decl_block,
         this.r_decl_class,
@@ -362,6 +374,8 @@ export class SystemVerilogParser {
         switch (precision) {
             case 'full':
                 return this.full_parse;
+            case 'full_no_references':
+                return this.full_parse_no_references;
             case 'declaration':
                 return this.declaration_parse;
             case 'fast':
