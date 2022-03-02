@@ -1,14 +1,17 @@
 import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position, workspace } from 'vscode' // prettier-ignore
+import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
 import { SystemVerilogSymbol } from '../symbol';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     private parser: SystemVerilogParser;
+    private indexer: SystemVerilogIndexer;
     private precision: string;
     private depth: number = -1;
 
-    constructor(parser) {
+    constructor(parser, indexer) {
         this.parser = parser;
+        this.indexer = indexer;
         const settings = workspace.getConfiguration();
         this.precision = settings.get('systemverilog.documentSymbolsPrecision');
         if(this.precision === 'full') {
@@ -33,12 +36,23 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         _token?: CancellationToken
     ): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve) => {
+            let symbols = [];
+            const path = document.uri.fsPath;
+            const all_symbols = this.indexer.symbols.get(path);
+            if(all_symbols){
+                all_symbols.forEach((symbol) => {
+                    if(symbol.kind !== SymbolKind.Key) {
+                        symbols.push(symbol);
+                    }
+                });
+            } else {
+                symbols = this.parser.get_all_recursive(document, this.precision, this.depth);
+            }
             /*
             Matches the regex and uses the index from the regex to find the position
             TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
-            const symbols = this.parser.get_all_recursive(document, this.precision, this.depth);
             resolve(symbols);
             // resolve(show_SymbolKinds(document.uri));
         });

@@ -51,7 +51,7 @@ suite('Extension Tests', () => {
         const outputChannel = vscode.window.createOutputChannel('SystemVerilog');
         const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
         const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
-        const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
+        const docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
         vscode.languages.registerDocumentSymbolProvider(selector, docProvider);
         vscode.languages.registerWorkspaceSymbolProvider(symProvider);
         await indexer.build_index();

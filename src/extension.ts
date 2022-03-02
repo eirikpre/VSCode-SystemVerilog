@@ -38,7 +38,7 @@ export function activate(context: ExtensionContext) {
     const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
 
     // Providers
-    const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
+    const docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
     const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
     const defProvider = new SystemVerilogDefinitionProvider();
     const hoverProvider = new SystemVerilogHoverProvider();
@@ -129,7 +129,7 @@ export function activate(context: ExtensionContext) {
                     syms.push(
                         new SystemVerilogSymbol(
                             s.name,
-                            s.type,
+                            s.kind,
                             s.containerName,
                             new Location(
                                 Uri.file(entry[0]),

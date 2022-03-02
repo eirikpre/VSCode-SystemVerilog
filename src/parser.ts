@@ -107,6 +107,7 @@ export class SystemVerilogParser {
 
     private r_potential_reference: RegExp = new RegExp(
         [
+            this.illegalMatches,
             /\b(?<name>\w+)\b/
         ]
             .map((x) => (typeof x === 'string' ? x : x.source))
@@ -145,14 +146,27 @@ export class SystemVerilogParser {
 
     private r_ports: RegExp = new RegExp(
         [
-            /(?<!^(?:\/\/|`|\n).*?)/,
-            '(?<=',
-            /(?:\b(?:input|output|inout)\b)\s*/,
+            /(?:\b(?:input|output|inout|interface)\b)\s*/,
             /(?<type>(?:`?\w+)?\s*(\[.*?\])*?)?\s*/,
             // Allow multiple declaration
             /(\b\w+\s*,\s*)*?/,
-            ')',
             /(?<name>\b\w+\b)/,
+            // Has to be followed by , or )
+            /(?=\s*((\[.*?\]\s*)*?|\/\/[^\n]*\s*)(?:,|\)))/
+        ]
+            .map((x) => (typeof x === 'string' ? x : x.source))
+            .join(''),
+        'mg'
+    );
+
+    private r_params: RegExp = new RegExp(
+        [
+            /(?<type>parameter)\s+/,
+            /(?:\w+\s*)*?/,
+            /(?:\[.*?\]\s*)?/,
+            // Allow multiple declaration
+            /(?<name>\w+)\s*\=\s*/,
+            /(?<value>[\w|\']+)/,
             // Has to be followed by , or )
             /(?=\s*((\[.*?\]\s*)*?|\/\/[^\n]*\s*)(?:,|\)))/
         ]
@@ -285,6 +299,14 @@ export class SystemVerilogParser {
                             match.groups.name
                         ).then((out) => symbols.push(...out)); // eslint-disable-line @typescript-eslint/no-loop-func
                     }
+                    if (match.groups.params && precision === 'full') {
+                        this.get_params(
+                            document,
+                            match.groups.params,
+                            offset + match.index + match[0].indexOf(match.groups.params),
+                            match.groups.name
+                        ).then((out) => symbols.push(...out)); // eslint-disable-line @typescript-eslint/no-loop-func
+                    }
 
                     if (match.groups.body) {
                         sub_blocks.push(match);
@@ -352,17 +374,48 @@ export class SystemVerilogParser {
                 if (match_ports == null) {
                     break;
                 }
+                const location = new Location(
+                    document.uri,
+                    new Range(
+                        document.positionAt(match_ports.index + offset),
+                        document.positionAt(match_ports.index + match_ports[0].length + offset)
+                    )
+                );
                 const symbolInfo = new SystemVerilogSymbol(
                     match_ports.groups.name,
                     match_ports.groups.type,
                     parent,
-                    new Location(
-                        document.uri,
-                        new Range(
-                            document.positionAt(match_ports.index + offset),
-                            document.positionAt(match_ports.index + match_ports[0].length + offset)
-                        )
+                    location
+                );
+                symbols.push(symbolInfo);
+            }
+            resolve(symbols);
+        });
+    }
+
+    /////////////
+    // TODO: parse parameter input syntax .VAR(val) too
+    private get_params(document: TextDocument, text: string, offset, parent): Thenable<Array<SystemVerilogSymbol>> {
+        return new Promise((resolve) => {
+            const symbols: Array<SystemVerilogSymbol> = [];
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                const match_params: RegExpMatchArray = this.r_params.exec(text);
+                if (match_params == null) {
+                    break;
+                }
+                const location = new Location(
+                    document.uri,
+                    new Range(
+                        document.positionAt(match_params.index + offset),
+                        document.positionAt(match_params.index + match_params[0].length + offset)
                     )
+                );
+                const symbolInfo = new SystemVerilogSymbol(
+                    match_params.groups.name,
+                    match_params.groups.type,
+                    parent,
+                    location
                 );
                 symbols.push(symbolInfo);
             }

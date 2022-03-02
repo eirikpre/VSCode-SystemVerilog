@@ -19,7 +19,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         Queries a symbol from `this.symbols`, performs an exact match if `exactMatch` is set to true,
         and a partial match if it's not passed or set to false.
 
-        @param query the symbol's name, if it is prepended with a ¤ it signifies an exact match
+        @param query the symbol's name. If it is prepended with a ¤ it signifies an exact match. If it is prepended with a ¬ it signifies to cull potential matches from the results.
         @param _token the CancellationToken
         @return an array of matching SystemVerilogSymbol
     */
