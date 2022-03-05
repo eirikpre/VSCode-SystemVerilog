@@ -24,6 +24,7 @@ export class SystemVerilogIndexer {
     public filesGlob: string = undefined;
     public exclude: GlobPattern = undefined;
     public forceFastIndexing: Boolean = false;
+    public maxLineCountIndexing: Number = 5000;
 
     public outputChannel: OutputChannel;
 
@@ -38,6 +39,7 @@ export class SystemVerilogIndexer {
         const settings = workspace.getConfiguration();
         this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
         this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
+        this.maxLineCountIndexing = settings.get('systemverilog.maxLineCountIndexing');
     }
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
@@ -125,7 +127,12 @@ export class SystemVerilogIndexer {
                     if (total_files >= 100 * this.parallelProcessing) {
                         return this.parser.get_all_recursive(doc, 'declaration', 0);
                     }
-                    return this.parser.get_all_recursive(doc, 'full', 1);
+                    if(doc.lineCount > this.maxLineCountIndexing){
+                        window.showInformationMessage(`The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount}`);
+                        return this.parser.get_all_recursive(doc, 'fast', 0);
+                    } else {
+                        return this.parser.get_all_recursive(doc, 'full', 1);
+                    }
                 })
             );
         })

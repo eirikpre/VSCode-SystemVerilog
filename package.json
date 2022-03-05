@@ -141,15 +141,21 @@
                         "default": true,
                         "description": "Enable incremental indexation as you open files."
                     },
+                    "systemverilog.maxLineCountIndexing": {
+                        "type": "integer",
+                        "default": 2000,
+                        "description": "When indexing a file, if the line count is larger than this number, fast indixing will be used to improve symbol lookup performance."
+                    },
                     "systemverilog.documentSymbolsPrecision": {
                         "type": "string",
                         "enum": [
                             "full",
+                            "full_no_references",
                             "declaration",
                             "fast"
                         ],
                         "default": "full",
-                        "description": "The level of detail the parser should look for when looking for symbols."
+                        "description": "The level of detail the parser should look for when looking for symbols:\n'full': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and references\n'full_no_references': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions\n'declarations': detect blocks, ports, parameters, classes, methods, typedefs, and defines\n'declarations': detect only common blocks (module, class, interface, package, program) without hierarchy"
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
