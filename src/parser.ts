@@ -165,8 +165,8 @@ export class SystemVerilogParser {
             /(?:\w+\s*)*?/,
             /(?:\[.*?\]\s*)?/,
             // Allow multiple declaration
-            /(?<name>\w+)\s*\=\s*/,
-            /(?<value>[\w|\']+)/,
+            /(?<name>\w+)\s*=\s*/,
+            /(?<value>[\w|']+)/,
             // Has to be followed by , or )
             /(?=\s*((\[.*?\]\s*)*?|\/\/[^\n]*\s*)(?:,|\)))/
         ]
