@@ -254,7 +254,7 @@ export class SystemVerilogParser {
         // Get the locations of begin and end comment blocks
         let blockCommentStartLocations: Array<Position> = [];
         let blockCommentEndLocations: Array<Position> = [];
-        if(precision === 'full') {
+        if(precision.includes('full')) {
             blockCommentStartLocations = regexGetIndexes(document, text, /(?<!\/)\/\*/g, offset);
             blockCommentEndLocations = regexGetIndexes(document, text, /\*\//g, offset);
         }
@@ -291,7 +291,7 @@ export class SystemVerilogParser {
                     );
                     symbols.push(symbolInfo);
 
-                    if (match.groups.ports && precision === 'full') {
+                    if (match.groups.ports && precision.includes('full')) {
                         this.get_ports(
                             document,
                             match.groups.ports,
@@ -299,7 +299,7 @@ export class SystemVerilogParser {
                             match.groups.name
                         ).then((out) => symbols.push(...out)); // eslint-disable-line @typescript-eslint/no-loop-func
                     }
-                    if (match.groups.params && precision === 'full') {
+                    if (match.groups.params && precision.includes('full')) {
                         this.get_params(
                             document,
                             match.groups.params,

@@ -25,6 +25,7 @@ export class SystemVerilogIndexer {
     public exclude: GlobPattern = undefined;
     public forceFastIndexing: Boolean = false;
     public maxLineCountIndexing: Number = 5000;
+    public documentSymbolPrecision: string = 'full';
 
     public outputChannel: OutputChannel;
 
@@ -40,6 +41,7 @@ export class SystemVerilogIndexer {
         this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
         this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
         this.maxLineCountIndexing = settings.get('systemverilog.maxLineCountIndexing');
+        this.documentSymbolPrecision = settings.get('systemverilog.documentSymbolsPrecision')
     }
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
@@ -128,10 +130,10 @@ export class SystemVerilogIndexer {
                         return this.parser.get_all_recursive(doc, 'declaration', 0);
                     }
                     if(doc.lineCount > this.maxLineCountIndexing){
-                        window.showInformationMessage(`The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount}`);
+                        window.showInformationMessage(`The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`);
                         return this.parser.get_all_recursive(doc, 'fast', 0);
                     } else {
-                        return this.parser.get_all_recursive(doc, 'full', 1);
+                        return this.parser.get_all_recursive(doc, this.documentSymbolPrecision, 1);
                     }
                 })
             );
