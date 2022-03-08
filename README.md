@@ -71,7 +71,6 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ## Future
 - Tree view of module hierarchy
 - References document
-- IntelliSense support (CompletionProvider and ReferenceProvider)
 - Back-end Language server for Systemverilog
 - Update workspace state to save to [storagePath](https://code.visualstudio.com/api/advanced-topics/remote-extensions#persisting-extension-data-or-state)
 
