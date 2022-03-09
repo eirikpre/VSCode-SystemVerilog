@@ -66,7 +66,8 @@ ANY_ASCII_CHARACTER : [\u0000-\u007F] ;
 ONE_LINE_COMMENT : '//' (~[\n])* '\n' -> skip ;
 BLOCK_COMMENT : '/*' .*? '*/' -> skip ;
 
-FILENAME : '<' [a-zA-Z0-9_./\\\-]+ '.' ('v' | 'sv') '>'
-  | '"' [a-zA-Z0-9_./\\\-]+ '.' ('v' | 'sv') '"' ;
+FILENAME : '<' [a-zA-Z0-9_./\\\-]+ '.' ('v' | 'sv' | 'svh' | 'vh' | 'sva' | 'svi' | 'svp' | 'svhp') '>'
+  | '"' [a-zA-Z0-9_./\\\-]+ '.' ('v' | 'sv' | 'svh' | 'vh' | 'sva' | 'svi' | 'svp' | 'svhp') '"' 
+  | '"' [a-zA-Z0-9_/\\\-]+ '"' ;
 
 STRING_LITERAL : '"' (~["] | '\\"')* '"' ;
