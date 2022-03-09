@@ -97,6 +97,15 @@ npm run compile
 ## Release Notes
 See the [changelog](CHANGELOG.md) for more details
 
+### 0.12
+- Implemented 'find references' feature, thanks to `joecrop`
+- Ports and parameters are now recognized as symbols, thanks to `joecrop`
+- Illegal/reserved words contained with symbols is now supported, thanks to `joecrop`
+- Added more consistent syntax highlighting for UDP tables, thanks to `sw23`
+- Added support for verible_verilog_lint as a compiler/linter, thanks to `joecrop`
+- Fixed 'npm run compile' on MacOS, thanks to `sw23`
+- Added 'Contributing' section to documentation, thanks to `gasrodriguez`
+
 ### 0.11
 - Syntax Highlighting Overhaul, thanks to `jecassis`
 - Smaller extension footprint, thanks to `jecassis`
