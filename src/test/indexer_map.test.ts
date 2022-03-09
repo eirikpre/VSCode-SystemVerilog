@@ -164,7 +164,7 @@ async function setUp() {
 
     parser = new SystemVerilogParser();
     indexer = new SystemVerilogIndexer(statusBar, parser, window.createOutputChannel('SystemVerilog'));
-    docProvider = new SystemVerilogDocumentSymbolProvider(parser);
+    docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
     symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
 
     symbols = new Map<string, Array<SystemVerilogSymbol>>();

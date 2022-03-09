@@ -30,7 +30,7 @@ export class VeribleCompiler extends DocumentCompiler {
         documentFilePath: string,
         collection: Map<string, Diagnostic[]>
     ): void {
-        if (stdout === undefined || stdout == null || !compiledDocument) {
+        if (stdout === undefined || stdout === null || !compiledDocument) {
             return;
         }
 
@@ -49,32 +49,34 @@ export class VeribleCompiler extends DocumentCompiler {
             let matches;
 
             if ((matches = regexError.exec(error))) {
-                diagnosticData.filePath = matches[1];
-                diagnosticData.line = parseInt(matches[2], 10) - 1;
-                diagnosticData.charPosition = parseInt(matches[3], 10) - 1;
+                const [match, path, line, position, message] = matches;
+                diagnosticData.filePath = path;
+                diagnosticData.line = parseInt(line, 10) - 1;
+                diagnosticData.charPosition = parseInt(position, 10) - 1;
                 diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity('Error');
 
                 // Format Diagnostic's problem
                 const problem = [];
 
                 // remove preceding/trailing special characters
-                problem.push(matches[4]);
+                problem.push(message);
 
                 diagnosticData.problem = problem.join('').trim();
             }
 
             if ((matches = regexInfo.exec(error))) {
-                diagnosticData.filePath = matches[1];
-                diagnosticData.line = parseInt(matches[2], 10) - 1;
-                diagnosticData.charPosition = parseInt(matches[3], 10) - 1;
+                const [match, path, line, position, message, style] = matches;
+                diagnosticData.filePath = path;
+                diagnosticData.line = parseInt(line, 10) - 1;
+                diagnosticData.charPosition = parseInt(position, 10) - 1;
                 diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity('Info');
 
                 // Format Diagnostic's problem
                 const problem = [];
 
                 // remove preceding/trailing special characters
-                problem.push(matches[4]);
-                problem.push(matches[5]);
+                problem.push(message);
+                problem.push(style);
 
                 diagnosticData.problem = problem.join('').trim();
             }

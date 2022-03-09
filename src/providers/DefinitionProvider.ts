@@ -1,4 +1,5 @@
-import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, workspace, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { DefinitionProvider, TextDocument, Position, SymbolKind, CancellationToken, Definition, Range, Location, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { regexGetIndexes } from '../utils/common';
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
     public provideDefinition(
@@ -13,9 +14,14 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             const results: Location[] = [];
 
             if (!range) {
-                return results;
+                resolve(results);
             }
 
+            // don't attempt to find a reference for a symbol in a comment
+            const inside = isLineInsideComments();
+            if(inside) {
+                resolve(results);
+            }
             // Port
             await findPortInModule();
 
@@ -24,28 +30,51 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // Lookup all symbols in the current document
             if (results.length === 0) {
-                await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word).then(
-                    (symbols: DocumentSymbol[]) => {
-                        getDocumentSymbols(results, symbols, word, range, document.uri);
-                    },
-                    (reason: any) => {
-                        console.log(reason); // eslint-disable-line no-console
-                    }
-                );
+                try {
+                    const symbols: DocumentSymbol[] = await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word);
+                    getDocumentSymbols(results, symbols, word, range, document.uri);
+                } catch(reason) {
+                    console.log(reason); // eslint-disable-line no-console
+                }
             }
 
             // Look up all indexed symbols
             if (results.length === 0) {
-                await commands
-                    .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
-                    .then((res: SymbolInformation[]) => {
-                        if (res.length !== 0) {
-                            res.map((x) => results.push(x.location));
-                        }
-                    });
+                const res: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
+                if (res.length !== 0) {
+                    res.map((x) => results.push(x.location));
+                }
             }
 
             resolve(results);
+
+            function isLineInsideComments(): Boolean {
+                /* eslint-disable spaced-comment */
+                //is line commented out with a single line comment (//)?
+                const isSingleComment = /^\s*\/\/.*/.test(line);
+                if(isSingleComment) {
+                    return true;
+                }
+                // only look at text before symbol. If we see a begin comment, an end comment
+                // must be implied and we can ignore looking for one
+                const text = document.getText(new Range(new Position(0, 0), range.start));
+                // Get the locations of begin and end comment blocks
+                const commentStart = regexGetIndexes(document, text, /(?<!\/)\/\*/g, 0);
+                const commentEnd = regexGetIndexes(document, text, /\*\//g, 0);
+
+                // only look at text before symbol. If we see a begin comment, an end comment
+                // must be implied and we can ignore looking for one
+                const lastStartComment = commentStart.find(x => x.isBeforeOrEqual(range.start));
+                const lastEndComment = commentEnd.find(x => x.isBeforeOrEqual(range.start));
+
+                // If there is begin comment (/*) that is not yet closed,
+                // we know the symbol must be commented out.
+                if(lastStartComment > lastEndComment) {
+                    // we must be within a block comment
+                    return true;
+                }
+                return false;
+            }
 
             async function findInPackage() {
                 const regex_package = '\\b(\\w+)\\s*::\\s*(word)';
@@ -121,7 +150,7 @@ function getDocumentSymbols(
         return;
     }
     for (const entry of entries) {
-        if (entry.name === word) {
+        if (entry.name === word && entry.kind !== SymbolKind.Key) {
             if (containerName) {
                 if (entry.containerName === containerName) {
                     results.push({

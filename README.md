@@ -8,6 +8,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - Go to symbol in document (`Ctrl+Shift+O`)
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages) (`Ctrl+T`)
 - Go to definition (_works for module/interface/program/class/package names and for ports too!_) (`Ctrl+LeftClick`)
+- Find references (_works for module/interface/program/class/package names and for ports too!_) (`Ctrl+LeftClick`)
 - Quick-start on already indexed workspaces
 - Code snippets for many common blocks
 - Instantiate module from already indexed module
@@ -23,11 +24,14 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ### Go To Definition
 ![Go To Definition Example](resources/goToDef_demo.gif)
 
+### Find References
+![Find References Example](resources/find_references.gif)
+
 ### Module Instantiation
 ![Module Instantiation Example](resources/moduleInit_demo.gif)
 
 ## Recommendations
-- If you have netlists in your workspace you can exclude them in the settings, e.g.: `**/syn/**`
+- If you have netlists in your workspace you can exclude them in the settings (systemverilog.excludeIndexing), e.g.: `**/syn/**`
 - _Disclaimer_: This is not a functional tool that will compile and simulate HDL, but it will make it easier and more user-friendly to write and navigate SystemVerilog and Verilog.
 
 ## Settings
@@ -35,7 +39,16 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.disableIndexing`: _Boolean_, Disable indexing
 - `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on glob
 - `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
+- `systemverilog.forceFastIndexing`: _Boolean_, force indexer to bo basic parsing. Good for when the extension takes too long to initialize.
+- `systemverilog.enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as you open files.
+- `systemverilog.maxLineCountIndexing`: _Boolean_, When indexing a file, if the line count is larger than this number, fast indexing will be used to improve symbol lookup performance.
+- `systemverilog.documentSymbolsPrecision`: _String_, The level of detail the parser should use when looking for symbols:
+  - _full_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and *references across files*.
+  - _full_no_references_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions.
+  - _declarations_: detect blocks, ports, parameters, classes, methods, typedefs, and defines.
+  - _fast_: detect only common blocks (module, class, interface, package, program) without hierarchy.
 - `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
+- `systemverilog.verifyOnOpen`: _Boolean_, Run ANTLR verification on all files when opened.
 - `systemverilog.launchConfigurationVerilator`: _String_, Command to run when launching verilator
   * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
   * If not in path, replace _verilator_ with the appropriate command
@@ -58,7 +71,6 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ## Future
 - Tree view of module hierarchy
 - References document
-- IntelliSense support (CompletionProvider)
 - Back-end Language server for Systemverilog
 - Update workspace state to save to [storagePath](https://code.visualstudio.com/api/advanced-topics/remote-extensions#persisting-extension-data-or-state)
 

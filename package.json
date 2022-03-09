@@ -133,7 +133,7 @@
                     },
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
-                        "default": true,
+                        "default": false,
                         "description": "Force indexing to use fast regular expression parsing."
                     },
                     "systemverilog.enableIncrementalIndexing": {
@@ -141,15 +141,21 @@
                         "default": true,
                         "description": "Enable incremental indexation as you open files."
                     },
+                    "systemverilog.maxLineCountIndexing": {
+                        "type": "integer",
+                        "default": 2000,
+                        "description": "When indexing a file, if the line count is larger than this number, fast indexing will be used to improve symbol lookup performance."
+                    },
                     "systemverilog.documentSymbolsPrecision": {
                         "type": "string",
                         "enum": [
                             "full",
+                            "full_no_references",
                             "declaration",
                             "fast"
                         ],
                         "default": "full",
-                        "description": "The level of detail the parser should look for when looking for symbols."
+                        "description": "The level of detail the parser should use when looking for symbols:\n  'full': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and references\n  'full_no_references': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions\n  'declarations': detect blocks, ports, parameters, classes, methods, typedefs, and defines\n  'fast': detect only common blocks (module, class, interface, package, program) without hierarchy"
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
@@ -430,6 +436,7 @@
         "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc -watch -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
+        "clean": "npx rimraf dist && npx rimraf out && npx rimraf .vscode-test",
         "coverage": "nyc npm test",
         "lint": "eslint -c ./.eslintrc --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
@@ -467,6 +474,7 @@
         "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
         "glob": "^7.1.6",
+        "glob-to-regexp": "^0.4.1",
         "minimatch": "^3.0.4",
         "uri-js": "^4.4.1",
         "vscode-languageclient": "^7.0.0",
