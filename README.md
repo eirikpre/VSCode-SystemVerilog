@@ -1,4 +1,8 @@
-[![Build Status](https://dev.azure.com/CPS-External/VSCode-SystemVerilog/_apis/build/status/VSCode-SystemVerilog%20Github?branchName=master)](https://dev.azure.com/CPS-External/VSCode-SystemVerilog/_build/latest?definitionId=5&branchName=master)
+[![](https://vsmarketplacebadge.apphb.com/version/eirikpre.systemverilog.svg)](https://marketplace.visualstudio.com/items?itemName=eirikpre.systemverilog)
+[![](https://vsmarketplacebadge.apphb.com/installs-short/eirikpre.systemverilog.svg)](https://marketplace.visualstudio.com/items?itemName=eirikpre.systemverilog)
+![](https://vsmarketplacebadge.apphb.com/rating-star/eirikpre.systemverilog.svg)
+[![](https://github.com/eirikpre/VSCode-SystemVerilog/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/eirikpre/VSCode-SystemVerilog/actions?query=workflow%3ATest+branch%3Amaster)
+
 
 # SystemVerilog - Language Support
 This VS Code extension provides features to read, navigate and write SystemVerilog code much faster.
@@ -31,7 +35,9 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ![Module Instantiation Example](resources/moduleInit_demo.gif)
 
 ## Recommendations
-- If you have netlists in your workspace you can exclude them in the settings (systemverilog.excludeIndexing), e.g.: `**/syn/**`
+- If you have netlists in your workspace you can exclude them in the settings with `systemverilog.excludeIndexing`, e.g.: `**/syn/**`
+- When running in workspaces with a large number of files, the `systemverilog.documentSymbolsPrecision` setting may need to be reduced down to 'full_no_references'. Doing this will turn off the 'find references' feature which will dramatically speedup the parsing.
+- When you have large files, the `systemverilog.maxLineCountIndexing` setting can be tuned to prevent full parsing of these files, which will improve extension performance.
 - _Disclaimer_: This is not a functional tool that will compile and simulate HDL, but it will make it easier and more user-friendly to write and navigate SystemVerilog and Verilog.
 
 ## Settings
@@ -41,7 +47,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
 - `systemverilog.forceFastIndexing`: _Boolean_, force indexer to bo basic parsing. Good for when the extension takes too long to initialize.
 - `systemverilog.enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as you open files.
-- `systemverilog.maxLineCountIndexing`: _Boolean_, When indexing a file, if the line count is larger than this number, fast indexing will be used to improve symbol lookup performance.
+- `systemverilog.maxLineCountIndexing`: _Boolean_, When indexing a file, if the line count is larger than this number, _fast_ indexing will be used to improve symbol lookup performance, as fewer symbols will be parsed.
 - `systemverilog.documentSymbolsPrecision`: _String_, The level of detail the parser should use when looking for symbols:
   - _full_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and *references across files*.
   - _full_no_references_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions.
