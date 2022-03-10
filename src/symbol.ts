@@ -57,6 +57,10 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'interface':
         case 'Interface':
             return SymbolKind.Interface;
+        case 'input':
+        case 'output':
+        case 'inout':
+            return SymbolKind.Boolean;
         case 'assert':
         case 'event':
         case 'Event':
