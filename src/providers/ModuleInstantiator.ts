@@ -150,7 +150,7 @@ export class SystemVerilogModuleInstantiator {
                 .then((symbols: SystemVerilogSymbol[]) => {
                     const found_item = symbols.find((value) => 
                         workspace.asRelativePath(value.location.uri) === item.description &&
-                        value.name == item.label
+                        value.name === item.label
                     );
                     if(found_item) {
                         return found_item;
@@ -196,12 +196,12 @@ export class SystemVerilogModuleInstantiator {
 
         this.symbolProvider.getAllModules().then((modules) => {
 
-            const choices: QuickPickItem[] = modules.map((item) => {
-                return {
+            const choices: QuickPickItem[] = modules.map((item) => (
+                {
                     label: item.name,
                     description: workspace.asRelativePath(item.location.uri)
                 }
-            })
+            ))
             // request the module's name from the user
             window.showQuickPick(choices, options).then((value) => {
                 if (!value) {
