@@ -63,6 +63,17 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         });
     }
 
+    public getAllModules(): Thenable<Array<SystemVerilogSymbol>> {
+        return new Promise((resolve, reject) => {
+            let modules: Array<SystemVerilogSymbol> = [];
+            this.indexer.symbols.forEach((list) => {
+                const found_modules = list.filter(symbol => symbol.kind === getSymbolKind('module'));
+                modules = modules.concat(found_modules);
+            });
+            resolve(modules);
+        });
+    }
+
     // filter out duplicate locations if any.
     // Make sure 'potential_references' are removed when sorting instead of legit matches
     private uniquifyResults(results: Array<SystemVerilogSymbol>) {

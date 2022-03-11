@@ -95,6 +95,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'Variable':
             return SymbolKind.Variable;
         case 'module':
+            return SymbolKind.Enum
         default:
             return SymbolKind.Field;
     }

@@ -42,8 +42,8 @@ export function activate(context: ExtensionContext) {
     const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
     const defProvider = new SystemVerilogDefinitionProvider();
     const hoverProvider = new SystemVerilogHoverProvider();
-    const moduleInstantiator = new SystemVerilogModuleInstantiator();
     const formatProvider = new SystemVerilogFormatProvider(outputChannel);
+    const moduleInstantiator = new SystemVerilogModuleInstantiator(formatProvider, symProvider);
     const referenceProvider = new SystemVerilogReferenceProvider();
 
     context.subscriptions.push(statusBar);

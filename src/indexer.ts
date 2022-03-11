@@ -134,8 +134,8 @@ export class SystemVerilogIndexer {
                     }
                     if (doc.lineCount > this.maxLineCountIndexing) {
                         window.showInformationMessage(
-                            `The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`
-                        ); // prettier-ignore
+                            `The character count of ${workspace.asRelativePath(uri)} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`
+                        ); //prettier-ignore
                         return this.parser.get_all_recursive(doc, 'fast', 0);
                     }
                     // Otherwise, we parse the file with the precision requested by the user
