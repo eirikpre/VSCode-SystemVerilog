@@ -45,12 +45,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                if (!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                                if (!ignorePotentialReferences || symbol.kind !== getSymbolKind('potential_reference')) {
                                     results.push(symbol);
                                 }
                             }
                         } else if (symbol.name.match(pattern)) {
-                            if (!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                            if (!ignorePotentialReferences || symbol.kind !== getSymbolKind('potential_reference')) {
                                 results.push(symbol);
                             }
                         }
