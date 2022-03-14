@@ -22,7 +22,7 @@ jobs:
         id: node-cache
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install NPM dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci --production=false --unsafe-perm
@@ -37,7 +37,7 @@ jobs:
       - name: Check bundle
         run: npm run webpack
       - name: Verify files
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
         run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
   qa:
     name: Run quality checks
@@ -50,14 +50,12 @@ jobs:
         id: node-cache
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install NPM dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci --production=false --unsafe-perm
       - name: Compile ANTLR
         run: npm run compile:antlr4ts
-      - name: RunLint
-        run: npm run lint
       - name: Run ESLint
         run: npm run lint
       - name: Run Prettier
