@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog and SystemVerilog.",
-    "version": "0.11.3",
+    "version": "0.12.0",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -132,7 +132,7 @@
                     },
                     "systemverilog.forceFastIndexing": {
                         "type": "boolean",
-                        "default": true,
+                        "default": false,
                         "description": "Force indexing to use fast regular expression parsing."
                     },
                     "systemverilog.enableIncrementalIndexing": {
@@ -140,29 +140,51 @@
                         "default": true,
                         "description": "Enable incremental indexation as you open files."
                     },
+                    "systemverilog.maxLineCountIndexing": {
+                        "type": "integer",
+                        "default": 2000,
+                        "description": "When indexing a file, if the line count is larger than this number, fast indexing will be used to improve symbol lookup performance."
+                    },
                     "systemverilog.documentSymbolsPrecision": {
                         "type": "string",
                         "enum": [
                             "full",
+                            "full_no_references",
                             "declaration",
                             "fast"
                         ],
                         "default": "full",
-                        "description": "The level of detail the parser should look for when looking for symbols."
+                        "description": "The level of detail the parser should use when looking for symbols:\n  'full': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and references\n  'full_no_references': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions\n  'declarations': detect blocks, ports, parameters, classes, methods, typedefs, and defines\n  'fast': detect only common blocks (module, class, interface, package, program) without hierarchy"
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
                         "enum": [
                             "Verilator",
-                            "VCS"
+                            "VCS",
+                            "Verible"
                         ],
                         "default": "Verilator",
                         "description": "Select the compiler type from the drop down list."
                     },
-                    "systemverilog.launchConfiguration": {
+                    "systemverilog.excludeCompiling": {
+                        "type": "string",
+                        "default": "",
+                        "description": "Files excluded from compiling (glob pattern)."
+                    },
+                    "systemverilog.launchConfigurationVerilator": {
                         "type": "string",
                         "default": "verilator --sv --lint-only --language 1800-2012 --Wall",
-                        "description": "Launch command for running the compiler."
+                        "description": "Launch command for running Verilator as the compiler."
+                    },
+                    "systemverilog.launchConfigurationVCS": {
+                        "type": "string",
+                        "default": "vcs",
+                        "description": "Launch command for running VCS as the compiler."
+                    },
+                    "systemverilog.launchConfigurationVerible": {
+                        "type": "string",
+                        "default": "verible-verilog-lint",
+                        "description": "Launch command for running Verible as the compiler."
                     },
                     "systemverilog.formatCommand": {
                         "type": "string",
@@ -385,6 +407,22 @@
                         "message": 4
                     }
                 ]
+            },
+            {
+                "name": "verible-info",
+                "owner": "Verible",
+                "source": "systemverilog",
+                "severity": "info",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "^(.+?):(\\d+):(\\d+):\\s+(.+?)\\s+\\[(Style:\\s+[-\\w]+)\\]\\s+\\[([-\\w]+)\\]$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                ]
             }
         ]
     },
@@ -401,7 +439,8 @@
         "coverage": "nyc --silent npm run test:coverage",
         "lint": "eslint --config ./.eslintrc.json --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
-        "pretty:check": "prettier --check \"**/*\""
+        "pretty:check": "prettier --check \"**/*\"",
+        "clean": "npx rimraf dist && npx rimraf out && npx rimraf .vscode-test"
     },
     "devDependencies": {
         "@istanbuljs/nyc-config-typescript": "^1.0.1",
@@ -437,6 +476,7 @@
         "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
         "glob": "^7.2.0",
+        "glob-to-regexp": "^0.4.1",
         "minimatch": "^3.0.4",
         "uri-js": "^4.4.1",
         "vscode-languageclient": "^7.0.0",

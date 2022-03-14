@@ -3,6 +3,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { SystemVerilogCompiler, CompilerType } from './compiling/SystemVerilogCompiler';
 import { ANTLRBackend } from './compiling/ANTLRBackend';
 
+const globToRegExp = require('glob-to-regexp');
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -17,16 +18,19 @@ const configurations: Map<string, any> = new Map();
 const compilerConfigurationsKeys: string[] = [
     'systemverilog.compilerType',
     'systemverilog.compileOnSave',
-    'systemverilog.launchConfiguration',
+    'systemverilog.launchConfigurationVerilator',
+    'systemverilog.launchConfigurationVCS',
+    'systemverilog.launchConfigurationVerible',
     'systemverilog.antlrVerification',
-    'systemverilog.verifyOnOpen'
+    'systemverilog.verifyOnOpen',
+    'systemverilog.excludeCompiling'
 ];
 
 const backend: ANTLRBackend = new ANTLRBackend();
 
 connection.onInitialize((_params: InitializeParams) => ({
     capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Incremental
+        textDocumentSync: TextDocumentSyncKind.Incremental,
         // Tell the client that this server supports code completion.
         // completionProvider: {
         //     resolveProvider: true
@@ -117,9 +121,18 @@ function updateConfigurationsSettings(): Promise<any> {
  */
 documents.onDidSave((saveEvent) => {
     if (configurations.get(compilerConfigurationsKeys[1])) {
-        compile(saveEvent.document).catch((error) => {
-            connection.window.showErrorMessage(error);
-        });
+        let doCompile = true;
+        if (configurations.get(compilerConfigurationsKeys[7])) { // excludeCompiling
+            const re = globToRegExp(configurations.get(compilerConfigurationsKeys[7]));
+            if(re.test(saveEvent.document.uri)) {
+                doCompile = false;
+            }
+        }
+        if(doCompile) {
+            compile(saveEvent.document).catch((error) => {
+                connection.window.showErrorMessage(error);
+            });
+        }
     }
 });
 
@@ -129,7 +142,7 @@ documents.onDidSave((saveEvent) => {
  * @param uri The universal resource indicator for the document to verify
  */
 function verifyDocument(uri: string) {
-    if (configurations.get(compilerConfigurationsKeys[3])) {
+    if (configurations.get(compilerConfigurationsKeys[5])) {
         // Check for ANTLR verification being enabled
         backend
             .getDiagnostics(documents.get(uri))
@@ -154,7 +167,7 @@ function verifyDocument(uri: string) {
 documents.onDidOpen(async (openEvent) => {
     // Delay to allow configs to be initialized
     await new Promise((resolve) => setTimeout(resolve, 200));
-    if (configurations.get(compilerConfigurationsKeys[4])) {
+    if (configurations.get(compilerConfigurationsKeys[6])) {
         // Check for verifyOnOpen being true
         verifyDocument(openEvent.document.uri);
     }

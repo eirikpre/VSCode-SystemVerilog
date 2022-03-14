@@ -17,12 +17,16 @@ export class SystemVerilogIndexer {
     public building = false;
     public statusbar: StatusBarItem;
     public parser: SystemVerilogParser;
-    public symbolsCount = 0;
-    public NUM_FILES = 250;
-    public parallelProcessing: number;
+    public symbolsCount: number = 0;
+
+    public NUM_FILES: number = 250;
+    public parallelProcessing: number = 1;
     public filesGlob: string = undefined;
     public exclude: GlobPattern = undefined;
-    public forceFastIndexing = false;
+    public forceFastIndexing: Boolean = false;
+    public maxLineCountIndexing: Number = 5000;
+    public documentSymbolPrecision: string = 'full';
+
     public outputChannel: OutputChannel;
 
     constructor(statusbar: StatusBarItem, parser: SystemVerilogParser, channel: OutputChannel) {
@@ -32,6 +36,13 @@ export class SystemVerilogIndexer {
         this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
     }
 
+    public initialize() {
+        const settings = workspace.getConfiguration();
+        this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
+        this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
+        this.maxLineCountIndexing = settings.get('systemverilog.maxLineCountIndexing');
+        this.documentSymbolPrecision = settings.get('systemverilog.documentSymbolsPrecision')
+    }
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
         Looks up all the `symbols` that it exist on the queried files,
@@ -44,9 +55,7 @@ export class SystemVerilogIndexer {
         this.building = true;
         this.symbolsCount = 0;
         this.statusbar.text = 'SystemVerilog: Indexing..';
-        const settings = workspace.getConfiguration();
-        this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
-        this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
+        this.initialize();
 
         return window
             .withProgress(
@@ -122,7 +131,12 @@ export class SystemVerilogIndexer {
                     if (total_files >= 100 * this.parallelProcessing) {
                         return this.parser.get_all_recursive(doc, 'declaration', 0);
                     }
-                    return this.parser.get_all_recursive(doc, 'declaration', 1);
+                    if(doc.lineCount > this.maxLineCountIndexing){
+                        window.showInformationMessage(`The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`);
+                        return this.parser.get_all_recursive(doc, 'fast', 0);
+                    }
+                    // Otherwise, we parse the file with the precision requested by the user
+                    return this.parser.get_all_recursive(doc, this.documentSymbolPrecision, 1);
                 })
             );
         })
@@ -173,6 +187,7 @@ export class SystemVerilogIndexer {
                     workspace.getConfiguration().get('systemverilog.excludeIndexing').toString()
                 )
             ) {
+                this.outputChannel.appendLine('SystemVerilog Indexing...');
                 return this.processFile(document.uri);
             }
         });

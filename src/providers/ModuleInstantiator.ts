@@ -291,8 +291,10 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
     const output = [];
     let maxLength = 0;
 
-    let lastPort;
-    let lastParameter;
+    // This is a bit funky, but the for loop below actually checks if these varaibles
+    // are undefined so it is important that they are initialized as such
+    let lastPort: string = undefined; // eslint-disable-line no-undef-init
+    let lastParameter: string = undefined; // eslint-disable-line no-undef-init
     let passedEqualSign = false;
 
     let state = ProcessingState.INITIAL;
@@ -386,9 +388,11 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
     const output = [];
     const keys = container.split(' ');
 
-    let lastPort;
-    let lastParameter;
-    let lastParameterDefault;
+    // This is a bit funky, but the for loop below actually checks if these varaibles
+    // are undefined so it is important that they are initialized as such
+    let lastPort: string = undefined; // eslint-disable-line no-undef-init
+    let lastParameter: string = undefined; // eslint-disable-line no-undef-init
+    let lastParameterDefault: string = undefined; // eslint-disable-line no-undef-init
 
     let passedEqualSign = false;
 

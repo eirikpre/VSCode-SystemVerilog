@@ -12,6 +12,7 @@ patterns:
   - include: '#typedef'
   - include: '#functions'
   - include: '#keywords'
+  - include: '#tables'
   - include: '#function-task'
   - include: '#module-declaration'
   - include: '#class-declaration'
@@ -249,7 +250,7 @@ repository:
   keywords:
     patterns:
       - match: >-
-          [ \t\r\n]*\b(edge|negedge|posedge|cell|config|defparam|design|disable|endgenerate|endspecify|endtable|event|generate|ifnone|incdir|instance|liblist|library|noshowcancelled|pulsestyle_onevent|pulsestyle_ondetect|scalared|showcancelled|specify|specparam|table|use|vectored)\b
+          [ \t\r\n]*\b(edge|negedge|posedge|cell|config|defparam|design|disable|endgenerate|endspecify|event|generate|ifnone|incdir|instance|liblist|library|noshowcancelled|pulsestyle_onevent|pulsestyle_ondetect|scalared|showcancelled|specify|specparam|use|vectored)\b
         captures:
           '1':
             name: keyword.other.systemverilog
@@ -733,3 +734,29 @@ repository:
           - include: '#operators'
           - include: '#identifiers'
     name: meta.import.systemverilog
+  tables:
+    begin: '[ \t\r\n]*\b(table)\b'
+    beginCaptures:
+      '1':
+        name: keyword.table.systemverilog.begin
+    end: '[ \t\r\n]*\b(endtable)\b'
+    endCaptures:
+      '1':
+        name: keyword.table.systemverilog.end
+    patterns:
+      - include: '#comments'
+      - match: '\b[01xXbBrRfFpPnN]\b'
+        name: constant.language.systemverilog
+      - match: '[-*?]'
+        name: constant.language.systemverilog
+      - match: '\(([01xX?]{2})\)'
+        captures:
+          '1':
+            name: constant.language.systemverilog
+      - match: ':'
+        name: punctuation.definition.label.systemverilog
+      - include: '#operators'
+      - include: '#constants'
+      - include: '#strings'
+      - include: '#identifiers'
+    name: meta.table.systemverilog

@@ -6,6 +6,7 @@ import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolP
 import { SystemVerilogFormatProvider } from './providers/FormatProvider';
 import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
+import { SystemVerilogReferenceProvider } from './providers/ReferenceProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexer } from './indexer';
@@ -37,12 +38,13 @@ export function activate(context: ExtensionContext) {
     const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
 
     // Providers
-    const docProvider = new SystemVerilogDocumentSymbolProvider(parser);
+    const docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
     const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
     const defProvider = new SystemVerilogDefinitionProvider();
     const hoverProvider = new SystemVerilogHoverProvider();
     const moduleInstantiator = new SystemVerilogModuleInstantiator();
     const formatProvider = new SystemVerilogFormatProvider(outputChannel);
+    const referenceProvider = new SystemVerilogReferenceProvider();
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
@@ -51,6 +53,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerWorkspaceSymbolProvider(symProvider));
     context.subscriptions.push(languages.registerDocumentRangeFormattingEditProvider(selector, formatProvider));
     context.subscriptions.push(languages.registerDocumentFormattingEditProvider(selector, formatProvider));
+    context.subscriptions.push(languages.registerReferenceProvider(selector, referenceProvider));
 
     const buildHandler = () => {
         indexer.build_index().then((_) => saveIndex());
@@ -126,7 +129,7 @@ export function activate(context: ExtensionContext) {
                     syms.push(
                         new SystemVerilogSymbol(
                             s.name,
-                            s.type,
+                            s.kind,
                             s.containerName,
                             new Location(
                                 Uri.file(entry[0]),

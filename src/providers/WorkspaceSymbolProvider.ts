@@ -1,4 +1,4 @@
-import { WorkspaceSymbolProvider, CancellationToken } from 'vscode';
+import { WorkspaceSymbolProvider, CancellationToken, SymbolKind } from 'vscode';
 import { SystemVerilogIndexer } from '../indexer';
 import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
@@ -20,7 +20,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         Queries a symbol from `this.symbols`, performs an exact match if `exactMatch` is set to true,
         and a partial match if it's not passed or set to false.
 
-        @param query the symbol's name, if it is prepended with a ¤ it signifies an exact match
+        @param query the symbol's name. If it is prepended with a ¤ it signifies an exact match. If it is prepended with a ¬ it signifies to cull potential matches from the results.
         @param _token the CancellationToken
         @return an array of matching SystemVerilogSymbol
     */
@@ -31,7 +31,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
             } else {
                 const pattern = new RegExp(`.*${query.replace(" ", "").split("").map((c) => c).join(".*")}.*`, 'i'); // prettier-ignore
                 const results = new Array<SystemVerilogSymbol>();
-                let exactMatch = false;
+                let exactMatch: Boolean = false;
+                let ignorePotentialReferences: Boolean = true;
+                if (query.startsWith('¬')) {
+                    ignorePotentialReferences = false;
+                    query = query.substr(1);
+                }
                 if (query.startsWith('¤')) {
                     exactMatch = true;
                     query = query.substr(1);
@@ -40,18 +45,45 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                results.push(symbol);
+                                if(!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                                    results.push(symbol);
+                                }
                             }
                         } else if (symbol.name.match(pattern)) {
-                            results.push(symbol);
+                            if(!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                                results.push(symbol);
+                            }
                         }
                     });
                 });
 
                 this.indexer.updateMostRecentSymbols(results.slice(0)); // pass a shallow copy of the array
-                resolve(results);
+                resolve(this.uniquifyResults(results))
             }
         });
+    }
+
+    // filter out duplicate locations if any.
+    // Make sure 'potential_references' are removed when sorting instead of legit matches
+    private uniquifyResults(results: Array<SystemVerilogSymbol>) {
+        // sympols with a larger end range are likely form more interesting
+        // types, like modules, tasks, etc. so we put them at the top
+        const sorted = results.sort((a,b) => {
+            if(a.location.range.end.isAfter(b.location.range.end)) {
+                return -1;
+            }
+            if(a.location.range.end.isBefore(b.location.range.end)) {
+                return 1;
+            }
+            return 0;
+        });
+        // Filter out duplicates that were found to be 'potential_reference's
+        const new_results = sorted.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.location.range.start.isEqual(value.location.range.start) && t.location.uri.toString() === value.location.uri.toString()
+            ))
+        )
+        return new_results;
     }
 
     /**

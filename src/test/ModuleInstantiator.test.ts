@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -11,13 +12,13 @@ suite('ModuleInstantiator Tests', () => {
         let document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(585), document.positionAt(1129));
+        let fullRange = null;
+        fullRange = new vscode.Range(new vscode.Position(21,0), new vscode.Position(54,0));
 
         const container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
-
-        fullRange = new vscode.Range(document.positionAt(152), document.positionAt(354));
+        fullRange = new vscode.Range(new vscode.Position(3,0), new vscode.Position(15,0));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -32,7 +33,11 @@ suite('ModuleInstantiator Tests', () => {
         }
 
         // Replace multiple space with a single space
-        actualInstance = actualInstance.replace(/ +/g, ' ');
+        actual_instance = actual_instance.replace(/ +/g, ' ');
+        if(os.platform() === 'win32') {
+            actual_instance = actual_instance.replace(/\n/g, '\r\n');
+            actual_instance = actual_instance.replace(/\r\r/g, '\r');
+        }
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -41,8 +46,9 @@ suite('ModuleInstantiator Tests', () => {
         let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
         let document = await vscode.workspace.openTextDocument(uri);
 
+        let fullRange = null;
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(1278), document.positionAt(1872));
+        fullRange = new vscode.Range(new vscode.Position(58,0), new vscode.Position(94,0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -51,7 +57,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(506), document.positionAt(785));
+        fullRange = new vscode.Range(new vscode.Position(22,0), new vscode.Position(37,0));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -66,7 +72,11 @@ suite('ModuleInstantiator Tests', () => {
         }
 
         // Replace multiple space with a single space
-        actualInstance = actualInstance.replace(/ +/g, ' ');
+        actual_instance = actual_instance.replace(/ +/g, ' ');
+        if(os.platform() === 'win32') {
+            actual_instance = actual_instance.replace(/\n/g, '\r\n');
+            actual_instance = actual_instance.replace(/\r\r/g, '\r');
+        }
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -75,8 +85,9 @@ suite('ModuleInstantiator Tests', () => {
         let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
         let document = await vscode.workspace.openTextDocument(uri);
 
+        let fullRange = null;
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(2041), document.positionAt(2611));
+        fullRange = new vscode.Range(new vscode.Position(98,0), new vscode.Position(131,0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -85,7 +96,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(954), document.positionAt(1071));
+        fullRange = new vscode.Range(new vscode.Position(41,0), new vscode.Position(50,0));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -100,7 +111,11 @@ suite('ModuleInstantiator Tests', () => {
         }
 
         // Replace multiple space with a single space
-        actualInstance = actualInstance.replace(/ +/g, ' ');
+        actual_instance = actual_instance.replace(/ +/g, ' ');
+        if(os.platform() === 'win32') {
+            actual_instance = actual_instance.replace(/\n/g, '\r\n');
+            actual_instance = actual_instance.replace(/\r\r/g, '\r');
+        }
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -109,8 +124,9 @@ suite('ModuleInstantiator Tests', () => {
         let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
         let document = await vscode.workspace.openTextDocument(uri);
 
-        // range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(2777), document.positionAt(3398));
+        let fullRange = null;
+        // Range of the module in the document
+        fullRange = new vscode.Range(new vscode.Position(135,0), new vscode.Position(171,0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -119,7 +135,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(1240), document.positionAt(1407));
+        fullRange = new vscode.Range(new vscode.Position(54,0), new vscode.Position(66,0));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -134,7 +150,11 @@ suite('ModuleInstantiator Tests', () => {
         }
 
         // Replace multiple white spaces with a single space
-        actualInstance = actualInstance.replace(/ +/g, ' ');
+        actual_instance = actual_instance.replace(/ +/g, ' ');
+        if(os.platform() === 'win32') {
+            actual_instance = actual_instance.replace(/\n/g, '\r\n');
+            actual_instance = actual_instance.replace(/\r\r/g, '\r');
+        }
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -143,8 +163,9 @@ suite('ModuleInstantiator Tests', () => {
         let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
         let document = await vscode.workspace.openTextDocument(uri);
 
+        let fullRange = null;
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(3597), document.positionAt(3942));
+        fullRange = new vscode.Range(new vscode.Position(175,0), new vscode.Position(195,0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -153,7 +174,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(1590), document.positionAt(1747));
+        fullRange = new vscode.Range(new vscode.Position(70,0), new vscode.Position(82,0));
 
         let instance = document.getText(fullRange).trim();
         // Replace multiple space with a single space
@@ -168,7 +189,11 @@ suite('ModuleInstantiator Tests', () => {
         }
 
         // Replace multiple white spaces with a single space
-        actualInstance = actualInstance.replace(/ +/g, ' ');
+        actual_instance = actual_instance.replace(/ +/g, ' ');
+        if(os.platform() === 'win32') {
+            actual_instance = actual_instance.replace(/\n/g, '\r\n');
+            actual_instance = actual_instance.replace(/\r\r/g, '\r');
+        }
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -255,8 +280,9 @@ suite('ModuleInstantiator Tests', () => {
         let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v'));
         let document = await vscode.workspace.openTextDocument(uri);
 
+        let fullRange = null;
         // Range of the module in the document
-        let fullRange = new vscode.Range(document.positionAt(5269), document.positionAt(5814));
+        fullRange = new vscode.Range(new vscode.Position(262,0), new vscode.Position(295,0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -265,7 +291,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(document.positionAt(2636), document.positionAt(2856));
+        fullRange = new vscode.Range(new vscode.Position(121,0), new vscode.Position(133,0));
 
         const instance = document.getText(fullRange).trim();
 
@@ -277,6 +303,11 @@ suite('ModuleInstantiator Tests', () => {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
-        assert.strictEqual(actualInstance, instance);
+         if(os.platform() === 'win32') {
+             actual_instance = actual_instance.replace(/\n/g, '\r\n');
+             actual_instance = actual_instance.replace(/\r\r/g, '\r');
+         }
+
+        assert.strictEqual(actual_instance, instance);
     });
 });

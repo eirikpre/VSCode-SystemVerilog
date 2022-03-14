@@ -1,16 +1,13 @@
 name: Test
-on:
-  push:
-  pull_request:
-    branches:
-      - master
+on: [push, pull_request]
+
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['14', '16']
-    name: Run extension tests (Node.js ${{ matrix.node }})
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    name: Run extension tests (Node.js 16 on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Clone vscode-systemverilog
         uses: actions/checkout@v2
@@ -18,7 +15,7 @@ jobs:
         uses: actions/setup-node@v2
         id: node
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '16'
           cache: npm
       # - name: Cache node modules
       #   uses: actions/cache@v2
@@ -26,7 +23,7 @@ jobs:
       #   with:
       #     path: node_modules
       #     key: node-modules-${{ hashFiles('package-lock.json') }}
-      - name: Install Dependencies
+      - name: Install NPM dependencies
         # if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci --production=false --unsafe-perm
       - name: Run quality checks
@@ -34,7 +31,7 @@ jobs:
           npm run compile:antlr4ts
           npm run lint
           npm run pretty:check
-      - name: Run tests and collect coverage
+      - name: Run headless tests and collect coverage
         uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run coverage

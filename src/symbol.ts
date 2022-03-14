@@ -28,39 +28,57 @@ export function getSymbolKind(name: string): SymbolKind {
         return SymbolKind.Array;
     }
     switch (name) {
+
         case 'parameter':
         case 'localparam':
+        case 'Constant':
             return SymbolKind.Constant;
+        case 'potential_reference':
+        case 'Key':
+            return SymbolKind.Key;
         case 'package':
         case 'program':
         case 'import':
+        case 'Package':
             return SymbolKind.Package;
         case 'begin': // Labels
         case 'string':
+        case 'String':
             return SymbolKind.String;
         case 'class':
+        case 'Class':
             return SymbolKind.Class;
         case 'task':
+        case 'Method':
             return SymbolKind.Method;
         case 'function':
+        case 'Function':
             return SymbolKind.Function;
         case 'interface':
+        case 'Interface':
             return SymbolKind.Interface;
         case 'assert':
         case 'event':
+        case 'Event':
             return SymbolKind.Event;
         case 'struct':
+        case 'Struct':
             return SymbolKind.Struct;
         case 'typedef':
+        case 'TypeParameter':
             return SymbolKind.TypeParameter;
         case 'genvar':
+        case 'Operator':
             return SymbolKind.Operator;
         case 'enum':
+        case 'Enum':
             return SymbolKind.Enum;
         case 'modport':
+        case 'Null':
             return SymbolKind.Null;
         case 'define':
         case 'property':
+        case 'Property':
             return SymbolKind.Property;
         case 'wire':
         case 'reg':
@@ -71,6 +89,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'char':
         case 'time':
         case 'float':
+        case 'Variable':
             return SymbolKind.Variable;
         case 'module':
         default:
