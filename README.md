@@ -3,7 +3,6 @@
 ![](https://vsmarketplacebadge.apphb.com/rating-star/eirikpre.systemverilog.svg)
 [![](https://github.com/eirikpre/VSCode-SystemVerilog/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/eirikpre/VSCode-SystemVerilog/actions?query=workflow%3ATest+branch%3Amaster)
 
-
 # SystemVerilog - Language Support
 
 This VS Code extension provides features to read, navigate and write SystemVerilog code much faster.
@@ -33,6 +32,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ![Go To Definition Example](resources/goToDef_demo.gif)
 
 ### Find References
+
 ![Find References Example](resources/find_references.gif)
 
 ### Module Instantiation
@@ -40,6 +40,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ![Module Instantiation Example](resources/moduleInit_demo.gif)
 
 ## Recommendations
+
 - If you have netlists in your workspace you can exclude them in the settings with `systemverilog.excludeIndexing`, e.g.: `**/syn/**`
 - When running in workspaces with a large number of files, the `systemverilog.documentSymbolsPrecision` setting may need to be reduced down to 'full_no_references'. Doing this will turn off the 'find references' feature which will dramatically speedup the parsing.
 - When you have large files, the `systemverilog.maxLineCountIndexing` setting can be tuned to prevent full parsing of these files, which will improve extension performance.
@@ -57,21 +58,21 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as you open files.
 - `systemverilog.maxLineCountIndexing`: _Boolean_, When indexing a file, if the line count is larger than this number, _fast_ indexing will be used to improve symbol lookup performance, as fewer symbols will be parsed.
 - `systemverilog.documentSymbolsPrecision`: _String_, The level of detail the parser should use when looking for symbols:
-  - _full_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and *references across files*.
+  - _full_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and _references across files_.
   - _full_no_references_: detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions.
   - _declarations_: detect blocks, ports, parameters, classes, methods, typedefs, and defines.
   - _fast_: detect only common blocks (module, class, interface, package, program) without hierarchy.
 - `systemverilog.antlrVerification`: _Boolean_, Use ANTLR parser to verify code in real-time
 - `systemverilog.verifyOnOpen`: _Boolean_, Run ANTLR verification on all files when opened.
 - `systemverilog.launchConfigurationVerilator`: _String_, Command to run when launching verilator
-  * Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
-  * If not in path, replace _verilator_ with the appropriate command
+  - Default: _verilator --sv --lint-only --language 1800-2012 --Wall_
+  - If not in path, replace _verilator_ with the appropriate command
 - `systemverilog.launchConfigurationVCS`: _String_, Command to run when launching VCS
-  * Default: _vcs_
-  * If not in path, replace _vcs_ with the appropriate command
+  - Default: _vcs_
+  - If not in path, replace _vcs_ with the appropriate command
 - `systemverilog.launchConfigurationVerible`: _String_, Command to run when launching Verible
-  * Default: _verible-verilog-lint_
-  * If not in path, replace _verible-verilog-lint_ with the appropriate command
+  - Default: _verible-verilog-lint_
+  - If not in path, replace _verible-verilog-lint_ with the appropriate command
 - `systemverilog.excludeCompiling`: _String_, Files excluded from compiling when saved based on glob
 - `systemverilog.compileOnSave`: _Boolean_, Compile files when saved
   - Default: `true`
@@ -151,6 +152,7 @@ npm run compile
 See the [changelog](CHANGELOG.md) for more details
 
 ### 0.12
+
 - Implemented 'find references' feature, thanks to `joecrop`
 - Ports and parameters are now recognized as symbols, thanks to `joecrop`
 - Illegal/reserved words contained with symbols is now supported, thanks to `joecrop`

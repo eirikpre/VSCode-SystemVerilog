@@ -9,7 +9,25 @@ All notable changes to this extension are documented below.
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
-### [0.12]
+### [0.12.1]
+
+- Update VS Code engine to 1.56.0 to support Node.js 14
+- Update several dependencies to address CVEs
+- Update ESLint to version 8 and implement some suggested fixes
+- Update Prettier and apply suggested formatting changes
+- Remove React-related ESLint dependencies
+- Remove direct dependency on `antlr4` package as it is a submodule of `antlr4ts`
+- Remove on Markdown activation
+- Rename `.eslintrc` to `.eslintrc.json` to fix ESLint editor integration
+- Add `-Xexact-output-dir` to compile command to fix MacOS build
+- Update `README.md` with a suggested configuration section and add missing settings
+- Enable bracket matching and coloring to function with SystemVerilog textual brackets
+- Fix `port-net-parameter` highlighting corner case
+- Enhance Github Actions test workflow
+- Fix coverage collection
+
+### [0.12.0]
+
 - Implemented 'find references' feature, thanks to `joecrop`
 - Ports and parameters are now recognized as symbols, thanks to `joecrop`
 - Illegal/reserved words contained with symbols is now supported, thanks to `joecrop`
