@@ -20,7 +20,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // don't attempt to find a reference for a symbol in a comment
             const inside = isLineInsideComments();
-            if(inside) {
+            if (inside) {
                 resolve(results);
             }
             // Port
@@ -32,16 +32,24 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             // Lookup all symbols in the current document
             if (results.length === 0) {
                 try {
-                    const symbols: DocumentSymbol[] = await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word);
+                    const symbols: DocumentSymbol[] = await commands.executeCommand(
+                        'vscode.executeDocumentSymbolProvider',
+                        document.uri,
+                        word
+                    );
                     getDocumentSymbols(results, symbols, word, range, document.uri);
-                } catch(reason) {
+                } catch (reason) {
                     console.log(reason); // eslint-disable-line no-console
                 }
             }
 
             // Look up all indexed symbols
             if (results.length === 0) {
-                const res: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
+                const res: SymbolInformation[] = await commands.executeCommand(
+                    'vscode.executeWorkspaceSymbolProvider',
+                    `¤${word}`,
+                    token
+                );
                 if (res.length !== 0) {
                     res.map((x) => results.push(x.location));
                 }
@@ -53,7 +61,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 /* eslint-disable spaced-comment */
                 //is line commented out with a single line comment (//)?
                 const isSingleComment = /^\s*\/\/.*/.test(line);
-                if(isSingleComment) {
+                if (isSingleComment) {
                     return true;
                 }
                 // only look at text before symbol. If we see a begin comment, an end comment
@@ -65,12 +73,12 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
                 // only look at text before symbol. If we see a begin comment, an end comment
                 // must be implied and we can ignore looking for one
-                const lastStartComment = commentStart.find(x => x.isBeforeOrEqual(range.start));
-                const lastEndComment = commentEnd.find(x => x.isBeforeOrEqual(range.start));
+                const lastStartComment = commentStart.find((x) => x.isBeforeOrEqual(range.start));
+                const lastEndComment = commentEnd.find((x) => x.isBeforeOrEqual(range.start));
 
                 // If there is begin comment (/*) that is not yet closed,
                 // we know the symbol must be commented out.
-                if(lastStartComment > lastEndComment) {
+                if (lastStartComment > lastEndComment) {
                     // we must be within a block comment
                     return true;
                 }

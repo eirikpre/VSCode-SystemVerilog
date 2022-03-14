@@ -60,7 +60,7 @@ export class SystemVerilogCompiler {
                 this.configurations,
                 this.compilerConfigurationsKeys
             );
-        } else if (type === compilerType.Verible) {
+        } else if (type === CompilerType.Verible) {
             this.compiler = new VeribleCompiler(
                 this.connection,
                 this.documents,

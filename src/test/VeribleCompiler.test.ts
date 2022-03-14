@@ -11,7 +11,13 @@ import { getPathFromUri } from '../utils/common';
 const testFolderLocation = '../../src/test/test-files/VeribleCompiler.test';
 
 let diagnosticCollection: Map<string, Diagnostic[]>;
-const documentCompiler = new VeribleCompiler(undefined, undefined, path.join(__dirname, testFolderLocation), undefined, undefined);
+const documentCompiler = new VeribleCompiler(
+    undefined,
+    undefined,
+    path.join(__dirname, testFolderLocation),
+    undefined,
+    undefined
+);
 
 suite('VeribleCompiler Tests', () => {
     test('test #1: Diagnostics from Style Infos', async () => {

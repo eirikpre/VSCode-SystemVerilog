@@ -14,7 +14,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         this.indexer = indexer;
         const settings = workspace.getConfiguration();
         this.precision = settings.get('systemverilog.documentSymbolsPrecision');
-        if(this.precision === 'full') {
+        if (this.precision === 'full') {
             this.precision = 'full_no_references';
         } else if (this.precision !== 'full') {
             this.depth = 1;
@@ -38,10 +38,10 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         return new Promise((resolve) => {
             let symbols = [];
             const path = document.uri.fsPath;
-            const all_symbols = this.indexer.symbols.get(path);
-            if(all_symbols){
-                all_symbols.forEach((symbol) => {
-                    if(symbol.kind !== SymbolKind.Key) {
+            const allSymbols = this.indexer.symbols.get(path);
+            if (allSymbols) {
+                allSymbols.forEach((symbol) => {
+                    if (symbol.kind !== SymbolKind.Key) {
                         symbols.push(symbol);
                     }
                 });

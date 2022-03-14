@@ -5,7 +5,6 @@
 /resources/
 /dist/
 /src/compiling/ANTLR/grammar/
-/src/test/ModuleInstantiator.test.ts
 /src/test/test-files/
 /verilog-examples/
 /snippets/systemverilog.json

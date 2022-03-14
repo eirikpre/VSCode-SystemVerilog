@@ -164,8 +164,8 @@ async function setUp() {
 
     parser = new SystemVerilogParser();
     indexer = new SystemVerilogIndexer(statusBar, parser, window.createOutputChannel('SystemVerilog'));
-    docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
-    symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
+    docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer); // eslint-disable-line @typescript-eslint/no-unused-vars
+    symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     symbols = new Map<string, Array<SystemVerilogSymbol>>();
 

@@ -30,7 +30,7 @@ const backend: ANTLRBackend = new ANTLRBackend();
 
 connection.onInitialize((_params: InitializeParams) => ({
     capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Incremental,
+        textDocumentSync: TextDocumentSyncKind.Incremental
         // Tell the client that this server supports code completion.
         // completionProvider: {
         //     resolveProvider: true
@@ -122,13 +122,14 @@ function updateConfigurationsSettings(): Promise<any> {
 documents.onDidSave((saveEvent) => {
     if (configurations.get(compilerConfigurationsKeys[1])) {
         let doCompile = true;
-        if (configurations.get(compilerConfigurationsKeys[7])) { // excludeCompiling
+        if (configurations.get(compilerConfigurationsKeys[7])) {
+            // excludeCompiling
             const re = globToRegExp(configurations.get(compilerConfigurationsKeys[7]));
-            if(re.test(saveEvent.document.uri)) {
+            if (re.test(saveEvent.document.uri)) {
                 doCompile = false;
             }
         }
-        if(doCompile) {
+        if (doCompile) {
             compile(saveEvent.document).catch((error) => {
                 connection.window.showErrorMessage(error);
             });

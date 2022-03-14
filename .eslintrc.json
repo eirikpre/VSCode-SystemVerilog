@@ -20,7 +20,13 @@
         "@typescript-eslint/lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
         "@typescript-eslint/no-shadow": ["error", { "allow": ["err"] }],
         "@typescript-eslint/no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
-        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+        "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
+        "@typescript-eslint/naming-convention": [
+            "error",
+            { "selector": "variable", "format": ["camelCase", "PascalCase", "UPPER_CASE"], "leadingUnderscore": "allow" },
+            { "selector": "function", "format": ["camelCase", "PascalCase"] },
+            { "selector": "typeLike", "format": ["PascalCase"] }
+        ]
         // "@typescript-eslint/no-explicit-any": "off"
     }
 }

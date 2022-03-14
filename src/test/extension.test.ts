@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { CancellationToken, CancellationTokenSource } from 'vscode-languageclient';
+import { CancellationTokenSource } from 'vscode-languageclient';
 import * as definitionProvider from '../providers/DefinitionProvider';
 import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
 import { SystemVerilogParser } from '../parser';
@@ -43,8 +43,8 @@ suite('Extension Tests', () => {
         const document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        const symbolPosition = new vscode.Position(15,9); // assign return_true
-                                                          //        ^
+        const symbolPosition = new vscode.Position(15, 9); // assign return_true
+        //        ^
 
         const parser = new SystemVerilogParser();
         const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
@@ -58,9 +58,13 @@ suite('Extension Tests', () => {
 
         const defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
         const tokenSource = new CancellationTokenSource();
-        const definition: vscode.Definition = await defProvider.provideDefinition(document, symbolPosition, tokenSource.token)
+        const definition: vscode.Definition = await defProvider.provideDefinition(
+            document,
+            symbolPosition,
+            tokenSource.token
+        );
 
-        if ("length" in definition) {
+        if ('length' in definition) {
             assert.strictEqual(1, definition.length);
         } else {
             assert(false);
@@ -72,13 +76,17 @@ suite('Extension Tests', () => {
         const document = await vscode.workspace.openTextDocument(uri);
 
         // Range of the module in the document
-        const symbolPosition = new vscode.Position(8,2);
+        const symbolPosition = new vscode.Position(8, 2);
 
         const defProvider = new definitionProvider.SystemVerilogDefinitionProvider();
         const tokenSource = new CancellationTokenSource();
-        const definition: vscode.Definition = await defProvider.provideDefinition(document, symbolPosition, tokenSource.token)
+        const definition: vscode.Definition = await defProvider.provideDefinition(
+            document,
+            symbolPosition,
+            tokenSource.token
+        );
 
-        if ("length" in definition) {
+        if ('length' in definition) {
             // should be empty
             assert.strictEqual(0, definition.length);
         }
