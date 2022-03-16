@@ -52,7 +52,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.disableIndexing`: _Boolean_, Disable indexing
 - `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on glob
 - `systemverilog.forceFastIndexing`: _Boolean_, Use fast regular expression parsing
-- `enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as files are opened
+- `systemverilog.enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as files are opened
 - `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
 - `systemverilog.forceFastIndexing`: _Boolean_, force indexer to bo basic parsing. Good for when the extension takes too long to initialize.
 - `systemverilog.enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as you open files.
