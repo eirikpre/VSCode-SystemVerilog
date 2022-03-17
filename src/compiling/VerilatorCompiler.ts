@@ -72,7 +72,7 @@ export class VerilatorCompiler extends DocumentCompiler {
 
             if ((matches = this.regexError.exec(error))) {
                 if (matches && matches.length > 4) {
-                    diagnosticData.filePath = matches[1]; // eslint-disable-line prefer-destructuring
+                    diagnosticData.filePath = matches[1];
                     diagnosticData.line = parseInt(matches[2], 10) - 1;
                     if (matches[3] !== undefined) {
                         diagnosticData.charPosition = parseInt(matches[3].substr(1), 10) - 1;
@@ -191,7 +191,7 @@ export class VerilatorCompiler extends DocumentCompiler {
                     }
                     break;
 
-                case CannotFindModuleState.FilesSearched:
+                case CannotFindModuleState.FilesSearched: // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     if (!(matches = regexFilesSearched.exec(error))) {
                         state = CannotFindModuleState.End;
                     }

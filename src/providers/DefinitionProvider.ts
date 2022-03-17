@@ -7,6 +7,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
         position: Position,
         token: CancellationToken
     ): Promise<Definition> {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise<Definition>(async (resolve, _reject) => {
             const range = document.getWordRangeAtPosition(position);
             const line = document.lineAt(position.line).text;
@@ -19,7 +20,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // don't attempt to find a reference for a symbol in a comment
             const inside = isLineInsideComments();
-            if(inside) {
+            if (inside) {
                 resolve(results);
             }
             // Port
@@ -31,16 +32,24 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             // Lookup all symbols in the current document
             if (results.length === 0) {
                 try {
-                    const symbols: DocumentSymbol[] = await commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word);
+                    const symbols: DocumentSymbol[] = await commands.executeCommand(
+                        'vscode.executeDocumentSymbolProvider',
+                        document.uri,
+                        word
+                    );
                     getDocumentSymbols(results, symbols, word, range, document.uri);
-                } catch(reason) {
+                } catch (reason) {
                     console.log(reason); // eslint-disable-line no-console
                 }
             }
 
             // Look up all indexed symbols
             if (results.length === 0) {
-                const res: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
+                const res: SymbolInformation[] = await commands.executeCommand(
+                    'vscode.executeWorkspaceSymbolProvider',
+                    `¤${word}`,
+                    token
+                );
                 if (res.length !== 0) {
                     res.map((x) => results.push(x.location));
                 }
@@ -52,7 +61,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 /* eslint-disable spaced-comment */
                 //is line commented out with a single line comment (//)?
                 const isSingleComment = /^\s*\/\/.*/.test(line);
-                if(isSingleComment) {
+                if (isSingleComment) {
                     return true;
                 }
                 // only look at text before symbol. If we see a begin comment, an end comment
@@ -64,12 +73,12 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
                 // only look at text before symbol. If we see a begin comment, an end comment
                 // must be implied and we can ignore looking for one
-                const lastStartComment = commentStart.find(x => x.isBeforeOrEqual(range.start));
-                const lastEndComment = commentEnd.find(x => x.isBeforeOrEqual(range.start));
+                const lastStartComment = commentStart.find((x) => x.isBeforeOrEqual(range.start));
+                const lastEndComment = commentEnd.find((x) => x.isBeforeOrEqual(range.start));
 
                 // If there is begin comment (/*) that is not yet closed,
                 // we know the symbol must be commented out.
-                if(lastStartComment > lastEndComment) {
+                if (lastStartComment > lastEndComment) {
                     // we must be within a block comment
                     return true;
                 }
@@ -77,11 +86,11 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             async function findInPackage() {
-                const regex_package = '\\b(\\w+)\\s*::\\s*(word)';
-                const match_package = line.match(regex_package.replace('word', word));
-                if (match_package && line.indexOf(word, match_package.index) === range.start.character) {
+                const regexPackage = '\\b(\\w+)\\s*::\\s*(word)';
+                const matchPackage = line.match(regexPackage.replace('word', word));
+                if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
                     await commands
-                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${match_package[1]}`, token)
+                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${matchPackage[1]}`, token)
                         .then((ws_symbols: SymbolInformation[]) => {
                             if (ws_symbols.length && ws_symbols[0].location) {
                                 return ws_symbols[0].location.uri;
@@ -92,7 +101,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                                 await commands
                                     .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
                                     .then((symbols) => {
-                                        getDocumentSymbols(results, symbols, word, range, uri, match_package[1]);
+                                        getDocumentSymbols(results, symbols, word, range, uri, matchPackage[1]);
                                     });
                             }
                         });
@@ -100,33 +109,32 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             }
 
             async function findPortInModule() {
-                const regex_port = '\\.word\\s*\\(';
-                const match_port = line.match(regex_port.replace('word', word));
-                if (match_port && match_port.index === range.start.character - 1) {
+                const regexPort = '\\.word\\s*\\(';
+                const matchPort = line.match(regexPort.replace('word', word));
+                if (matchPort && matchPort.index === range.start.character - 1) {
                     const container = moduleFromPort(document, range);
                     if (container) {
                         await commands
                             .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${container}`)
                             .then((res: SymbolInformation[]) =>
                                 Promise.all(
-                                    res.map(
-                                        async (x) =>
-                                            await commands
-                                                .executeCommand(
-                                                    'vscode.executeDocumentSymbolProvider',
+                                    res.map(async (x) =>
+                                        commands
+                                            .executeCommand(
+                                                'vscode.executeDocumentSymbolProvider',
+                                                x.location.uri,
+                                                word
+                                            )
+                                            .then((symbols) => {
+                                                getDocumentSymbols(
+                                                    results,
+                                                    symbols,
+                                                    word,
+                                                    range,
                                                     x.location.uri,
-                                                    word
-                                                )
-                                                .then((symbols) => {
-                                                    getDocumentSymbols(
-                                                        results,
-                                                        symbols,
-                                                        word,
-                                                        range,
-                                                        x.location.uri,
-                                                        container
-                                                    );
-                                                })
+                                                    container
+                                                );
+                                            })
                                     )
                                 )
                             );
@@ -181,10 +189,10 @@ export function moduleFromPort(document, range): string {
         else if (text[i] === '(') depthParathesis -= 1;
 
         if (depthParathesis === -1) {
-            const match_param = text.slice(0, i).match(/(\w+)\s*#\s*$/);
-            const match_simple = text.slice(0, i).match(/(\w+)\s+(\w+)\s*$/);
-            if (match_param) return match_param[1];
-            if (match_simple) return match_simple[1];
+            const matchParam = text.slice(0, i).match(/(\w+)\s*#\s*$/);
+            const matchSimple = text.slice(0, i).match(/(\w+)\s+(\w+)\s*$/);
+            if (matchParam) return matchParam[1];
+            if (matchSimple) return matchSimple[1];
         }
     }
 }

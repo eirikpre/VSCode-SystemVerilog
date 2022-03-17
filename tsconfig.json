@@ -2,7 +2,7 @@
     "compilerOptions": {
         "forceConsistentCasingInFileNames": true,
         // "isolatedModules": true,
-        "lib": ["es2019"],
+        "lib": ["es2020"],
         "module": "commonjs",
         "moduleResolution": "node",
         "noEmit": false,
@@ -14,7 +14,7 @@
         "skipLibCheck": true,
         "sourceMap": true,
         // "strict": true,
-        "target": "es2019"
+        "target": "es2020"
     },
     "exclude": ["node_modules", ".vscode-test", "src/wip"]
 }

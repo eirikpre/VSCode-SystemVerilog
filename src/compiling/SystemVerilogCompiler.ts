@@ -6,7 +6,7 @@ import { VCSCompiler } from './VCSCompiler';
 import { VeribleCompiler } from './VeribleCompiler';
 
 /* defines supported simulators/compilers */
-export enum compilerType {
+export enum CompilerType {
     Verilator = 1,
     VCS = 2,
     Verible = 3
@@ -43,8 +43,8 @@ export class SystemVerilogCompiler {
 
         @returns a `Promise` of a map of entries mapping each uri to a `Diagnostic` array
     */
-    public async validateTextDocument(document: TextDocument, type: compilerType): Promise<Map<string, Diagnostic[]>> {
-        if (type === compilerType.Verilator) {
+    public async validateTextDocument(document: TextDocument, type: CompilerType): Promise<Map<string, Diagnostic[]>> {
+        if (type === CompilerType.Verilator) {
             this.compiler = new VerilatorCompiler(
                 this.connection,
                 this.documents,
@@ -52,7 +52,7 @@ export class SystemVerilogCompiler {
                 this.configurations,
                 this.compilerConfigurationsKeys
             );
-        } else if (type === compilerType.VCS) {
+        } else if (type === CompilerType.VCS) {
             this.compiler = new VCSCompiler(
                 this.connection,
                 this.documents,
@@ -60,7 +60,7 @@ export class SystemVerilogCompiler {
                 this.configurations,
                 this.compilerConfigurationsKeys
             );
-        } else if (type === compilerType.Verible) {
+        } else if (type === CompilerType.Verible) {
             this.compiler = new VeribleCompiler(
                 this.connection,
                 this.documents,

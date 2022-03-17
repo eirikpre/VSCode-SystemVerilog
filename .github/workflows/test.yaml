@@ -1,35 +1,62 @@
-name: Tests
+name: Test and QA
 on: [push, pull_request]
 
 jobs:
-  test_os:
-    name: Test
+  test:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+    name: Run extension tests (Node.js 16 on ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
+      - name: Clone vscode-systemverilog
         uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v2
+        id: node
         with:
           node-version: '16'
-      - name: Install npm dependencies
-        run: npm install
-      - name: Compile Antlr
-        run: npm run compile
-      - name: Run headless test
+          cache: npm
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: node-cache
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install NPM dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: npm ci --production=false --unsafe-perm
+      - name: Compile ANTLR
+        run: npm run compile:antlr4ts
+      - name: Run headless tests and collect coverage
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm test
-  lint:
+          run: npm run coverage
+          working-directory: ./
+          options: ''
+      - name: Check bundle
+        run: npm run webpack
+      - name: Verify files
+        if: runner.os == 'Linux'
+        run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
+  qa:
+    name: Run quality checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install npm dependencies
-        run: npm install
-      - name: Compile Antlr
-        run: npm run compile
-      - name: RunLint
+      - name: Clone vscode-systemverilog
+        uses: actions/checkout@v2
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: node-cache
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install NPM dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: npm ci --production=false --unsafe-perm
+      - name: Compile ANTLR
+        run: npm run compile:antlr4ts
+      - name: Run ESLint
         run: npm run lint
+      - name: Run Prettier
+        run: npm run pretty:check

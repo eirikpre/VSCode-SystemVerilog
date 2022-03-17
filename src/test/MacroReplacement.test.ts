@@ -10,46 +10,46 @@ const testFolderLocation = '../../src/test';
 
 suite('Macro Replacement Tests', () => {
     test('test #1: Macro replacement/definition removal for text without macro definitions', async () => {
-        const input_file_name: string = 'test-files/MacroReplace.test/no_macros.sv';
-        const expected_file_name: string = 'test-files/MacroReplace.test/no_macros_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        const inputFileName = 'test-files/MacroReplace.test/no_macros.sv';
+        const expectedFileName = 'test-files/MacroReplace.test/no_macros_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000);
 
     test('test #2: Macro replacement/definition removal for text with single macro definition but no macro uses', async () => {
-        const input_file_name: string = 'test-files/MacroReplace.test/single_macro_no_uses.sv';
-        const expected_file_name: string = 'test-files/MacroReplace.test/single_macro_no_uses_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        const inputFileName = 'test-files/MacroReplace.test/single_macro_no_uses.sv';
+        const expectedFileName = 'test-files/MacroReplace.test/single_macro_no_uses_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000);
 
     test('test #3: Macro replacement/definition removal for text with single macro definition with multiple macro uses', async () => {
-        const input_file_name: string = 'test-files/MacroReplace.test/single_macro_multiple_uses.sv';
-        const expected_file_name: string = 'test-files/MacroReplace.test/single_macro_multiple_uses_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        const inputFileName = 'test-files/MacroReplace.test/single_macro_multiple_uses.sv';
+        const expectedFileName = 'test-files/MacroReplace.test/single_macro_multiple_uses_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000);
 
     test('test #4: Macro replacement/definition removal for text with multiple macro definitions with multiple macro uses', async () => {
-        const input_file_name: string = 'test-files/MacroReplace.test/multiple_macros_multiple_uses.sv';
-        const expected_file_name: string = 'test-files/MacroReplace.test/multiple_macros_multiple_uses_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        const inputFileName = 'test-files/MacroReplace.test/multiple_macros_multiple_uses.sv';
+        const expectedFileName = 'test-files/MacroReplace.test/multiple_macros_multiple_uses_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000);
 
     test('test #5: Macro replacement/definition removal for text with multiple macro definitions interspersed throughout the file', async () => {
-        const input_file_name: string = 'test-files/MacroReplace.test/multiple_macros_interspersed.sv';
-        const expected_file_name: string = 'test-files/MacroReplace.test/multiple_macros_interspersed_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        const inputFileName = 'test-files/MacroReplace.test/multiple_macros_interspersed.sv';
+        const expectedFileName = 'test-files/MacroReplace.test/multiple_macros_interspersed_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000);
 
     // This feature is not currently implemented
     /* test('test #6: Macro replacement/definition removal for text with single macro defined twice and used after each definition', async () => {
-        let input_file_name: string = 'test-files/MacroReplace.test/redefined_macro.sv';
-        let expected_file_name: string = 'test-files/MacroReplace.test/redefined_macro_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        let inputFileName: string = 'test-files/MacroReplace.test/redefined_macro.sv';
+        let expectedFileName: string = 'test-files/MacroReplace.test/redefined_macro_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000); */
 
     test('test #7: Macro replacement/definition removal for text with single multiline macro definition with one use', async () => {
-        const input_file_name: string = 'test-files/MacroReplace.test/multiline_macro.sv';
-        const expected_file_name: string = 'test-files/MacroReplace.test/multiline_macro_expected.sv';
-        await macroReplaceTest(input_file_name, expected_file_name);
+        const inputFileName = 'test-files/MacroReplace.test/multiline_macro.sv';
+        const expectedFileName = 'test-files/MacroReplace.test/multiline_macro_expected.sv';
+        await macroReplaceTest(inputFileName, expectedFileName);
     }).timeout(10000);
 });
 
@@ -64,18 +64,18 @@ async function macroReplaceTest(input_file: string, expected_file: string) {
 
     const documentWorkspace = await workspace.openTextDocument(uriDoc);
     const document: TextDocument = castTextDocument(documentWorkspace);
-    const input_text: string = document.getText();
+    const inputText: string = document.getText();
 
     const filePath2 = path.join(__dirname, testFolderLocation, expected_file);
     const uriDoc2 = Uri.file(filePath2);
 
     const documentWorkspace2 = await workspace.openTextDocument(uriDoc2);
     const document2: TextDocument = castTextDocument(documentWorkspace2);
-    const expected_text: string = document2.getText().replace(/\r\n/g, '\n');
+    const expectedText: string = document2.getText().replace(/\r\n/g, '\n');
 
-    const output_text: string = new ANTLRBackend().macroReplace(input_text);
+    const outputText: string = new ANTLRBackend().macroReplace(inputText);
 
-    if (output_text !== expected_text) {
+    if (outputText !== expectedText) {
         assert.fail();
     } // else pass
 }

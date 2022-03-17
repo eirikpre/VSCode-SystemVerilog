@@ -1,6 +1,6 @@
 import { createConnection, TextDocuments, Diagnostic, ProposedFeatures, InitializeParams, TextDocumentPositionParams, CompletionItem, TextDocumentSyncKind } from 'vscode-languageserver/node'; // prettier-ignore
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { SystemVerilogCompiler, compilerType } from './compiling/SystemVerilogCompiler';
+import { SystemVerilogCompiler, CompilerType } from './compiling/SystemVerilogCompiler';
 import { ANTLRBackend } from './compiling/ANTLRBackend';
 
 const globToRegExp = require('glob-to-regexp');
@@ -30,7 +30,7 @@ const backend: ANTLRBackend = new ANTLRBackend();
 
 connection.onInitialize((_params: InitializeParams) => ({
     capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Incremental,
+        textDocumentSync: TextDocumentSyncKind.Incremental
         // Tell the client that this server supports code completion.
         // completionProvider: {
         //     resolveProvider: true
@@ -122,13 +122,14 @@ function updateConfigurationsSettings(): Promise<any> {
 documents.onDidSave((saveEvent) => {
     if (configurations.get(compilerConfigurationsKeys[1])) {
         let doCompile = true;
-        if (configurations.get(compilerConfigurationsKeys[7])) { // excludeCompiling
+        if (configurations.get(compilerConfigurationsKeys[7])) {
+            // excludeCompiling
             const re = globToRegExp(configurations.get(compilerConfigurationsKeys[7]));
-            if(re.test(saveEvent.document.uri)) {
+            if (re.test(saveEvent.document.uri)) {
                 doCompile = false;
             }
         }
-        if(doCompile) {
+        if (doCompile) {
             compile(saveEvent.document).catch((error) => {
                 connection.window.showErrorMessage(error);
             });
@@ -148,6 +149,7 @@ function verifyDocument(uri: string) {
             .getDiagnostics(documents.get(uri))
             .then((diagnosticCollection: Map<string, Diagnostic[]>) => {
                 // Send the computed diagnostics to VSCode for each document
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 for (const [uri, diagnostics] of diagnosticCollection.entries()) {
                     connection.sendDiagnostics({ uri, diagnostics });
                 }
@@ -206,8 +208,8 @@ async function compile(document: TextDocument): Promise<void> {
     // remove existing Diagnostics for the targeted document
     connection.sendDiagnostics({ uri: document.uri, diagnostics: [] });
 
-    // convert string to enum type `compilerType`
-    const type: compilerType = <compilerType>compilerType[<string>configurations.get(compilerConfigurationsKeys[0])];
+    // convert string to enum type `CompilerType`
+    const type: CompilerType = <CompilerType>CompilerType[<string>configurations.get(compilerConfigurationsKeys[0])];
 
     documentCompiler
         .validateTextDocument(document, type)

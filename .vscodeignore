@@ -3,6 +3,7 @@
 .vscode/
 .vscode-test/
 build/
+coverage/
 # dist/
 dist/**/*.LICENSE.txt
 dist/**/*.map

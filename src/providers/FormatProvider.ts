@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import { dirname } from 'path';
 
-export class SystemVerilogFormatProvider
-    implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
+// prettier-ignore
+export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
     private outputChannel: vscode.OutputChannel;
 
     private getWorkspaceFolder(): string | undefined {
@@ -70,7 +70,7 @@ export class SystemVerilogFormatProvider
             }
             if (range) {
                 const lines = [[range.start.line, range.end.line]];
-                formatArgs.push(`--lines=${lines.map((range) => range.map((line) => line + 1).join('-')).join(',')}`);
+                formatArgs.push(`--lines=${lines.map((lineRange) => lineRange.map((line) => line + 1).join('-')).join(',')}`);
             }
             formatArgs.push('-');
 

@@ -1,7 +1,5 @@
-import { ReferenceProvider, TextDocument, Range, Position, workspace, Location, CancellationToken, Definition, Uri, SymbolInformation, commands, languages } from 'vscode'; // prettier-ignore
+import { ReferenceProvider, TextDocument, Position, workspace, Location, CancellationToken, SymbolInformation, commands } from 'vscode'; // prettier-ignore
 import { SystemVerilogDefinitionProvider } from './DefinitionProvider';
-import { SystemVerilogIndexer } from '../indexer';
-import { SystemVerilogParser } from '../parser';
 
 export class SystemVerilogReferenceProvider implements ReferenceProvider {
     public definitionProvider: SystemVerilogDefinitionProvider;
@@ -14,6 +12,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         options: { includeDeclaration: boolean },
         token: CancellationToken
     ): Promise<Location[]> {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise<Location[]>(async (resolve, _reject) => {
             const range = document.getWordRangeAtPosition(position);
             const word = document.getText(range);
@@ -30,11 +29,15 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             const defLocation = await this.getDefinitionLocation(document, position, token);
 
             // Get all symbols in the worksace that match `word`
-            const all_symbols: SymbolInformation[] = await commands.executeCommand('vscode.executeWorkspaceSymbolProvider', `¬¤${word}`, token);
+            const allSymbols: SymbolInformation[] = await commands.executeCommand(
+                'vscode.executeWorkspaceSymbolProvider',
+                `¬¤${word}`,
+                token
+            );
 
-            if(defLocation !== undefined) {
+            if (defLocation !== undefined) {
                 // For each file in the workspace
-                for (const symbol of all_symbols) {
+                for (const symbol of allSymbols) {
                     // Find any tokens symbols (word) that that reference back to the Location we found above
                     promises.push(this.isLocationDefinedByDefinition(symbol.location, token, defLocation));
                 }
@@ -42,11 +45,10 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
                 this.results = await Promise.all(promises);
 
                 // filter out undefined locations (i.e. non references)
-                this.results = this.results.filter(x => x !== undefined);
+                this.results = this.results.filter((x) => x !== undefined);
             }
 
             resolve(this.results);
-
         });
     }
 
@@ -84,17 +86,17 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
 
         // Get the definition (i.e. declaration) of the found symbol Locations
         const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
-        if(thisDefLocation === undefined) {
+        if (thisDefLocation === undefined) {
             // we found a symbol in a comment probably
             return undefined;
         }
         // don't include the definition in the list when it is not requested
-        if(!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
+        if (!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
             return undefined;
         }
         if (this.isLocationShallowEqual(thisDefLocation, defLocation)) {
             // The declaration of the symbol matches hte original Location the user requested.
-            return location
+            return location;
         }
 
         return undefined;

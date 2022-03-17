@@ -8,7 +8,7 @@
     "jsxSingleQuote": false,
     "trailingComma": "none",
     "bracketSpacing": true,
-    "jsxBracketSameLine": false,
+    "bracketSameLine": false,
     "arrowParens": "always",
     "rangeStart": 0,
     "requirePragma": false,
@@ -17,5 +17,9 @@
     "htmlWhitespaceSensitivity": "strict",
     "endOfLine": "lf",
     "embeddedLanguageFormatting": "auto",
-    "overrides": [{ "files": "*.yaml", "options": { "tabWidth": 2 } }]
+    "overrides": [
+        { "files": "*.yaml", "options": { "tabWidth": 2 } },
+        { "files": "*.json", "options": { "printWidth": 130 } },
+        { "files": "*.md", "options": { "tabWidth": 2 } }
+    ]
 }

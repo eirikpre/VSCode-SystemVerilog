@@ -20,6 +20,7 @@ class TestStream extends Duplex {
         this.emit('data', chunk);
         done();
     }
+
     _read(_size: number) {}
 }
 /* eslint-enable no-underscore-dangle */
@@ -43,9 +44,9 @@ function sleep(ms: number): Promise<void> {
     });
 }
 
-const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
+let filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
 
-const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: 'Basic testing text!!!' });
+let openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: 'Basic testing text!!!' });
 client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
 let documents: TextDocuments<TextDocument>;
@@ -57,13 +58,13 @@ suite('ANTLRBackend Tests', () => {
     });
 
     test('test #1: Diagnostics for single syntax error', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
+        filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -82,20 +83,20 @@ suite('ANTLRBackend Tests', () => {
                     }
                 });
             },
-            (error) => {
+            (_error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #2: Diagnostics for multiple syntax errors', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'several_error.sv');
+        filePath = path.join(__dirname, testFolderLocation, 'several_error.sv');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -114,20 +115,20 @@ suite('ANTLRBackend Tests', () => {
                     }
                 });
             },
-            (error) => {
+            (_error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #3: Diagnostics for correct code', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'correct.sv');
+        filePath = path.join(__dirname, testFolderLocation, 'correct.sv');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -139,20 +140,20 @@ suite('ANTLRBackend Tests', () => {
                 const collection = result.get(document.uri);
                 assert.strictEqual(collection.length, 0);
             },
-            (error) => {
+            (_error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #4: Diagnostics for empty document', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'empty.sv');
+        filePath = path.join(__dirname, testFolderLocation, 'empty.sv');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -164,20 +165,20 @@ suite('ANTLRBackend Tests', () => {
                 const collection = result.get(document.uri);
                 assert.strictEqual(collection.length, 0);
             },
-            (error) => {
+            (_error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #5: Diagnostics for a document containing unicode characters', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'unicode.sv');
+        filePath = path.join(__dirname, testFolderLocation, 'unicode.sv');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -196,20 +197,20 @@ suite('ANTLRBackend Tests', () => {
                     }
                 });
             },
-            (error) => {
+            (_error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #6: Diagnostics for verilog document', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'single_error.v');
+        filePath = path.join(__dirname, testFolderLocation, 'single_error.v');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -228,20 +229,20 @@ suite('ANTLRBackend Tests', () => {
                     }
                 });
             },
-            (error) => {
+            (_error) => {
                 assert.fail();
             }
         );
     }).timeout(10000);
 
     test('test #7: Diagnostics for non-Verilog/SystemVerilog document', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'single_error.txt');
+        filePath = path.join(__dirname, testFolderLocation, 'single_error.txt');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -249,23 +250,23 @@ suite('ANTLRBackend Tests', () => {
         const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(document).then(
-            (result) => {
+            (_result) => {
                 assert.fail();
             },
-            (error) => {
+            (_error) => {
                 // Success
             }
         );
     }).timeout(10000);
 
     test('test #8: Diagnostics for invalid document with open document', async () => {
-        const filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
+        filePath = path.join(__dirname, testFolderLocation, 'single_error.sv');
         const uriDoc = Uri.file(filePath);
 
         const documentWorkspace = await workspace.openTextDocument(uriDoc);
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
+        openDocNotif = mockOpenDocNotif({ version: 1, uri: filePath, text: document.getText() });
         client.sendNotification(DidOpenTextDocumentNotification.type, openDocNotif);
 
         while (documents.keys().length === 0) await sleep(10); // eslint-disable-line no-await-in-loop
@@ -273,10 +274,10 @@ suite('ANTLRBackend Tests', () => {
         const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(undefined).then(
-            (result) => {
+            (_result) => {
                 assert.fail();
             },
-            (error) => {
+            (_error) => {
                 // Success
             }
         );
@@ -286,10 +287,10 @@ suite('ANTLRBackend Tests', () => {
         const documentCompiler = new ANTLRBackend();
 
         await documentCompiler.getDiagnostics(undefined).then(
-            (result) => {
+            (_result) => {
                 assert.fail();
             },
-            (error) => {
+            (_error) => {
                 // Success
             }
         );

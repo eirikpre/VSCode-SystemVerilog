@@ -1,0 +1,32 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "tsconfig.json"
+    },
+    "plugins": ["@typescript-eslint", "import"],
+    "extends": [
+        "eslint:recommended",
+        "airbnb-typescript/base",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
+        "plugin:prettier/recommended"
+    ],
+    "rules": {
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/src/test/*.ts"] }],
+        "import/no-unresolved": ["error", { "ignore": ["^vscode$"] }],
+        "@typescript-eslint/indent": ["error", 4],
+        "@typescript-eslint/no-empty-function": ["error", { "allow": ["arrowFunctions", "methods"] }],
+        "@typescript-eslint/lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
+        "@typescript-eslint/no-shadow": ["error", { "allow": ["err"] }],
+        "@typescript-eslint/no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
+        "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
+        "@typescript-eslint/naming-convention": [
+            "error",
+            { "selector": "variable", "format": ["camelCase", "PascalCase", "UPPER_CASE"], "leadingUnderscore": "allow" },
+            { "selector": "function", "format": ["camelCase", "PascalCase"] },
+            { "selector": "typeLike", "format": ["PascalCase"] }
+        ]
+        // "@typescript-eslint/no-explicit-any": "off"
+    }
+}

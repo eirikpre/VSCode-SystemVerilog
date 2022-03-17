@@ -9,7 +9,8 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
      * and the entry's value is a list of the symbols that exist in the file
      */
     public indexer: SystemVerilogIndexer;
-    public NUM_FILES: number = 250;
+
+    public NUM_FILES = 250;
 
     constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
@@ -24,7 +25,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         @return an array of matching SystemVerilogSymbol
     */
     public provideWorkspaceSymbols(query: string, _token: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             if (query === undefined || query.length === 0) {
                 resolve(this.indexer.mostRecentSymbols);
             } else {
@@ -44,12 +45,12 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                if(!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                                if (!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
                                     results.push(symbol);
                                 }
                             }
                         } else if (symbol.name.match(pattern)) {
-                            if(!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                            if (!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
                                 results.push(symbol);
                             }
                         }
@@ -57,7 +58,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 });
 
                 this.indexer.updateMostRecentSymbols(results.slice(0)); // pass a shallow copy of the array
-                resolve(this.uniquifyResults(results))
+                resolve(this.uniquifyResults(results));
             }
         });
     }
@@ -67,22 +68,26 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     private uniquifyResults(results: Array<SystemVerilogSymbol>) {
         // sympols with a larger end range are likely form more interesting
         // types, like modules, tasks, etc. so we put them at the top
-        const sorted = results.sort((a,b) => {
-            if(a.location.range.end.isAfter(b.location.range.end)) {
+        const sorted = results.sort((a, b) => {
+            if (a.location.range.end.isAfter(b.location.range.end)) {
                 return -1;
             }
-            if(a.location.range.end.isBefore(b.location.range.end)) {
+            if (a.location.range.end.isBefore(b.location.range.end)) {
                 return 1;
             }
             return 0;
         });
         // Filter out duplicates that were found to be 'potential_reference's
-        const new_results = sorted.filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.location.range.start.isEqual(value.location.range.start) && t.location.uri.toString() === value.location.uri.toString()
-            ))
-        )
-        return new_results;
+        const newResults = sorted.filter(
+            (value, index, self) =>
+                index ===
+                self.findIndex(
+                    (t) =>
+                        t.location.range.start.isEqual(value.location.range.start) &&
+                        t.location.uri.toString() === value.location.uri.toString()
+                )
+        );
+        return newResults;
     }
 
     /**

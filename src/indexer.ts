@@ -14,7 +14,7 @@ export class SystemVerilogIndexer {
      */
     public symbols: Map<string, Array<SystemVerilogSymbol>>;
     public mostRecentSymbols: Array<SystemVerilogSymbol>;
-    public building: Boolean = false;
+    public building = false;
     public statusbar: StatusBarItem;
     public parser: SystemVerilogParser;
     public symbolsCount: number = 0;
@@ -41,8 +41,9 @@ export class SystemVerilogIndexer {
         this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
         this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
         this.maxLineCountIndexing = settings.get('systemverilog.maxLineCountIndexing');
-        this.documentSymbolPrecision = settings.get('systemverilog.documentSymbolsPrecision')
+        this.documentSymbolPrecision = settings.get('systemverilog.documentSymbolsPrecision');
     }
+
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
         Looks up all the `symbols` that it exist on the queried files,
@@ -57,7 +58,7 @@ export class SystemVerilogIndexer {
         this.statusbar.text = 'SystemVerilog: Indexing..';
         this.initialize();
 
-        return await window
+        return window
             .withProgress(
                 {
                     location: ProgressLocation.Notification,
@@ -93,6 +94,7 @@ export class SystemVerilogIndexer {
      * find_files
      */
     public async find_files(token: CancellationToken): Promise<Uri[]> {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
             const settings = workspace.getConfiguration();
             const globArray: string[] = settings.get('systemverilog.includeIndexing');
@@ -119,7 +121,8 @@ export class SystemVerilogIndexer {
         @param uri uri to the document
         @param total_files total number of files to determine parse-precision
     */
-    public async processFile(uri: Uri, total_files: number = 0) {
+    public async processFile(uri: Uri, total_files = 0) {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
             resolve(
                 workspace.openTextDocument(uri).then((doc) => {
@@ -129,8 +132,10 @@ export class SystemVerilogIndexer {
                     if (total_files >= 100 * this.parallelProcessing) {
                         return this.parser.get_all_recursive(doc, 'declaration', 0);
                     }
-                    if(doc.lineCount > this.maxLineCountIndexing){
-                        window.showInformationMessage(`The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`);
+                    if (doc.lineCount > this.maxLineCountIndexing) {
+                        window.showInformationMessage(
+                            `The character count of ${uri.path.split('/').slice(-1)[0]} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`
+                        ); // prettier-ignore
                         return this.parser.get_all_recursive(doc, 'fast', 0);
                     }
                     // Otherwise, we parse the file with the precision requested by the user
@@ -172,7 +177,7 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onChange(document: TextDocument): Promise<any> {
-        return await new Promise(() => {
+        return new Promise(() => {
             if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
                 return;
             }
@@ -199,7 +204,7 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onCreate(uri: Uri): Promise<any> {
-        return await new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
+        return new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
     }
 
     /**
@@ -210,7 +215,7 @@ export class SystemVerilogIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     public async onDelete(uri: Uri): Promise<any> {
-        return await new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
+        return new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
     }
 
     /**
@@ -221,6 +226,7 @@ export class SystemVerilogIndexer {
         @return number of added files
     */
     addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, Array<SystemVerilogSymbol>>): Thenable<number> {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
             if (!document || !symbolsMap) {
                 resolve(new Array<SystemVerilogSymbol>());

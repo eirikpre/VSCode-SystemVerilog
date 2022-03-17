@@ -7,14 +7,14 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     private parser: SystemVerilogParser;
     private indexer: SystemVerilogIndexer;
     private precision: string;
-    private depth: number = -1;
+    private depth = -1;
 
     constructor(parser, indexer) {
         this.parser = parser;
         this.indexer = indexer;
         const settings = workspace.getConfiguration();
         this.precision = settings.get('systemverilog.documentSymbolsPrecision');
-        if(this.precision === 'full') {
+        if (this.precision === 'full') {
             this.precision = 'full_no_references';
         } else if (this.precision !== 'full') {
             this.depth = 1;
@@ -38,10 +38,10 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         return new Promise((resolve) => {
             let symbols = [];
             const path = document.uri.fsPath;
-            const all_symbols = this.indexer.symbols.get(path);
-            if(all_symbols){
-                all_symbols.forEach((symbol) => {
-                    if(symbol.kind !== SymbolKind.Key) {
+            const allSymbols = this.indexer.symbols.get(path);
+            if (allSymbols) {
+                allSymbols.forEach((symbol) => {
+                    if (symbol.kind !== SymbolKind.Key) {
                         symbols.push(symbol);
                     }
                 });
@@ -60,7 +60,8 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
 }
 
 // Function to easily show all the SymbolKind icons
-function show_SymbolKinds(uri: Uri): Array<SymbolInformation> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function showSymbolKinds(uri: Uri): Array<SymbolInformation> {
     // prettier-ignore
     return new Array<SymbolInformation>(
         new SymbolInformation("File",          SymbolKind.File,          "", new Location(uri, new Position(0,0))),

@@ -28,7 +28,6 @@ export function getSymbolKind(name: string): SymbolKind {
         return SymbolKind.Array;
     }
     switch (name) {
-
         case 'parameter':
         case 'localparam':
         case 'Constant':

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { runTests } from 'vscode-test';
+import { runTests } from '@vscode/test-electron';
 
 async function main() {
     try {
@@ -9,7 +9,10 @@ async function main() {
 
         // The path to the extension test script
         // Passed to --extensionTestsPath
-        const extensionTestsPath = path.resolve(__dirname, './index');
+        const extensionTestsPath = path.resolve(
+            __dirname,
+            `./index${typeof process.argv[2] !== 'undefined' ? process.argv[2] : ''}`
+        );
 
         const workspacePath = path.resolve(__dirname, '../../verilog-examples');
 

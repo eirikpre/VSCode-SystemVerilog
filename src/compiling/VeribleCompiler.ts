@@ -49,7 +49,7 @@ export class VeribleCompiler extends DocumentCompiler {
             let matches;
 
             if ((matches = regexError.exec(error))) {
-                const [match, path, line, position, message] = matches;
+                const [_match, path, line, position, message] = matches;
                 diagnosticData.filePath = path;
                 diagnosticData.line = parseInt(line, 10) - 1;
                 diagnosticData.charPosition = parseInt(position, 10) - 1;
@@ -65,7 +65,7 @@ export class VeribleCompiler extends DocumentCompiler {
             }
 
             if ((matches = regexInfo.exec(error))) {
-                const [match, path, line, position, message, style] = matches;
+                const [_match, path, line, position, message, style] = matches;
                 diagnosticData.filePath = path;
                 diagnosticData.line = parseInt(line, 10) - 1;
                 diagnosticData.charPosition = parseInt(position, 10) - 1;
@@ -92,5 +92,4 @@ export class VeribleCompiler extends DocumentCompiler {
             }
         }
     }
-
 }
