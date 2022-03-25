@@ -1,7 +1,7 @@
 import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position, workspace } from 'vscode' // prettier-ignore
 import { SystemVerilogIndexer } from '../indexer';
 import { SystemVerilogParser } from '../parser';
-import { SystemVerilogSymbol } from '../symbol';
+import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
     private parser: SystemVerilogParser;
@@ -41,7 +41,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             const allSymbols = this.indexer.symbols.get(path);
             if (allSymbols) {
                 allSymbols.forEach((symbol) => {
-                    if (symbol.kind !== SymbolKind.Key) {
+                    if (symbol.kind !== getSymbolKind('potential_reference')) {
                         symbols.push(symbol);
                     }
                 });

@@ -1,4 +1,5 @@
-import { DefinitionProvider, TextDocument, Position, SymbolKind, CancellationToken, Definition, Range, Location, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { DefinitionProvider, TextDocument, Position, CancellationToken, Definition, Range, Location, commands, DocumentSymbol, Uri, SymbolInformation } from 'vscode'; // prettier-ignore
+import { getSymbolKind } from '../symbol';
 import { regexGetIndexes } from '../utils/common';
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
@@ -158,7 +159,7 @@ function getDocumentSymbols(
         return;
     }
     for (const entry of entries) {
-        if (entry.name === word && entry.kind !== SymbolKind.Key) {
+        if (entry.name === word && entry.kind !== getSymbolKind('potential_reference')) {
             if (containerName) {
                 if (entry.containerName === containerName) {
                     results.push({

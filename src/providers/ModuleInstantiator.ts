@@ -1,5 +1,7 @@
-import { workspace, commands, InputBoxOptions, window } from 'vscode';
-import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
+import { workspace, window, QuickPickOptions, QuickPickItem } from 'vscode';
+import { SystemVerilogSymbol } from '../symbol';
+import { SystemVerilogFormatProvider } from './FormatProvider';
+import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 
 /**
  * Processing states:
@@ -126,6 +128,14 @@ function isModuleParameterized(symbol: string, container: string): boolean {
  * Module instantiator class which queries a given module, fetches the relative container, and parses an instance.
  */
 export class SystemVerilogModuleInstantiator {
+    private formatProvider: SystemVerilogFormatProvider;
+    private symbolProvider: SystemVerilogWorkspaceSymbolProvider;
+
+    constructor(formatProvider: SystemVerilogFormatProvider, symbolProvider: SystemVerilogWorkspaceSymbolProvider) {
+        this.formatProvider = formatProvider;
+        this.symbolProvider = symbolProvider;
+    }
+
     /**
         Uses the given symbol to query the module's definition,
         and then return the module's instance.
@@ -133,39 +143,43 @@ export class SystemVerilogModuleInstantiator {
         @param query the module's name
         @return the module's instance.
     */
-    public auto_instantiate(query: string): Thenable<string> {
+    public auto_instantiate(item: QuickPickItem): Thenable<string> {
         return new Promise((resolve, reject) =>
             // return this.workspaceSymbolProvider.provideWorkspaceSymbols(query, undefined, true)
-            commands
-                .executeCommand('vscode.executeWorkspaceSymbolProvider', query, undefined, true)
+            this.symbolProvider
+                .getAllModules()
                 .then((symbols: SystemVerilogSymbol[]) => {
-                    for (let i = 0; i < symbols.length; i++) {
-                        const s = symbols[i];
-                        if (s.kind === getSymbolKind('module')) {
-                            return s;
-                        }
+                    const found_item = symbols.find(
+                        (value) =>
+                            workspace.asRelativePath(value.location.uri) === item.description &&
+                            value.name === item.label
+                    );
+                    if (found_item) {
+                        return found_item;
                     }
-                    reject(new Error(`${query} module was not found in the workspace.`));
+                    reject(new Error(`${item.label} module was not found.`));
                 })
                 .then((s) => {
                     workspace.openTextDocument(s.location.uri).then((doc) => {
                         const container = doc.getText(s.location.range);
 
                         if (isEmptyKey(container)) {
-                            reject(new Error(`${query}'s definition is undefined in the workspace.`));
+                            reject(new Error(`${item.label}'s definition is undefined in the workspace.`));
                         }
 
                         let instance;
 
                         try {
-                            instance = formatInstance(query, container);
+                            instance = formatInstance(item.label, container);
                         } catch (error) {
                             console.log(error); // eslint-disable-line no-console
-                            reject(new Error(`An error occurred when formatting the instance for ${query}: ${error}`));
+                            reject(
+                                new Error(`An error occurred when formatting the instance for ${item.label}: ${error}`)
+                            );
                         }
 
                         if (instance === undefined) {
-                            reject(new Error(`An error occurred when formatting the instance for ${query}.`));
+                            reject(new Error(`An error occurred when formatting the instance for ${item.label}.`));
                         }
 
                         resolve(instance);
@@ -180,34 +194,49 @@ export class SystemVerilogModuleInstantiator {
         @return the module's instance, assigns the default parameter values.
     */
     public instantiateModule() {
-        const options: InputBoxOptions = {
-            prompt: 'Enter the module name to instantiate',
-            placeHolder: 'Enter the module name to instantiate'
+        const options: QuickPickOptions = {
+            canPickMany: false,
+            placeHolder: 'Choose a module to instantiate...'
         };
 
-        // request the module's name from the user
-        window.showInputBox(options).then((value) => {
-            if (!value) {
-                return;
-            }
-            // current editor
-            const editor = window.activeTextEditor;
-
-            // check if there is no selection
-            if (editor.selection.isEmpty) {
-                if (editor) {
-                    this.auto_instantiate(value).then(
-                        (v) => {
-                            editor.edit((editBuilder) => {
-                                editBuilder.replace(editor.selection, v);
-                            });
-                        },
-                        (e) => {
-                            window.showErrorMessage(e);
-                        }
-                    );
+        this.symbolProvider.getAllModules().then((modules) => {
+            const choices: QuickPickItem[] = modules.map((item) => ({
+                label: item.name,
+                description: workspace.asRelativePath(item.location.uri)
+            }));
+            // request the module's name from the user
+            window.showQuickPick(choices, options).then((value) => {
+                if (!value) {
+                    return;
                 }
-            }
+                // current editor
+                const editor = window.activeTextEditor;
+
+                // check if there is no selection
+                if (editor.selection.isEmpty) {
+                    if (editor) {
+                        this.auto_instantiate(value).then(
+                            (v) => {
+                                editor
+                                    .edit((editBuilder) => {
+                                        editBuilder.replace(editor.selection, v);
+                                    })
+                                    .then(() => {
+                                        this.formatProvider.provideDocumentRangeFormattingEdits(
+                                            editor.document,
+                                            editor.selection,
+                                            null,
+                                            null
+                                        );
+                                    });
+                            },
+                            (e) => {
+                                window.showErrorMessage(e);
+                            }
+                        );
+                    }
+                }
+            });
         });
     }
 }

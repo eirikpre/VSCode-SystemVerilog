@@ -1,4 +1,4 @@
-import { WorkspaceSymbolProvider, CancellationToken, SymbolKind } from 'vscode';
+import { WorkspaceSymbolProvider, CancellationToken } from 'vscode';
 import { SystemVerilogIndexer } from '../indexer';
 import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
@@ -45,12 +45,15 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                if (!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                                if (
+                                    !ignorePotentialReferences ||
+                                    symbol.kind !== getSymbolKind('potential_reference')
+                                ) {
                                     results.push(symbol);
                                 }
                             }
                         } else if (symbol.name.match(pattern)) {
-                            if (!ignorePotentialReferences || symbol.kind !== SymbolKind.Key) {
+                            if (!ignorePotentialReferences || symbol.kind !== getSymbolKind('potential_reference')) {
                                 results.push(symbol);
                             }
                         }
@@ -60,6 +63,17 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                 this.indexer.updateMostRecentSymbols(results.slice(0)); // pass a shallow copy of the array
                 resolve(this.uniquifyResults(results));
             }
+        });
+    }
+
+    public getAllModules(): Thenable<Array<SystemVerilogSymbol>> {
+        return new Promise((resolve) => {
+            let modules: Array<SystemVerilogSymbol> = [];
+            this.indexer.symbols.forEach((list) => {
+                const foundModules = list.filter((symbol) => symbol.kind === getSymbolKind('module'));
+                modules = modules.concat(foundModules);
+            });
+            resolve(modules);
         });
     }
 
