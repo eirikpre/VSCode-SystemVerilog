@@ -95,7 +95,7 @@ export function getSymbolKind(name: string): SymbolKind {
         case 'Variable':
             return SymbolKind.Variable;
         case 'module': // It is important that modules don't share a case with any other kind for the module instantiator to work
-            return SymbolKind.Enum
+            return SymbolKind.Enum;
         default:
             return SymbolKind.Field;
     }

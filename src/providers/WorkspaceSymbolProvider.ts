@@ -1,4 +1,4 @@
-import { WorkspaceSymbolProvider, CancellationToken, SymbolKind } from 'vscode';
+import { WorkspaceSymbolProvider, CancellationToken } from 'vscode';
 import { SystemVerilogIndexer } from '../indexer';
 import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
 
@@ -45,7 +45,10 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     list.forEach((symbol) => {
                         if (exactMatch === true) {
                             if (symbol.name === query) {
-                                if (!ignorePotentialReferences || symbol.kind !== getSymbolKind('potential_reference')) {
+                                if (
+                                    !ignorePotentialReferences ||
+                                    symbol.kind !== getSymbolKind('potential_reference')
+                                ) {
                                     results.push(symbol);
                                 }
                             }
@@ -64,11 +67,11 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     }
 
     public getAllModules(): Thenable<Array<SystemVerilogSymbol>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let modules: Array<SystemVerilogSymbol> = [];
             this.indexer.symbols.forEach((list) => {
-                const found_modules = list.filter(symbol => symbol.kind === getSymbolKind('module'));
-                modules = modules.concat(found_modules);
+                const foundModules = list.filter((symbol) => symbol.kind === getSymbolKind('module'));
+                modules = modules.concat(foundModules);
             });
             resolve(modules);
         });

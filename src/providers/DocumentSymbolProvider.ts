@@ -39,9 +39,9 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
             let symbols = [];
             const path = document.uri.fsPath;
             const allSymbols = this.indexer.symbols.get(path);
-            if(allSymbols){
+            if (allSymbols) {
                 allSymbols.forEach((symbol) => {
-                    if(symbol.kind !== getSymbolKind('potential_reference')) {
+                    if (symbol.kind !== getSymbolKind('potential_reference')) {
                         symbols.push(symbol);
                     }
                 });

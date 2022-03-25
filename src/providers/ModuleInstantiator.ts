@@ -1,5 +1,5 @@
-import { workspace, commands, InputBoxOptions, window, QuickPickOptions, QuickPickItem } from 'vscode';
-import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
+import { workspace, window, QuickPickOptions, QuickPickItem } from 'vscode';
+import { SystemVerilogSymbol } from '../symbol';
 import { SystemVerilogFormatProvider } from './FormatProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 
@@ -146,15 +146,15 @@ export class SystemVerilogModuleInstantiator {
     public auto_instantiate(item: QuickPickItem): Thenable<string> {
         return new Promise((resolve, reject) =>
             // return this.workspaceSymbolProvider.provideWorkspaceSymbols(query, undefined, true)
-            this.symbolProvider.getAllModules() 
+            this.symbolProvider.getAllModules()
                 .then((symbols: SystemVerilogSymbol[]) => {
-                    const found_item = symbols.find((value) => 
+                    const found_item = symbols.find((value) =>
                         workspace.asRelativePath(value.location.uri) === item.description &&
                         value.name === item.label
                     );
-                    if(found_item) {
+                    if (found_item) {
                         return found_item;
-                    } 
+                    }
                     reject(new Error(`${item.label} module was not found.`));
                 })
                 .then((s) => {
@@ -215,12 +215,12 @@ export class SystemVerilogModuleInstantiator {
                 if (editor.selection.isEmpty) {
                     if (editor) {
                         this.auto_instantiate(value).then((v) => {
-                                editor.edit((editBuilder) => {
-                                    editBuilder.replace(editor.selection, v);
-                                }).then(() => {
-                                    this.formatProvider.provideDocumentRangeFormattingEdits(editor.document, editor.selection,null, null);
-                                });
-                            },
+                            editor.edit((editBuilder) => {
+                                editBuilder.replace(editor.selection, v);
+                            }).then(() => {
+                                this.formatProvider.provideDocumentRangeFormattingEdits(editor.document, editor.selection, null, null);
+                            });
+                        },
                             (e) => {
                                 window.showErrorMessage(e);
                             }
