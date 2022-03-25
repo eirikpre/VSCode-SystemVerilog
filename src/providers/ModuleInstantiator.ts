@@ -146,11 +146,13 @@ export class SystemVerilogModuleInstantiator {
     public auto_instantiate(item: QuickPickItem): Thenable<string> {
         return new Promise((resolve, reject) =>
             // return this.workspaceSymbolProvider.provideWorkspaceSymbols(query, undefined, true)
-            this.symbolProvider.getAllModules()
+            this.symbolProvider
+                .getAllModules()
                 .then((symbols: SystemVerilogSymbol[]) => {
-                    const found_item = symbols.find((value) =>
-                        workspace.asRelativePath(value.location.uri) === item.description &&
-                        value.name === item.label
+                    const found_item = symbols.find(
+                        (value) =>
+                            workspace.asRelativePath(value.location.uri) === item.description &&
+                            value.name === item.label
                     );
                     if (found_item) {
                         return found_item;
@@ -171,7 +173,9 @@ export class SystemVerilogModuleInstantiator {
                             instance = formatInstance(item.label, container);
                         } catch (error) {
                             console.log(error); // eslint-disable-line no-console
-                            reject(new Error(`An error occurred when formatting the instance for ${item.label}: ${error}`));
+                            reject(
+                                new Error(`An error occurred when formatting the instance for ${item.label}: ${error}`)
+                            );
                         }
 
                         if (instance === undefined) {
@@ -192,17 +196,14 @@ export class SystemVerilogModuleInstantiator {
     public instantiateModule() {
         const options: QuickPickOptions = {
             canPickMany: false,
-            placeHolder: "Choose a module to instantiate..."
+            placeHolder: 'Choose a module to instantiate...'
         };
 
         this.symbolProvider.getAllModules().then((modules) => {
-
-            const choices: QuickPickItem[] = modules.map((item) => (
-                {
-                    label: item.name,
-                    description: workspace.asRelativePath(item.location.uri)
-                }
-            ))
+            const choices: QuickPickItem[] = modules.map((item) => ({
+                label: item.name,
+                description: workspace.asRelativePath(item.location.uri)
+            }));
             // request the module's name from the user
             window.showQuickPick(choices, options).then((value) => {
                 if (!value) {
@@ -214,13 +215,21 @@ export class SystemVerilogModuleInstantiator {
                 // check if there is no selection
                 if (editor.selection.isEmpty) {
                     if (editor) {
-                        this.auto_instantiate(value).then((v) => {
-                            editor.edit((editBuilder) => {
-                                editBuilder.replace(editor.selection, v);
-                            }).then(() => {
-                                this.formatProvider.provideDocumentRangeFormattingEdits(editor.document, editor.selection, null, null);
-                            });
-                        },
+                        this.auto_instantiate(value).then(
+                            (v) => {
+                                editor
+                                    .edit((editBuilder) => {
+                                        editBuilder.replace(editor.selection, v);
+                                    })
+                                    .then(() => {
+                                        this.formatProvider.provideDocumentRangeFormattingEdits(
+                                            editor.document,
+                                            editor.selection,
+                                            null,
+                                            null
+                                        );
+                                    });
+                            },
                             (e) => {
                                 window.showErrorMessage(e);
                             }
