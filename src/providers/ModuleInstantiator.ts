@@ -191,7 +191,8 @@ export class SystemVerilogModuleInstantiator {
     */
     public instantiateModule() {
         const options: QuickPickOptions = {
-            canPickMany: false
+            canPickMany: false,
+            placeHolder: "Choose a module to instantiate..."
         };
 
         this.symbolProvider.getAllModules().then((modules) => {
