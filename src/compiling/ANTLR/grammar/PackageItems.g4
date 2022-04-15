@@ -3,6 +3,7 @@ import DeclarationTypes;
 
 package_item : package_or_generate_item_declaration
   | anonymous_program
+  | include_compiler_directive
   | package_export_declaration
   | timeunits_declaration ;
 package_or_generate_item_declaration : net_declaration

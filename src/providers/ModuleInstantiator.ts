@@ -149,13 +149,13 @@ export class SystemVerilogModuleInstantiator {
             this.symbolProvider
                 .getAllModules()
                 .then((symbols: SystemVerilogSymbol[]) => {
-                    const found_item = symbols.find(
+                    const foundItem = symbols.find(
                         (value) =>
                             workspace.asRelativePath(value.location.uri) === item.description &&
                             value.name === item.label
                     );
-                    if (found_item) {
-                        return found_item;
+                    if (foundItem) {
+                        return foundItem;
                     }
                     reject(new Error(`${item.label} module was not found.`));
                 })
