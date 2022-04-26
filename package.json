@@ -123,7 +123,7 @@
                         "default": [
                             "**/*.{sv,v,svh,vh}"
                         ],
-                        "description": "Files included for indexing (glob pattern). Examples: \n  - Include files within the workspace's rtl folder ('*' at front denotes path is relative to workspace root): *rtl/**/*.{sv,v,svh,vh}\n  - Add all files with a '.svp' extension: **/*.svp\n  - Add files only when in a specific workspace: /abs/path/to/workspace/rtl/**/*.{sv,v,svh,vh}"
+                        "description": "Files included for indexing (glob pattern). Examples: \n  - Include files within the workspace's rtl folder ('*' at front of pattern denotes that path is relative to workspace root): **/rtl/**/*.{sv,v,svh,vh}\n  - Add all files with a '.svp' extension: **/*.svp\n  - Add files only when in a specific workspace: /abs/path/to/workspace/rtl/**/*.{sv,v,svh,vh}"
                     },
                     "systemverilog.excludeIndexing": {
                         "type": "string",
