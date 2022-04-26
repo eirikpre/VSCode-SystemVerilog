@@ -123,7 +123,7 @@
                         "default": [
                             "**/*.{sv,v,svh,vh}"
                         ],
-                        "description": "Files included for indexing (glob pattern)."
+                        "description": "Files included for indexing (glob pattern). Examples: \n  - Include files within the workspace's rtl folder ('*' at front denotes path is relative to workspace root): *rtl/**/*.{sv,v,svh,vh}\n  - Add all files with a '.svp' extension: **/*.svp\n  - Add files only when in a specific workspace: /abs/path/to/workspace/rtl/**/*.{sv,v,svh,vh}"
                     },
                     "systemverilog.excludeIndexing": {
                         "type": "string",
@@ -154,7 +154,7 @@
                             "fast"
                         ],
                         "default": "full",
-                        "description": "The level of detail the parser should use when looking for symbols:\n  'full': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and references\n  'full_no_references': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions\n  'declarations': detect blocks, ports, parameters, classes, methods, typedefs, and defines\n  'fast': detect only common blocks (module, class, interface, package, program) without hierarchy"
+                        "description": "The level of detail the parser should use when looking for symbols:\n  - 'full': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, assertions, and references\n  - 'full_no_references': detect blocks, ports, parameters, classes, methods, typedefs, defines, labels, instantiations, and assertions\n  - 'declarations': detect blocks, ports, parameters, classes, methods, typedefs, and defines\n  - 'fast': detect only common blocks (module, class, interface, package, program) without hierarchy"
                     },
                     "systemverilog.compilerType": {
                         "type": "string",
