@@ -9,6 +9,14 @@ All notable changes to this extension are documented below.
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13]
+
+- input/output/input now have different icons in the outline tree by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/151
+- Format module instance and dropdown list of modules for auto-instantiator by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/152
+- support more file extensions and no extension in antlr parser by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/149
+- Bump minimist from 1.2.5 to 1.2.6 by @dependabot in https://github.com/eirikpre/VSCode-SystemVerilog/pull/155
+- Include indexing docs by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/158
+
 ### [0.12.1]
 
 - Update VS Code engine to 1.56.0 to support Node.js 14

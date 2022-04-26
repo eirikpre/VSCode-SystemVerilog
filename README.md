@@ -151,6 +151,31 @@ npm run compile
 
 See the [changelog](CHANGELOG.md) for more details
 
+### 0.13
+
+- input/output/input now have different icons in the outline tree by `joecrop`
+- Format module instance and dropdown list of modules for auto-instantiator by `joecrop`
+- support more file extensions and no extension in antlr parser by `joecrop`
+- Bump minimist from 1.2.5 to 1.2.6 by `dependabot`
+- Include indexing docs by `joecrop`
+
+### 0.12.1
+
+- Update VS Code engine to 1.56.0 to support Node.js 14
+- Update several dependencies to address CVEs
+- Update ESLint to version 8 and implement some suggested fixes
+- Update Prettier and apply suggested formatting changes
+- Remove React-related ESLint dependencies
+- Remove direct dependency on `antlr4` package as it is a submodule of `antlr4ts`
+- Remove on Markdown activation
+- Rename `.eslintrc` to `.eslintrc.json` to fix ESLint editor integration
+- Add `-Xexact-output-dir` to compile command to fix MacOS build
+- Update `README.md` with a suggested configuration section and add missing settings
+- Enable bracket matching and coloring to function with SystemVerilog textual brackets
+- Fix `port-net-parameter` highlighting corner case
+- Enhance Github Actions test workflow
+- Fix coverage collection
+
 ### 0.12
 
 - Implemented 'find references' feature, thanks to `joecrop`
