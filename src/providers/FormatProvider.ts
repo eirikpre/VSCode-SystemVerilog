@@ -27,7 +27,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
             workspacePath = fallbackWorkspace;
         }
 
-        return getPathFromUri(workspacePath.uri.toString(), '');
+        return getPathFromUri(workspacePath.uri.toString(), workspacePath.uri.toString());
     }
 
     private getFormatCommand() {
