@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import { dirname } from 'path';
+import { getPathFromUri } from '../utils/common';
 
 // prettier-ignore
 export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
@@ -22,11 +23,11 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
         let workspacePath = vscode.workspace.getWorkspaceFolder(currentDocumentUri);
         if (!workspacePath) {
             const fallbackWorkspace = vscode.workspace.workspaceFolders[0];
-            vscode.window.showWarningMessage(`Expanding \${workspaceFolder} to '${fallbackWorkspace.name}'.`);
+            vscode.window.showWarningMessage(`${currentDocumentUri} is not found to be within a workspace, so the '${fallbackWorkspace.name}' workspace will be used for formatting settings.`);
             workspacePath = fallbackWorkspace;
         }
 
-        return workspacePath.uri.path;
+        return getPathFromUri(workspacePath.uri.toString(), '');
     }
 
     private getFormatCommand() {
@@ -35,7 +36,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
 
         // Replace placeholders, if present
         return execPath
-            .replace(/\${workspaceRoot}/g, this.getWorkspaceFolder())
+            .replace(/\${workspaceRoot}/g,  this.getWorkspaceFolder())
             .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder())
             .replace(/\${cwd}/, process.cwd())
             .replace(/\${env\.([^}]+)}/g, (_sub: string, envName: string) => process.env[envName]);
