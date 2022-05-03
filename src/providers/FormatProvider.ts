@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import { dirname } from 'path';
-import { getPathFromUri } from '../utils/common';
 
 // prettier-ignore
 export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
