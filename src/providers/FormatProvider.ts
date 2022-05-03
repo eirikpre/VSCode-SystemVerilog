@@ -36,7 +36,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
 
         // Replace placeholders, if present
         return execPath
-            .replace(/\${workspaceRoot}/g,  this.getWorkspaceFolder())
+            .replace(/\${workspaceRoot}/g,   this.getWorkspaceFolder())
             .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder())
             .replace(/\${cwd}/, process.cwd())
             .replace(/\${env\.([^}]+)}/g, (_sub: string, envName: string) => process.env[envName]);
