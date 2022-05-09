@@ -22,7 +22,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
         let workspacePath = vscode.workspace.getWorkspaceFolder(currentDocumentUri);
         if (!workspacePath) {
             const fallbackWorkspace = vscode.workspace.workspaceFolders[0];
-            vscode.window.showWarningMessage(`${currentDocumentUri} is not found to be within a workspace, so the '${fallbackWorkspace.name}' workspace will be used for formatting settings.`);
+            this.outputChannel.append(`${currentDocumentUri} is not found to be within a workspace, so the '${fallbackWorkspace.name}' workspace will be used for formatting settings.`); // eslint-disable-line no-console  
             workspacePath = fallbackWorkspace;
         }
 
@@ -35,7 +35,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
 
         // Replace placeholders, if present
         return execPath
-            .replace(/\${workspaceRoot}/g,   this.getWorkspaceFolder())
+            .replace(/\${workspaceRoot}/g, this.getWorkspaceFolder())
             .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder())
             .replace(/\${cwd}/, process.cwd())
             .replace(/\${env\.([^}]+)}/g, (_sub: string, envName: string) => process.env[envName]);
