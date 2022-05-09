@@ -154,6 +154,15 @@ npm run compile
 
 See the [changelog](CHANGELOG.md) for more details
 
+### 0.13.2
+
+- modified formatter command parser to support windows paths by `joecrop`
+- module instantiator now detects parameters correctly by `joecrop`
+
+### 0.13.1
+
+- Improved remote ssh performance by `eirikpre`
+
 ### 0.13
 
 - input/output/input now have different icons in the outline tree by `joecrop`

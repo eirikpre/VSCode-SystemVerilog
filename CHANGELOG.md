@@ -9,6 +9,15 @@ All notable changes to this extension are documented below.
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.2]
+
+- modified formatter command parser to support windows paths by `joecrop`
+- module instantiator now detects parameters correctly by `joecrop`
+
+### [0.13.1]
+
+- Improved remote ssh performance by `eirikpre`
+
 ### [0.13]
 
 - input/output/input now have different icons in the outline tree by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/151
