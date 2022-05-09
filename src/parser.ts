@@ -419,7 +419,7 @@ export class SystemVerilogParser {
                     );
                     symbols.push(symbolInfo);
                 }
-            } while (matchParams)
+            } while (matchParams);
 
             resolve(symbols);
         });
