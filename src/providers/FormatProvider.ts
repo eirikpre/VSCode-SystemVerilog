@@ -22,11 +22,11 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
         let workspacePath = vscode.workspace.getWorkspaceFolder(currentDocumentUri);
         if (!workspacePath) {
             const fallbackWorkspace = vscode.workspace.workspaceFolders[0];
-            vscode.window.showWarningMessage(`Expanding \${workspaceFolder} to '${fallbackWorkspace.name}'.`);
+            this.outputChannel.append(`${currentDocumentUri} is not found to be within a workspace, so the '${fallbackWorkspace.name}' workspace will be used for formatting settings.`); // eslint-disable-line no-console  
             workspacePath = fallbackWorkspace;
         }
 
-        return workspacePath.uri.path;
+        return workspacePath.uri.fsPath;
     }
 
     private getFormatCommand() {
