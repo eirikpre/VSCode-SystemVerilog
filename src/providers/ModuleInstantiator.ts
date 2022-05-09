@@ -110,14 +110,15 @@ function isModuleParameterized(symbol: string, container: string): boolean {
     // Surround '#(' with space
     container = container.replace(/#\(/g, ' #( ');
     // Replace multiple white spaces with a single whitespace
+    container = container.replace(/\t+/g, ' ');
     container = container.replace(/  +/g, ' ');
 
     const keys = container.split(' ');
-    if (keys.length < 3) {
+    if (keys.length < 2) {
         return false;
     }
 
-    if (keys[0] === 'module' && keys[1] === symbol && keys[2] === '#(') {
+    if (keys[0] === symbol && keys[1] === '#(') {
         return true;
     }
 

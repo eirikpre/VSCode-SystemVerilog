@@ -13,7 +13,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Range of the module in the document
         let fullRange = null;
-        fullRange = new vscode.Range(new vscode.Position(21, 0), new vscode.Position(54, 0));
+        fullRange = new vscode.Range(new vscode.Position(21, 6), new vscode.Position(54, 0));
 
         const container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
@@ -48,7 +48,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(58, 0), new vscode.Position(94, 0));
+        fullRange = new vscode.Range(new vscode.Position(59, 6), new vscode.Position(94, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -87,7 +87,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(98, 0), new vscode.Position(131, 0));
+        fullRange = new vscode.Range(new vscode.Position(99, 6), new vscode.Position(131, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -126,7 +126,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(135, 0), new vscode.Position(171, 0));
+        fullRange = new vscode.Range(new vscode.Position(136, 6), new vscode.Position(171, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -165,7 +165,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(175, 0), new vscode.Position(195, 0));
+        fullRange = new vscode.Range(new vscode.Position(176, 6), new vscode.Position(195, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
@@ -282,7 +282,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(262, 0), new vscode.Position(295, 0));
+        fullRange = new vscode.Range(new vscode.Position(263, 6), new vscode.Position(295, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
         // Replace multiple space with a single space
