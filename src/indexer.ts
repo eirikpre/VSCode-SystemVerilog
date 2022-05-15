@@ -83,7 +83,7 @@ export class SystemVerilogIndexer {
                 this.building = false;
                 console.timeEnd('build_index'); // eslint-disable-line no-console
                 if (cancelled) {
-                    this.statusbar.text = 'SystemVerilog: Indexing cancelled';
+                    this.statusbar.text = `SystemVerilog: Indexing cancelled at ${this.symbolsCount}`;
                 } else {
                     this.statusbar.text = `SystemVerilog: ${this.symbolsCount} indexed objects`;
                 }
