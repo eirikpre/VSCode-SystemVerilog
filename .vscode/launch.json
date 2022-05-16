@@ -6,10 +6,7 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
-            "args": [
-                "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceRoot}"
-            ],
+            "args": ["--disable-extensions", "--extensionDevelopmentPath=${workspaceRoot}"],
             "outFiles": ["${workspaceRoot}/dist/client/**/*.js"],
             "preLaunchTask": {
                 "type": "npm",
