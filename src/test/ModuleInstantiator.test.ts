@@ -210,8 +210,8 @@ function compareInstantiation(instance_name, container_name, expected): void {
     }
 
     // Normalize both instances
-    actual = actual.replace(new RegExp(/\r\n/, 'g'), '\\n').trim();
-    expected = expected.replace(new RegExp(/\r\n/, 'g'), '\\n').trim();
+    actual = actual.replace(new RegExp(/\r\n/, 'g'), '\n').trim();
+    expected = expected.replace(new RegExp(/\r\n/, 'g'), '\n').trim();
 
     assert.strictEqual(actual, expected);
 }
