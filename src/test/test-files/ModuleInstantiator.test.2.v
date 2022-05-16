@@ -22,18 +22,18 @@ adder u_adder (
 // -------------------------------------------------------
 
 bar #(
-  .SIZE         (SIZE),
-  .SIZE_TWO     (SIZE_TWO)
+  .SIZE        (SIZE),
+  .SIZE_TWO    (SIZE_TWO)
 ) u_bar (
-  .clk          (clk),
-  .reset        (reset),
-  .a            (a),
+  .clk         (clk),
+  .reset       (reset),
+  .a           (a),
   // keep this single comment
-  .b            (b),
+  .b           (b),
   /* multiline comment should
   be kept*/
-  .valid        (valid),
-  .c            (c)
+  .valid       (valid),
+  .c           (c)
 );
 
 // -------------------------------------------------------
@@ -41,12 +41,12 @@ bar #(
 // -------------------------------------------------------
 
 akker u_akker (
-  .clk    (clk),
+  .clk      (clk),
   .reset    (reset),
-  .a    (a),
-  .b    (b),
+  .a        (a),
+  .b        (b),
   .valid    (valid),
-  .c    (c)
+  .c        (c)
 );
 
 // -------------------------------------------------------
@@ -54,15 +54,15 @@ akker u_akker (
 // -------------------------------------------------------
 
 accer #(
-  .SIZE    (SIZE),
+  .SIZE        (SIZE),
   .SIZE_TWO    (SIZE_TWO)
 ) u_accer (
-  .clk    (clk),
-  .reset    (reset),
-  .a    (a),
-  .b    (b),
-  .valid    (valid),
-  .c    (c)
+  .clk         (clk),
+  .reset       (reset),
+  .a           (a),
+  .b           (b),
+  .valid       (valid),
+  .c           (c)
 );
 
 // -------------------------------------------------------
@@ -70,15 +70,15 @@ accer #(
 // -------------------------------------------------------
 
 anner #(
-  .SIZE    (1),
+  .SIZE        (1),
   .SIZE_TWO    (4)
 ) u_anner (
-  .clk    (clk),
-  .reset    (reset),
-  .a    (a),
-  .b    (b),
-  .valid    (valid),
-  .c    (c)
+  .clk         (clk),
+  .reset       (reset),
+  .a           (a),
+  .b           (b),
+  .valid       (valid),
+  .c           (c)
 );
 
 
@@ -87,15 +87,15 @@ anner #(
 // ---------------------------------------------------------------
 
 atter u_atter (
-  .clk    (clk),
-  .reset    (reset),
+  .clk         (clk),
+  .reset       (reset),
   //keep
-  .a    (a),
+  .a           (a),
   //also this comment 1
-  .b    (b),
+  .b           (b),
   // also this comment 2
-  .valid    (valid),
-  .c    (c)
+  .valid       (valid),
+  .c           (c)
 );
 
 // ---------------------------------------------------------------
@@ -103,16 +103,16 @@ atter u_atter (
 // ---------------------------------------------------------------
 
 apper u_apper (
-  .clk    (clk),
+  .clk      (clk),
   //keep
   .reset    (reset),
-  .a    (a),
+  .a        (a),
   //keep this single comment 2
-  .b    (b),
+  .b        (b),
   /* multiline comment should
   be kept*/
   .valid    (valid),
-  .c    (c)
+  .c        (c)
 );
 
 
@@ -121,15 +121,15 @@ apper u_apper (
 // -------------------------------------------------------
 
 golden u_golden (
-    .clk      (clk),
-    .reset    (reset),
-    .a        (a),
-    // keep this single comment
-    .b        (b),
-    /* multiline comment should
- be kept*/
-    .valid    (valid),
-    .c        (c)
+  .clk      (clk),
+  .reset    (reset),
+  .a        (a),
+  // keep this single comment
+  .b        (b),
+  /* multiline comment should
+  be kept*/
+  .valid    (valid),
+  .c        (c)
 );
 
 // -------------------------------------------------------
