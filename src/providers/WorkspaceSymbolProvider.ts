@@ -21,12 +21,13 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         and a partial match if it's not passed or set to false.
 
         @param query the symbol's name. If it is prepended with a ¤ it signifies an exact match. If it is prepended with a ¬ it signifies to cull potential matches from the results.
-        @param _token the CancellationToken
+        @param token the CancellationToken
         @return an array of matching SystemVerilogSymbol
     */
-    public provideWorkspaceSymbols(query: string, _token: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
+    public provideWorkspaceSymbols(query: string, token: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
         return new Promise((resolve, _reject) => {
             if (query === undefined || query.length === 0) {
+                this.indexer.updateMostRecentSymbols(undefined);
                 resolve(this.indexer.mostRecentSymbols);
             } else {
                 const pattern = new RegExp(`.*${query.replace(" ", "").split("").map((c) => c).join(".*")}.*`, 'i'); // prettier-ignore
@@ -42,7 +43,13 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
                     query = query.substr(1);
                 }
                 this.indexer.symbols.forEach((list) => {
+                    if (token.isCancellationRequested) {
+                        resolve(undefined);
+                    }
                     list.forEach((symbol) => {
+                        if (token.isCancellationRequested) {
+                            resolve(undefined);
+                        }
                         if (exactMatch === true) {
                             if (symbol.name === query) {
                                 if (
