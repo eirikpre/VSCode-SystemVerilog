@@ -8,11 +8,11 @@ const testFolderLocation = '../../src/test/test-files';
 
 suite('Extension Tests', () => {
     test('test #1: run build_index command', async () => {
-        setTimeout(() => {
-            vscode.commands.executeCommand('systemverilog.build_index');
+        setTimeout( async () => {
+            await vscode.commands.executeCommand('systemverilog.build_index');
         }, 500);
         // Wait for 500ms since command execution returns before build_index
-        await new Promise((f) => setTimeout(f, 500));
+        // await new Promise((f) => setTimeout(f, 500));
     });
 
     test('test #2: moduleFromPort', async () => {

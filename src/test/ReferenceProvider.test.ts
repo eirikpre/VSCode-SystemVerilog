@@ -5,7 +5,6 @@ import * as assert from 'assert';
 const rootFolderLocation = '../../';
 
 suite('ReferenceProvider Tests', () => {
-    require('./extension.test.js');
 
     test('test #1: find references of post_test() task from definition', async () => {
         const filepath = path.join(__dirname, rootFolderLocation, 'verilog-examples/environment.sv');
@@ -51,6 +50,7 @@ suite('ReferenceProvider Tests', () => {
  * @param expectedLocations The list of expected locations
  */
 async function referenceProviderTest(inputLocation: vscode.Location, expectedLocations: vscode.Location[]) {
+    require('./extension.test.js');
     const references = (await vscode.commands.executeCommand(
         'vscode.executeReferenceProvider',
         inputLocation.uri,
