@@ -222,8 +222,8 @@ function compareInstantiation(instance_name, container_name, expected): void {
     }
 
     // Normalize both instances
-    actual = actual.replace(/r\n/g, '\n').trim();
-    expected = expected.replace(/r\n/g, '\n').trim();
+    actual = actual.normalize().trim();
+    expected = expected.normalize().trim();
 
     assert.strictEqual(actual, expected);
 }
