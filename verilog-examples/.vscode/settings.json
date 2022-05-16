@@ -1,0 +1,5 @@
+{
+    "systemverilog.forceFastIndexing": false,
+    "systemverilog.disableIndexing": false,
+    "systemverilog.documentSymbolsPrecision": "full"
+}

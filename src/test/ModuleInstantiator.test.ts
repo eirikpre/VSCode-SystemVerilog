@@ -1,4 +1,3 @@
-import * as os from 'os';
 import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -34,10 +33,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple space with a single space
         actualInstance = actualInstance.replace(/ +/g, ' ');
-        if (os.platform() === 'win32') {
-            actualInstance = actualInstance.replace(/\n/g, '\r\n');
-            actualInstance = actualInstance.replace(/\r\r/g, '\r');
-        }
+        actualInstance = actualInstance.replace(/\r\n/g, '\n');
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -73,10 +69,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple space with a single space
         actualInstance = actualInstance.replace(/ +/g, ' ');
-        if (os.platform() === 'win32') {
-            actualInstance = actualInstance.replace(/\n/g, '\r\n');
-            actualInstance = actualInstance.replace(/\r\r/g, '\r');
-        }
+        actualInstance = actualInstance.replace(/\r\n/g, '\n');
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -112,10 +105,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple space with a single space
         actualInstance = actualInstance.replace(/ +/g, ' ');
-        if (os.platform() === 'win32') {
-            actualInstance = actualInstance.replace(/\n/g, '\r\n');
-            actualInstance = actualInstance.replace(/\r\r/g, '\r');
-        }
+        actualInstance = actualInstance.replace(/\r\n/g, '\n');
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -151,10 +141,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple white spaces with a single space
         actualInstance = actualInstance.replace(/ +/g, ' ');
-        if (os.platform() === 'win32') {
-            actualInstance = actualInstance.replace(/\n/g, '\r\n');
-            actualInstance = actualInstance.replace(/\r\r/g, '\r');
-        }
+        actualInstance = actualInstance.replace(/\r\n/g, '\n');
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -190,10 +177,7 @@ suite('ModuleInstantiator Tests', () => {
 
         // Replace multiple white spaces with a single space
         actualInstance = actualInstance.replace(/ +/g, ' ');
-        if (os.platform() === 'win32') {
-            actualInstance = actualInstance.replace(/\n/g, '\r\n');
-            actualInstance = actualInstance.replace(/\r\r/g, '\r');
-        }
+        actualInstance = actualInstance.replace(/\r\n/g, '\n');
 
         assert.strictEqual(actualInstance, instance);
     });
@@ -303,10 +287,7 @@ suite('ModuleInstantiator Tests', () => {
             assert.fail(`formatInstance produced an error: ${error}`);
         }
 
-        if (os.platform() === 'win32') {
-            actualInstance = actualInstance.replace(/\n/g, '\r\n');
-            actualInstance = actualInstance.replace(/\r\r/g, '\r');
-        }
+        actualInstance = actualInstance.replace(/r\n/g, '\n');
 
         assert.strictEqual(actualInstance, instance);
     });

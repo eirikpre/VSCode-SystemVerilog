@@ -1,23 +1,19 @@
 import * as vscode from 'vscode';
-import { workspace } from 'vscode';
 import * as path from 'path';
 import * as assert from 'assert';
-import { SystemVerilogReferenceProvider } from '../providers/ReferenceProvider';
-import { SystemVerilogParser } from '../parser';
-import { SystemVerilogDocumentSymbolProvider } from '../providers/DocumentSymbolProvider';
-import { SystemVerilogIndexer } from '../indexer';
-import { SystemVerilogWorkspaceSymbolProvider } from '../providers/WorkspaceSymbolProvider';
 
 const rootFolderLocation = '../../';
 
 suite('ReferenceProvider Tests', () => {
+    require('./extension.test.js');
+
     test('test #1: find references of post_test() task from definition', async () => {
         const filepath = path.join(__dirname, rootFolderLocation, 'verilog-examples/environment.sv');
         const uri = vscode.Uri.file(filepath);
         const inputLocation = new vscode.Location(uri, new vscode.Position(44, 7));
         const expectedLocations = [
             new vscode.Location(uri, new vscode.Position(44, 7)),
-            new vscode.Location(uri, new vscode.Position(59, 4))
+            new vscode.Location(uri, new vscode.Position(55, 4))
         ];
         await referenceProviderTest(inputLocation, expectedLocations);
     }).timeout(10000);
@@ -25,10 +21,10 @@ suite('ReferenceProvider Tests', () => {
     test('test #2: find references of post_test() task from call', async () => {
         const filepath = path.join(__dirname, rootFolderLocation, 'verilog-examples/environment.sv');
         const uri = vscode.Uri.file(filepath);
-        const inputLocation = new vscode.Location(uri, new vscode.Position(59, 4));
+        const inputLocation = new vscode.Location(uri, new vscode.Position(55, 6));
         const expectedLocations = [
             new vscode.Location(uri, new vscode.Position(44, 7)),
-            new vscode.Location(uri, new vscode.Position(59, 4))
+            new vscode.Location(uri, new vscode.Position(55, 4))
         ];
         await referenceProviderTest(inputLocation, expectedLocations);
     }).timeout(10000);
@@ -38,10 +34,12 @@ suite('ReferenceProvider Tests', () => {
         const environment = path.join(__dirname, rootFolderLocation, 'verilog-examples/environment.sv');
         const driverUri = vscode.Uri.file(driver);
         const environmentUri = vscode.Uri.file(environment);
-        const inputLocation = new vscode.Location(driverUri, new vscode.Position(7, 6));
+        const inputLocation = new vscode.Location(driverUri, new vscode.Position(7, 8));
         const expectedLocations = [
             new vscode.Location(driverUri, new vscode.Position(7, 6)),
-            new vscode.Location(environmentUri, new vscode.Position(51, 4))
+            new vscode.Location(environmentUri, new vscode.Position(5, 10)),
+            new vscode.Location(environmentUri, new vscode.Position(10, 2)),
+            new vscode.Location(environmentUri, new vscode.Position(49, 2))
         ];
         await referenceProviderTest(inputLocation, expectedLocations);
     }).timeout(10000);
@@ -53,31 +51,13 @@ suite('ReferenceProvider Tests', () => {
  * @param expectedLocations The list of expected locations
  */
 async function referenceProviderTest(inputLocation: vscode.Location, expectedLocations: vscode.Location[]) {
-    const selector: vscode.DocumentSelector = [
-        { scheme: 'file', language: 'systemverilog' },
-        { scheme: 'file', language: 'verilog' }
-    ];
-    const document = await workspace.openTextDocument(inputLocation.uri);
+    const references = (await vscode.commands.executeCommand(
+        'vscode.executeReferenceProvider',
+        inputLocation.uri,
+        inputLocation.range.start
+    )) as vscode.Location[];
 
-    const parser = new SystemVerilogParser();
-    const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-    const outputChannel = vscode.window.createOutputChannel('SystemVerilog');
-    const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
-    const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
-    const docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
-    vscode.languages.registerDocumentSymbolProvider(selector, docProvider);
-    vscode.languages.registerWorkspaceSymbolProvider(symProvider);
-    await indexer.build_index();
-
-    const referenceProvider = new SystemVerilogReferenceProvider();
-    const token = new vscode.CancellationTokenSource();
-    const references = await referenceProvider.provideReferences(
-        document,
-        inputLocation.range.start,
-        { includeDeclaration: true },
-        token.token
-    );
-    assert(expectedLocations.length === references.length);
+    assert.strictEqual(references.length, expectedLocations.length);
 
     // depending on the modify date of the file, they may be accessed in different order, so we need to accoutn for that
     for (let i = 0; i < expectedLocations.length; i++) {

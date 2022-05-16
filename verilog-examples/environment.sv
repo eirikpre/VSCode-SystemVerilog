@@ -47,11 +47,7 @@ class environment;
     wait(gen.repeat_count == driv.no_transactions);
   endtask
 
-  driver #(
-    A,B,C
-  ) driver (
-    .signals ()
-  );
+  driver another_driver;
 
   //run task
   task run;
