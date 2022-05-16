@@ -21,7 +21,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let instance = document.getText(fullRange);
 
-        compareInstantiation("adder", container, instance);
+        compareInstantiation('adder', container, instance);
     });
 
     test('test #2: formatInstance with parameters', async () => {
@@ -43,7 +43,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let instance = document.getText(fullRange);
 
-        compareInstantiation("bar", container, instance);
+        compareInstantiation('bar', container, instance);
     });
 
     test('test #3: formatInstance without parameters, ports in header', async () => {
@@ -65,7 +65,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let instance = document.getText(fullRange);
 
-        compareInstantiation("akker", container, instance);
+        compareInstantiation('akker', container, instance);
     });
 
     test('test #4: formatInstance with parameters, ports in header', async () => {
@@ -87,7 +87,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let instance = document.getText(fullRange);
 
-        compareInstantiation("accer", container, instance);
+        compareInstantiation('accer', container, instance);
     });
 
     test('test #5: formatInstance with defaulted parameters.', async () => {
@@ -109,7 +109,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let instance = document.getText(fullRange);
 
-        compareInstantiation("anner", container, instance);
+        compareInstantiation('anner', container, instance);
     });
 
     test('test #6: empty and undefined container/symbol scenarios', async () => {
@@ -209,7 +209,7 @@ suite('ModuleInstantiator Tests', () => {
 
         const instance = document.getText(fullRange);
 
-        compareInstantiation("golden", container, instance);
+        compareInstantiation('golden', container, instance);
     });
 });
 
@@ -227,4 +227,3 @@ function compareInstantiation(instance_name, container_name, expected): void {
 
     assert.strictEqual(actual, expected);
 }
-
