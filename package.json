@@ -215,12 +215,7 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Run ANTLR verification on all files when opened."
-                    },
-                    "systemverilog.compileOnOpen": {
-                      "type": "boolean",
-                      "default": false,
-                      "description": "Compile all files when opened."
-                  }
+                    }
                 }
             }
         ],
@@ -440,11 +435,11 @@
         "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc --watch --project ./",
         "test": "npm run compile && node ./out/test/runTest.js",
-        "test:coverage": "npm run compile && node ./out/test/runTest.js -coverage",
+        "test:coverage": "node ./out/test/runTest.js -coverage",
         "coverage": "nyc --silent npm run test:coverage",
         "lint": "eslint --config ./.eslintrc.json --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
-        "pretty:check": "prettier --check \"**/*.ts\"",
+        "pretty:check": "prettier --check \"**/*\"",
         "clean": "npx rimraf dist/ out/ .vscode-test/"
     },
     "devDependencies": {
@@ -487,5 +482,11 @@
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.4"
+    },
+    "__metadata": {
+        "id": "3788d090-07a9-4840-9cf7-cd455e906cf0",
+        "publisherDisplayName": "Eirik Prestegårdshus",
+        "publisherId": "f9c1f1d6-09c5-489a-b8ac-a8a96b90a5ab",
+        "isPreReleaseVersion": false
     }
 }

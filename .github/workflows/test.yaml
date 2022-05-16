@@ -18,16 +18,16 @@ jobs:
           node-version: '16'
       - name: Install NPM dependencies
         run: npm ci --production=false --unsafe-perm
-      - name: Compile ANTLR
-        run: npm run compile:antlr4ts
+      - name: Compile extension
+        run: npm run compile
+      - name: Create bundle
+        run: npm run webpack
       - name: Run headless tests and collect coverage
         uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run coverage
           working-directory: ./
           options: ''
-      - name: Check bundle
-        run: npm run webpack
       - name: Verify files
         if: runner.os == 'Linux'
         run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
