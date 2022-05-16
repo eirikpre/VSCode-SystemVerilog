@@ -53,7 +53,6 @@ export class SystemVerilogIndexer {
     */
     public async build_index(): Promise<any> {
         let cancelled = false;
-        this.building = true;
         this.symbolsCount = 0;
         this.statusbar.text = 'SystemVerilog: Indexing..';
         this.initialize();
@@ -66,22 +65,27 @@ export class SystemVerilogIndexer {
                     cancellable: true
                 },
                 async (_progress, token) => {
-                    this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
-                    const uris: Uri[] = await this.find_files(token);
-                    console.time('build_index'); // eslint-disable-line no-console
-                    for (let filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
-                        const subset = uris.slice(filenr, filenr + this.parallelProcessing);
-                        if (token.isCancellationRequested) {
-                            cancelled = true;
-                            break;
+                    if (!this.building) {
+                        this.building = true;
+                        this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
+                        const uris: Uri[] = await this.find_files(token);
+                        console.time('build_index'); // eslint-disable-line no-console
+                        for (let filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
+                            const subset = uris.slice(filenr, filenr + this.parallelProcessing);
+                            if (token.isCancellationRequested) {
+                                cancelled = true;
+                                break;
+                            }
+                            await Promise.all(subset.map((uri) => this.processFile(uri, uris.length))); // eslint-disable-line no-await-in-loop
                         }
-                        await Promise.all(subset.map((uri) => this.processFile(uri, uris.length))); // eslint-disable-line no-await-in-loop
+                    } else {
+                        return Promise.reject();
                     }
                 }
             )
             .then(() => {
-                this.building = false;
                 console.timeEnd('build_index'); // eslint-disable-line no-console
+                this.building = false;
                 if (cancelled) {
                     this.statusbar.text = `SystemVerilog: Indexing cancelled at ${this.symbolsCount}`;
                 } else {
