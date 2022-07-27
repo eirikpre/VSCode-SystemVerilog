@@ -82,6 +82,8 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.compilerType`: _String_, Dropdown list to select a compiler type
   - Default: `Verilator`
 - `systemverilog.trace.server`: _String_, Dropdown to select verbosity of LSP message tracing
+- `systemverilog.compileOnOpen`: _Boolean_, Compile all files when opened
+  - Default: `false`
 
 ### Customizations
 
