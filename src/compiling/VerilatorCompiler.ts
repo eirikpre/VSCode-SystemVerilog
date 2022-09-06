@@ -21,15 +21,28 @@ enum CannotFindModuleState {
  * and eventually parses the errors/warnings in `stderr` into `Diagnostic` array mapped to each unique document's uri.
  */
 export class VerilatorCompiler extends DocumentCompiler {
+    errorPrefixRegex = '%Error';
+
+    // Match file path, with possible Windows drive letter and colon prefix. Example: '/foo/bar' or 'c:/foo/bar'
+    filePathRegex = '((?:\\w:)?[^:]*)';
+
+    // Matches line number, and column number of it exists. Example: '1034' or '1034:20'
+    lineNumberAndPossibleColumnRegex = '([0-9]+)(:[0-9]+)?';
+
+    fileAndLineNumberRegex = `${this.filePathRegex}:${this.lineNumberAndPossibleColumnRegex}`;
+
     // Regular expressions
-    regexError = new RegExp('%Error: ([^:]*):([0-9]+)(:[0-9]+)?: (.*)');
-    regexErrorWarning = new RegExp('%Error-(.*): ([^:]*):([0-9]+)(:[0-9]+)?: (.*)');
-    regexWarning = new RegExp('%Warning-(.*): ([^:]*):([0-9]+)(:[0-9]+)?: (.*)');
+    regexError = new RegExp(`${this.errorPrefixRegex}: ${this.fileAndLineNumberRegex}: (.*)`);
+    regexErrorWarning = new RegExp(`${this.errorPrefixRegex}-(.*): ${this.fileAndLineNumberRegex}: (.*)`);
+    regexWarning = new RegExp(`%Warning-(.*): ${this.fileAndLineNumberRegex}: (.*)`);
     regexWarningSuggest = new RegExp('%Warning-(.*): (.*)');
-    regexCannotFindModule = new RegExp('%Error: ([^:]*):([0-9]+)(:[0-9]+)?: Cannot find(.*): (.*)');
-    regexSearchPathNotFound = new RegExp("%Error: ([^:]*):([0-9]+)(:[0-9]+)?: This may be because there's no search path specified with -I<dir>."); // prettier-ignore
-    regexLookedIn = new RegExp('%Error: ([^:]*):([0-9]+)(:[0-9]+)?: Looked in:');
-    regexFilesSearchedSource = '%Error: ([^:]*):([0-9]+)(:[0-9]+)?:       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|)$'; // prettier-ignore
+    regexCannotFindModule = new RegExp(
+        `${this.errorPrefixRegex}: ${this.fileAndLineNumberRegex}: Cannot find(.*): (.*)`
+    );
+
+    regexSearchPathNotFound = new RegExp(`${this.errorPrefixRegex}: ${this.fileAndLineNumberRegex}: This may be because there's no search path specified with -I<dir>.`); // prettier-ignore
+    regexLookedIn = new RegExp(`${this.errorPrefixRegex}: ${this.fileAndLineNumberRegex}: Looked in:`);
+    regexFilesSearchedSource = `${this.errorPrefixRegex}: ${this.fileAndLineNumberRegex}:       (.*)notFoundModulePlaceHolder(.v|.sv|.vh|.svh|)$`; // prettier-ignore
     regexOffendPart = new RegExp(".*'(.*)'.*");
 
     /**

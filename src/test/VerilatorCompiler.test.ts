@@ -12,7 +12,13 @@ const testFolderLocation = '../../src/test/test-files/VerilatorCompiler.test';
 const filePathPlaceholder = 'FILEPATH_PLACEHOLDER';
 
 let diagnosticCollection: Map<string, Diagnostic[]>;
-const documentCompiler = new VerilatorCompiler(undefined, undefined, undefined, undefined, undefined);
+const documentCompiler = new VerilatorCompiler(
+    undefined,
+    undefined,
+    path.join(__dirname, '../../'),
+    undefined,
+    undefined
+);
 
 suite('VerilatorCompiler Tests', () => {
     test('test #1: Diagnostics from %Error', async () => {
@@ -25,7 +31,7 @@ suite('VerilatorCompiler Tests', () => {
 
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const compiledFilePath = getPathFromUri(document.uri, __dirname);
+        const compiledFilePath = getPathFromUri(document.uri, __dirname) || document.uri;
 
         const stderrFile = path.join(__dirname, testFolderLocation, 'foo.stderr.txt');
 
@@ -55,7 +61,7 @@ suite('VerilatorCompiler Tests', () => {
 
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const compiledFilePath = getPathFromUri(document.uri, __dirname);
+        const compiledFilePath = getPathFromUri(document.uri, __dirname) || document.uri;
 
         const stderrFile = path.join(__dirname, testFolderLocation, 'bar.stderr.txt');
 
@@ -88,7 +94,7 @@ suite('VerilatorCompiler Tests', () => {
 
         const document: TextDocument = castTextDocument(documentWorkspace);
 
-        const compiledFilePath = getPathFromUri(document.uri, __dirname);
+        const compiledFilePath = getPathFromUri(document.uri, __dirname) || document.uri;
 
         documentCompiler.parseDiagnostics(undefined, undefined, '', document, compiledFilePath, diagnosticCollection);
 
@@ -106,7 +112,7 @@ suite('VerilatorCompiler Tests', () => {
 
         let uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
         let document = await workspace.openTextDocument(uriDoc);
-        let compiledFilePath = getPathFromUri(document.uri.toString(), __dirname);
+        let compiledFilePath = getPathFromUri(document.uri.toString(), __dirname) || document.uri;
 
         let stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
@@ -125,7 +131,7 @@ suite('VerilatorCompiler Tests', () => {
 
         uriDoc = Uri.file(path.join(__dirname, testFolderLocation, filePath));
         document = await workspace.openTextDocument(uriDoc);
-        compiledFilePath = getPathFromUri(document.uri.toString(), __dirname);
+        compiledFilePath = getPathFromUri(document.uri.toString(), __dirname) || document.uri;
 
         stderr = fs.readFileSync(stderrFile).toString();
         stderr = stderrSetUp(stderr, compiledFilePath);
