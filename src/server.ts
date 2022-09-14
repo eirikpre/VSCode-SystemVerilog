@@ -23,7 +23,8 @@ const compilerConfigurationsKeys: string[] = [
     'systemverilog.launchConfigurationVerible',
     'systemverilog.antlrVerification',
     'systemverilog.verifyOnOpen',
-    'systemverilog.excludeCompiling'
+    'systemverilog.excludeCompiling',
+    'systemverilog.compileOnOpen'
 ];
 
 const backend: ANTLRBackend = new ANTLRBackend();
@@ -115,7 +116,7 @@ function updateConfigurationsSettings(): Promise<any> {
 }
 
 /**
- *	If `compileOnSave` is set to true, the server will compile the document.
+ *	If `compileOnSave` and/or `compileOnOpen` is set to true, the server will compile the document.
  *
  *  @param saveEvent An object containing information about the saved file
  */
@@ -171,6 +172,10 @@ documents.onDidOpen(async (openEvent) => {
     if (configurations.get(compilerConfigurationsKeys[6])) {
         // Check for verifyOnOpen being true
         verifyDocument(openEvent.document.uri);
+    }
+    if (configurations.get(compilerConfigurationsKeys[8])) {
+        // Check for compileOnOpen being true
+        compile(openEvent.document);
     }
 });
 

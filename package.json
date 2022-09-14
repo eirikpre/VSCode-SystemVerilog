@@ -215,7 +215,12 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Run ANTLR verification on all files when opened."
-                    }
+                    },
+                    "systemverilog.compileOnOpen": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Compile all files when opened."
+                  }
                 }
             }
         ],
