@@ -215,6 +215,11 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Run ANTLR verification on all files when opened."
+                    },
+                    "systemverilog.compileOnOpen": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Compile all files when opened."
                     }
                 }
             }
@@ -439,7 +444,7 @@
         "coverage": "nyc --silent npm run test:coverage",
         "lint": "eslint --config ./.eslintrc.json --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
-        "pretty:check": "prettier --check \"**/*\"",
+        "pretty:check": "prettier --check \"**/*.ts\"",
         "clean": "npx rimraf dist/ out/ .vscode-test/"
     },
     "devDependencies": {
