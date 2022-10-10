@@ -1,6 +1,7 @@
 # Changelog
 
 All notable changes to this extension are documented below.
+More details can be found on the [Releases](https://github.com/eirikpre/VSCode-SystemVerilog/releases) page on GitHub.
 
 ## [Unreleased]
 
@@ -8,6 +9,15 @@ All notable changes to this extension are documented below.
 - ❌ IntelliSense support
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
+
+### [0.13.3]
+
+- adding `compileOnOpen` setting option by `joennlae`
+- removing cache in hopes that workflow errors will be resolved by `joecrop`
+- bump terser to version 5.15.0 by `joecrop`
+- fix: #177: Properly handle Windows paths in Verilator output by `agg23`
+- Remote ssh performance by `eirikpre`
+- fix: Added debounce delay for saving indexes by `agg23`
 
 ### [0.13.2]
 
@@ -20,11 +30,11 @@ All notable changes to this extension are documented below.
 
 ### [0.13]
 
-- input/output/input now have different icons in the outline tree by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/151
-- Format module instance and dropdown list of modules for auto-instantiator by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/152
-- support more file extensions and no extension in antlr parser by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/149
-- Bump minimist from 1.2.5 to 1.2.6 by @dependabot in https://github.com/eirikpre/VSCode-SystemVerilog/pull/155
-- Include indexing docs by @joecrop in https://github.com/eirikpre/VSCode-SystemVerilog/pull/158
+- input/output/input now have different icons in the outline tree by `joecrop`
+- Format module instance and dropdown list of modules for auto-instantiator by `joecrop`
+- support more file extensions and no extension in antlr parser by `joecrop`
+- Bump minimist from 1.2.5 to 1.2.6 by `dependabot`
+- Include indexing docs by `joecrop`
 
 ### [0.12.1]
 
