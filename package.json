@@ -440,7 +440,7 @@
         "webpack:dev": "webpack --mode none --config ./build/client.webpack.config.js && webpack --mode none --config ./build/server.webpack.config.js",
         "watch": "tsc --watch --project ./",
         "test": "npm run compile && node ./out/test/runTest.js",
-        "test:coverage": "node ./out/test/runTest.js -coverage",
+        "test:coverage": "npm run compile && node ./out/test/runTest.js -coverage",
         "coverage": "nyc --silent npm run test:coverage",
         "lint": "eslint --config ./.eslintrc.json --ext .ts ./src",
         "pretty": "prettier --write \"**/*\"",
