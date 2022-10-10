@@ -8,55 +8,84 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
         position: Position,
         token: CancellationToken
     ): Promise<Definition> {
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise<Definition>(async (resolve, _reject) => {
+        return new Promise<Definition>((resolve, _reject) => {
             const range = document.getWordRangeAtPosition(position);
             const line = document.lineAt(position.line).text;
             const word = document.getText(range);
             const results: Location[] = [];
 
             if (!range) {
-                resolve(results);
+                return undefined;
+            }
+            if (isLineInsideComments()) {
+                return undefined;
             }
 
-            // don't attempt to find a reference for a symbol in a comment
-            const inside = isLineInsideComments();
-            if (inside) {
-                resolve(results);
+            const matchPort = line.match(`\\.\\s*${word}\\s*\\(`);
+            const matchPackage = line.match(`\\b(\\w+)\\s*::\\s*(${word})`);
+
+            // Return a promise to find object in a portlist
+            if (matchPort && matchPort.index === range.start.character - 1) {
+                const container = moduleFromPort(document, range);
+                if (container) {
+                    commands
+                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${container}`)
+                        .then((res: SymbolInformation[]) => {
+                            return Promise.all(
+                                res.map(async (x) => {
+                                    commands
+                                        .executeCommand('vscode.executeDocumentSymbolProvider', x.location.uri, word)
+                                        .then((symbols: Array<SymbolInformation | DocumentSymbol>) => {
+                                            results.concat(extractLocations(symbols, word, x.location.uri, container));
+                                        });
+                                })
+                            );
+                        })
+                        .then(() => {
+                            resolve(results);
+                        });
+                }
             }
-            // Port
-            await findPortInModule();
-
-            // Package
-            await findInPackage();
-
+            // Return a promise to find object in a package
+            else if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
+                commands
+                    .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${matchPackage[1]}`, token)
+                    .then((ws_symbols: SymbolInformation[]) => {
+                        if (ws_symbols.length && ws_symbols[0].location) {
+                            return ws_symbols[0].location.uri;
+                        }
+                    })
+                    .then((uri) => {
+                        if (uri) {
+                            return commands
+                                .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
+                                .then((symbols: Array<DocumentSymbol | SymbolInformation>) => {
+                                    results.concat(extractLocations(symbols, word, uri, matchPackage[1]));
+                                    resolve(results);
+                                });
+                        } else {
+                            resolve(undefined);
+                        }
+                    });
+            }
             // Lookup all symbols in the current document
-            if (results.length === 0) {
-                try {
-                    const symbols: DocumentSymbol[] = await commands.executeCommand(
-                        'vscode.executeDocumentSymbolProvider',
-                        document.uri,
-                        word
-                    );
-                    getDocumentSymbols(results, symbols, word, range, document.uri);
-                } catch (reason) {
-                    console.log(reason); // eslint-disable-line no-console
-                }
+            else {
+                commands
+                    .executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word, token)
+                    .then((res: Array<DocumentSymbol | SymbolInformation>) => {
+                        let o = extractLocations(res, word, document.uri);
+                        if (o.length) {
+                            resolve(o);
+                        } else {
+                            // Look up all indexed symbols
+                            commands
+                                .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
+                                .then((syms: SymbolInformation[]) => {
+                                    resolve(syms.map((x) => x.location));
+                                });
+                        }
+                    });
             }
-
-            // Look up all indexed symbols
-            if (results.length === 0) {
-                const res: SymbolInformation[] = await commands.executeCommand(
-                    'vscode.executeWorkspaceSymbolProvider',
-                    `¤${word}`,
-                    token
-                );
-                if (res.length !== 0) {
-                    res.map((x) => results.push(x.location));
-                }
-            }
-
-            resolve(results);
 
             function isLineInsideComments(): Boolean {
                 /* eslint-disable spaced-comment */
@@ -85,99 +114,46 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 }
                 return false;
             }
-
-            async function findInPackage() {
-                const regexPackage = '\\b(\\w+)\\s*::\\s*(word)';
-                const matchPackage = line.match(regexPackage.replace('word', word));
-                if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
-                    await commands
-                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${matchPackage[1]}`, token)
-                        .then((ws_symbols: SymbolInformation[]) => {
-                            if (ws_symbols.length && ws_symbols[0].location) {
-                                return ws_symbols[0].location.uri;
-                            }
-                        })
-                        .then(async (uri) => {
-                            if (uri) {
-                                await commands
-                                    .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
-                                    .then((symbols) => {
-                                        getDocumentSymbols(results, symbols, word, range, uri, matchPackage[1]);
-                                    });
-                            }
-                        });
-                }
-            }
-
-            async function findPortInModule() {
-                const regexPort = '\\.word\\s*\\(';
-                const matchPort = line.match(regexPort.replace('word', word));
-                if (matchPort && matchPort.index === range.start.character - 1) {
-                    const container = moduleFromPort(document, range);
-                    if (container) {
-                        await commands
-                            .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${container}`)
-                            .then((res: SymbolInformation[]) =>
-                                Promise.all(
-                                    res.map(async (x) =>
-                                        commands
-                                            .executeCommand(
-                                                'vscode.executeDocumentSymbolProvider',
-                                                x.location.uri,
-                                                word
-                                            )
-                                            .then((symbols) => {
-                                                getDocumentSymbols(
-                                                    results,
-                                                    symbols,
-                                                    word,
-                                                    range,
-                                                    x.location.uri,
-                                                    container
-                                                );
-                                            })
-                                    )
-                                )
-                            );
-                    }
-                }
-            }
         });
     }
 }
 
-// Retrieves locations from the hierarchical DocumentSymbols
-function getDocumentSymbols(
-    results: Location[],
-    entries,
+function flattenDocumentSymbols(docSyms) {
+    let o = [];
+    if (docSyms) {
+        for (let s of docSyms) {
+            o.push(s);
+            o = o.concat(flattenDocumentSymbols(s.children));
+        }
+    }
+    return o;
+}
+
+function extractLocations(
+    docSyms: Array<DocumentSymbol | SymbolInformation>,
     word: string,
-    range: Range,
     uri: Uri,
     containerName?: string
-): void {
-    if (!entries) {
-        return;
-    }
-    for (const entry of entries) {
-        if (entry.name === word && entry.kind !== getSymbolKind('potential_reference')) {
+): Location[] {
+    let locs: Location[] = [];
+    for (let s of flattenDocumentSymbols(docSyms)) {
+        if (s.name === word && s.kind !== getSymbolKind('potential_reference')) {
             if (containerName) {
-                if (entry.containerName === containerName) {
-                    results.push({
+                if (s.containerName === containerName) {
+                    locs.push({
                         uri,
-                        range: entry.range
+                        range: s.range
                     });
                 }
-            } else if (range.start.line !== entry.range.start.line) {
-                results.push({
+            } else {
+                locs.push({
                     uri,
-                    range: entry.range
+                    range: s.range
                 });
             }
         }
-        if (entry.children.length > 0) {
-            getDocumentSymbols(results, entry.children, word, range, uri);
-        }
     }
+    return locs;
 }
 
 export function moduleFromPort(document, range): string {

@@ -220,7 +220,7 @@
                       "type": "boolean",
                       "default": false,
                       "description": "Compile all files when opened."
-                  }
+                    }
                 }
             }
         ],
@@ -487,5 +487,11 @@
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.4"
+    },
+    "__metadata": {
+        "id": "3788d090-07a9-4840-9cf7-cd455e906cf0",
+        "publisherDisplayName": "Eirik Prestegårdshus",
+        "publisherId": "f9c1f1d6-09c5-489a-b8ac-a8a96b90a5ab",
+        "isPreReleaseVersion": false
     }
 }

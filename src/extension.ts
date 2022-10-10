@@ -44,7 +44,7 @@ export function activate(context: ExtensionContext) {
     const hoverProvider = new SystemVerilogHoverProvider();
     const formatProvider = new SystemVerilogFormatProvider(outputChannel);
     const moduleInstantiator = new SystemVerilogModuleInstantiator(formatProvider, symProvider);
-    const referenceProvider = new SystemVerilogReferenceProvider();
+    const referenceProvider = new SystemVerilogReferenceProvider(defProvider);
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));

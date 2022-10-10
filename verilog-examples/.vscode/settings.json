@@ -1,0 +1,8 @@
+{
+    // For tests to work correctly
+    "systemverilog.forceFastIndexing": false,
+    "systemverilog.disableIndexing": true,
+    "systemverilog.documentSymbolsPrecision": "full",
+    "editor.tabSize": 2,
+    "files.eol": "\n"
+}

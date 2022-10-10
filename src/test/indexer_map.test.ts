@@ -153,7 +153,7 @@ suite('indexer_map Tests', () => {
     });
 });
 
-/**  
+/**
   Sets up the `symbols` map for testing.
 */
 async function setUp() {
@@ -233,7 +233,7 @@ async function setUp() {
     symbols.set(file4, list4);
 }
 
-/**  
+/**
   Counts `SystemVerilogSymbol` objects in the `symbols` map.
 
   @return the symbols count
@@ -252,7 +252,7 @@ function getSymbolsCount(): number {
     return count;
 }
 
-/**  
+/**
   Checks if a given `symbolName` exists in the `symbols` map.
 
   @param symbolName the symbol's name

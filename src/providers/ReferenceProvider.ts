@@ -6,6 +6,10 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
     public results: Location[];
     public includeDeclaration: Boolean;
 
+    public constructor(definitionProvider) {
+        this.definitionProvider = definitionProvider;
+    }
+
     public async provideReferences(
         document: TextDocument,
         position: Position,
@@ -25,10 +29,9 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
             }
 
             // Get the original definition of the symbol 'Location' so we can compare against other symbols we find
-            this.definitionProvider = new SystemVerilogDefinitionProvider();
             const defLocation = await this.getDefinitionLocation(document, position, token);
 
-            // Get all symbols in the worksace that match `word`
+            // Get all symbols in the workspace that match `word`
             const allSymbols: SymbolInformation[] = await commands.executeCommand(
                 'vscode.executeWorkspaceSymbolProvider',
                 `¬¤${word}`,
