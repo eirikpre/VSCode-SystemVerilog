@@ -23,6 +23,26 @@ const selector: DocumentSelector = [
     { scheme: 'file', language: 'verilog' }
 ];
 
+let indexer: SystemVerilogIndexer | undefined = undefined;
+let saveIndexTimeout: NodeJS.Timeout | undefined;
+
+function queuedSaveIndex(context: ExtensionContext) {
+    if (saveIndexTimeout !== undefined) {
+        clearTimeout(saveIndexTimeout);
+    }
+
+    saveIndexTimeout = setTimeout(function () {
+        saveIndex(context);
+    }, 10000);
+}
+
+function saveIndex(context: ExtensionContext): void {
+    saveIndexTimeout = undefined;
+
+    const syms = [...indexer.symbols];
+    context.workspaceState.update('symbols', syms);
+}
+
 export function activate(context: ExtensionContext) {
     // Output Channel
     const outputChannel = window.createOutputChannel('SystemVerilog');
@@ -35,7 +55,7 @@ export function activate(context: ExtensionContext) {
 
     // Back-end Classes
     const parser = new SystemVerilogParser();
-    const indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
+    indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
 
     // Providers
     const docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
@@ -56,7 +76,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerReferenceProvider(selector, referenceProvider));
 
     const buildHandler = () => {
-        indexer.build_index().then((_) => saveIndex());
+        indexer.build_index().then((_) => queuedSaveIndex(context));
     };
     const instantiateHandler = () => {
         moduleInstantiator.instantiateModule();
@@ -70,14 +90,14 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         workspace.onDidSaveTextDocument((doc) => {
             indexer.onChange(doc);
-            saveIndex();
+            queuedSaveIndex(context);
         })
     );
     context.subscriptions.push(
         window.onDidChangeActiveTextEditor((editor) => {
             if (editor !== undefined) {
                 indexer.onChange(editor.document);
-                saveIndex();
+                queuedSaveIndex(context);
             }
         })
     );
@@ -85,19 +105,19 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         watcher.onDidCreate((uri) => {
             indexer.onCreate(uri);
-            saveIndex();
+            queuedSaveIndex(context);
         })
     );
     context.subscriptions.push(
         watcher.onDidDelete((uri) => {
             indexer.onDelete(uri);
-            saveIndex();
+            queuedSaveIndex(context);
         })
     );
     context.subscriptions.push(
         watcher.onDidChange((uri) => {
             indexer.onDelete(uri);
-            saveIndex();
+            queuedSaveIndex(context);
         })
     );
     context.subscriptions.push(watcher);
@@ -111,11 +131,6 @@ export function activate(context: ExtensionContext) {
         } else {
             commands.executeCommand('systemverilog.build_index');
         }
-    }
-
-    function saveIndex(): void {
-        const syms = [...indexer.symbols];
-        context.workspaceState.update('symbols', syms);
     }
 
     function loadIndex(): void {
@@ -243,9 +258,12 @@ export function activate(context: ExtensionContext) {
     });
 }
 
-export function deactivate(): Thenable<void> | undefined {
+export function deactivate(context: ExtensionContext): Thenable<void> | undefined {
     if (!client) {
         return undefined;
     }
+
+    queuedSaveIndex(context);
+
     return client.stop();
 }
