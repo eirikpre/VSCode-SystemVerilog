@@ -1,5 +1,6 @@
 import { Connection, Diagnostic, TextDocuments, Range, DiagnosticSeverity } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import { URI } from 'vscode-uri'
 import * as path from 'path';
 import * as child from 'child_process';
 import { getPathFromUri } from '../utils/common';
@@ -50,9 +51,8 @@ export abstract class DocumentCompiler {
             }
 
             const diagnosticCollection: Map<string, Diagnostic[]> = new Map();
-
-            const filePath = getPathFromUri(document.uri, this.workspaceRootPath);
-
+            // Get the fsPath and wrap it in quotes so that it gets joined properly below
+            const filePath = '"' + URI.parse(document.uri).fsPath + '"';
             const args = [];
 
             if (

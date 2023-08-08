@@ -217,9 +217,9 @@
                         "description": "Run ANTLR verification on all files when opened."
                     },
                     "systemverilog.compileOnOpen": {
-                      "type": "boolean",
-                      "default": false,
-                      "description": "Compile all files when opened."
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Compile all files when opened."
                     }
                 }
             }
@@ -486,7 +486,8 @@
         "uri-js": "^4.4.1",
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",
-        "vscode-languageserver-textdocument": "^1.0.4"
+        "vscode-languageserver-textdocument": "^1.0.4",
+        "vscode-uri": "^3.0.7"
     },
     "__metadata": {
         "id": "3788d090-07a9-4840-9cf7-cd455e906cf0",
