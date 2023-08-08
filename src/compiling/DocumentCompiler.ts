@@ -1,6 +1,6 @@
 import { Connection, Diagnostic, TextDocuments, Range, DiagnosticSeverity } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { URI } from 'vscode-uri'
+import { URI } from 'vscode-uri';
 import * as path from 'path';
 import * as child from 'child_process';
 import { getPathFromUri } from '../utils/common';
