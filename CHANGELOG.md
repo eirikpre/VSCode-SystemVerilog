@@ -9,6 +9,11 @@ All notable changes to this extension are documented below.
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.3]
+
+- Updated Verible lint regular expressions for new output format by `joecrop`
+- Fixed Windows path recognition in DocumentCompiler by `joecrop`
+
 ### [0.13.2]
 
 - modified formatter command parser to support windows paths by `joecrop`
