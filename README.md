@@ -156,10 +156,6 @@ npm run compile
 
 See the [changelog](CHANGELOG.md) for more details
 
-### 0.13.3
-
-- Updated Verible lint regular expressions for new output format by `joecrop`
-- Fixed Windows path recognition in DocumentCompiler by `joecrop`
 
 ### 0.13.2
 
