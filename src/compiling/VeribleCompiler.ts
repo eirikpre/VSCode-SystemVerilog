@@ -25,21 +25,24 @@ export class VeribleCompiler extends DocumentCompiler {
     public parseDiagnostics(
         _error: child.ExecException,
         stdout: string,
-        _stderr: string,
+        stderr: string,
         compiledDocument: TextDocument,
         documentFilePath: string,
         collection: Map<string, Diagnostic[]>
     ): void {
-        if (stdout === undefined || stdout === null || !compiledDocument) {
+        let allout = stdout + stderr;
+        if (allout === undefined || allout === null || !compiledDocument) {
             return;
         }
 
         const regexError = new RegExp(`^(.+):(\\d+):(\\d+): (.+)(\\(syntax-error\\)).*$`);
+        const regexError2 = new RegExp(`^(.+):(\\d+):([\\d\\-]+): (syntax error at token) .*$`);
         const regexInfo = new RegExp(`^(.+):(\\d+):(\\d+): (.+)(\\[Style.*)$`);
+        const regexInfo2 = new RegExp(`^(.+):(\\d+):([\\d\\-]+): (.+)(\\[Style.*)$`);
 
-        stdout = stdout.replace(/\r\n/g, '\n').trim();
+        allout = allout.replace(/\r\n/g, '\n').trim();
 
-        const errors = stdout.split(/\n/g);
+        const errors = allout.split(/\n/g);
 
         const visitedDocuments = new Map<string, boolean>();
 
@@ -64,7 +67,40 @@ export class VeribleCompiler extends DocumentCompiler {
                 diagnosticData.problem = problem.join('').trim();
             }
 
+            if ((matches = regexError2.exec(error))) {
+                const [_match, path, line, position, message] = matches;
+                diagnosticData.filePath = path;
+                diagnosticData.line = parseInt(line, 10) - 1;
+                diagnosticData.charPosition = parseInt(position, 10) - 1;
+                diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity('Error');
+
+                // Format Diagnostic's problem
+                const problem = [];
+
+                // remove preceding/trailing special characters
+                problem.push(message);
+
+                diagnosticData.problem = problem.join('').trim();
+            }
+
             if ((matches = regexInfo.exec(error))) {
+                const [_match, path, line, position, message, style] = matches;
+                diagnosticData.filePath = path;
+                diagnosticData.line = parseInt(line, 10) - 1;
+                diagnosticData.charPosition = parseInt(position, 10) - 1;
+                diagnosticData.diagnosticSeverity = this.getDiagnosticSeverity('Info');
+
+                // Format Diagnostic's problem
+                const problem = [];
+
+                // remove preceding/trailing special characters
+                problem.push(message);
+                problem.push(style);
+
+                diagnosticData.problem = problem.join('').trim();
+            }
+
+            if ((matches = regexInfo2.exec(error))) {
                 const [_match, path, line, position, message, style] = matches;
                 diagnosticData.filePath = path;
                 diagnosticData.line = parseInt(line, 10) - 1;

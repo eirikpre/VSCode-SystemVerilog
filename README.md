@@ -156,6 +156,7 @@ npm run compile
 
 See the [changelog](CHANGELOG.md) for more details
 
+
 ### 0.13.2
 
 - modified formatter command parser to support windows paths by `joecrop`
