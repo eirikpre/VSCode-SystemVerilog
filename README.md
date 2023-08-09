@@ -1,7 +1,7 @@
-[![](https://vsmarketplacebadge.apphb.com/version/eirikpre.systemverilog.svg)](https://marketplace.visualstudio.com/items?itemName=eirikpre.systemverilog)
-[![](https://vsmarketplacebadge.apphb.com/installs-short/eirikpre.systemverilog.svg)](https://marketplace.visualstudio.com/items?itemName=eirikpre.systemverilog)
-![](https://vsmarketplacebadge.apphb.com/rating-star/eirikpre.systemverilog.svg)
-[![](https://github.com/eirikpre/VSCode-SystemVerilog/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/eirikpre/VSCode-SystemVerilog/actions?query=workflow%3ATest+branch%3Amaster)
+[![](https://img.shields.io/visual-studio-marketplace/v/eirikpre.systemverilog?color=%2346bd19)](https://marketplace.visualstudio.com/items?itemName=eirikpre.systemverilog)
+[![](https://img.shields.io/visual-studio-marketplace/i/eirikpre.systemverilog)](https://marketplace.visualstudio.com/items?itemName=eirikpre.systemverilog)
+![](https://img.shields.io/visual-studio-marketplace/stars/eirikpre.systemverilog)
+[![](https://img.shields.io/github/actions/workflow/status/eirikpre/VSCode-SystemVerilog/test.yaml)](https://github.com/eirikpre/VSCode-SystemVerilog/actions?query=workflow%3ATest+branch%3Amaster)
 
 # SystemVerilog - Language Support
 
