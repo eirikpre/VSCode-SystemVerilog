@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [NEXT_RELEASE]
+
+- Improved format command parsing and error handling per issue #170 `joecrop`
+
 ### [0.13.4]
 
 - Updated Verible lint regular expressions for new output format by `joecrop`
