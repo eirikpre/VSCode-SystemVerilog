@@ -63,7 +63,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
             const codeContent = document.getText();
 
             const formatArgs = [];
-            const userArgs = formatCommand.split(/\s+/);
+            const userArgs = formatCommand.trim().split(/\s+/);
             const executable = userArgs[0];
             if (userArgs.length > 1) {
                 formatArgs.push(...userArgs.slice(1));
@@ -91,7 +91,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
             });
             child.on('error', (err) => {
                 if (err && (<any>err).code === 'ENOENT') {
-                    vscode.window.showInformationMessage(`The '${formatCommand}' command is not available.`);
+                    vscode.window.showInformationMessage(`The '${executable}' command is not available.`);
                     return resolve(null);
                 }
                 return reject(err);
@@ -99,9 +99,7 @@ export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEdi
             child.on('close', (code) => {
                 try {
                     if (stderr.length !== 0) {
-                        this.outputChannel.show();
-                        this.outputChannel.clear();
-                        this.outputChannel.appendLine(stderr);
+                        vscode.window.showInformationMessage(stderr);
                         return reject(new Error('Cannot format due to syntax errors.'));
                     }
 

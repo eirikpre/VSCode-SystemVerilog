@@ -122,6 +122,35 @@ Use the provided settings in a user or workspace `settings.json` as appropriate.
 }
 ```
 
+### Handling Spaces In Executable Paths
+
+Please exercise caution when setting an executable path in the settings, such as the case with  `systemverilog.formatCommand`, `systemverilog.launchConfigurationVerilator`, `systemverilog.launchConfigurationVCS`, and `systemverilog.launchConfigurationVerible`. Any spaces will be assumed to be arguments and not the executable itself. In Windows, for example, you might have an executable configured as follows:
+
+```json
+"systemverilog.formatCommand" : "C:\\Program Files\\verible\\bin\\verible-verilog-format --case_items_alignment=infer"
+```
+
+Because of the space in 'Program Files', the extension will infer that the executable is `C:\\Program` with two arguments: `Files\\verible\\bin\\verible-verilog-format` and `--case_items_alignment=infer`. This breaks the executable path. There are a couple solutions for tihs:
+
+1. (Prefered) Add the executable to your PATH and call it directly.
+  - [Windows instructions](https://www.computerhope.com/issues/ch000549.htm)
+  - [Linux Instructions](https://phoenixnap.com/kb/linux-add-to-path)
+  - [Mac Instructions](https://www.architectryan.com/2012/10/02/add-to-the-path-on-mac-os-x-mountain-lion/#.Uydjga1dXDg)
+
+```json
+"systemverilog.formatCommand" : "verible-verilog-format --case_items_alignment=infer"
+```
+
+2. If you can't edit your path (maybe because of privileges), then don't use spaces in paths. Either move the executable to a different location with no spaces, or (in the case of windows) you can use [DOS short names](https://superuser.com/questions/348079/how-can-i-find-the-short-path-of-a-windows-directory-file) as follows:
+
+```json
+"systemverilog.formatCommand" : "C:\\PROGRA~1\\verible\\bin\\verible-verilog-format --case_items_alignment=infer"
+```
+
+
+
+
+
 ## Known Issues
 
 - Initial indexing might hog CPU/RAM when looking through files in very large workspaces
