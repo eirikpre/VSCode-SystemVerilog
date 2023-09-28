@@ -328,7 +328,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
     let lastPort: string = undefined; // eslint-disable-line no-undef-init
     let lastParameter: string = undefined; // eslint-disable-line no-undef-init
     let passedEqualSign = false;
-
+    let numBracketPast = 0;
     let state = ProcessingState.INITIAL;
 
     for (let i = 0; i < keys.length; i++) {
@@ -353,7 +353,13 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
             }
         } else if (state === ProcessingState.PARAMETERS) {
             if (keys[i] === ')') {
-                state = ProcessingState.PORTS;
+                if (numBracketPast === 0) {
+                    state = ProcessingState.PORTS;
+                } else {
+                    numBracketPast--;
+                }
+            } else if (keys[i] === '(') {
+                numBracketPast++;
             } else if (keys[i] === ',' && lastParameter) {
                 maxLength = Math.max(lastParameter.length, maxLength);
                 lastParameter = undefined;
@@ -371,14 +377,20 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
                 lastParameter = undefined;
             }
 
-            if (keys[i] === ')') {
+            if (keys[i] === ')' && (numBracketPast == 0 )) {
                 state = ProcessingState.COMPLETE;
             } else if (keys[i] === ',' && lastPort) {
                 maxLength = Math.max(lastPort.length, maxLength);
                 lastPort = undefined;
+            } else if (keys[i] === '[') {
+                numBracketPast++;
+            } else if (keys[i] === ']') {
+                numBracketPast--;
             } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
-                lastPort = keys[i].trim();
-            }
+                if (numBracketPast == 0 ){ 
+                    lastPort = keys[i].trim();
+                }
+            } 
         }
 
         // Last item
@@ -418,21 +430,25 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
     }
 
     const output = [];
-    const keys = container.split(' ');
-    let parameterDefault = []; 
+    // Filtering out keys beforehand makes it slightly less time consuming to debug
+    const keys = container.split(' ').filter(el => {
+        if (isEmptyKey(el)) { 
+            return false; 
+        } else { 
+            return true; 
+        }
+    });
+    
     // This is a bit funky, but the for loop below actually checks if these varaibles
     // are undefined so it is important that they are initialized as such
     let lastPort: string = undefined; // eslint-disable-line no-undef-init
     let lastParameter: string = undefined; // eslint-disable-line no-undef-init
-    let lastParameterDefault: string = undefined; // eslint-disable-line no-undef-init
-
+    let parameterDefault = []; 
+    
     let numBracketPast = 0 
     let passedEqualSign = false;
 
     let state = ProcessingState.INITIAL;
-    
-    
-
 
     for (let i = 0; i < keys.length; i++) {
         if (keys[i] === undefined) {
@@ -456,7 +472,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
             }
         } else if (state === ProcessingState.PARAMETERS) {
             if (keys[i] === ')') {
-                if (numBracketPast == 0) {
+                if (numBracketPast === 0) {
                     state = ProcessingState.PORTS;
                 } else {
                     numBracketPast--; 
@@ -468,7 +484,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                     output.push(
                         `${padding}.${lastParameter}${' '.repeat(maxLength - lastParameter.length)}${' '.repeat(4)}(`
                     );
-                    output.push(`${parameterDefault.join('')})`);
+                    output.push(`${parameterDefault.join('')})`);// This will butcher default values for strings with spaces included, sorry. 
 
                     passedEqualSign = false;
                 } else {
@@ -486,7 +502,6 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 parameterDefault = []; 
             } else if (!isParameterSymbol(keys[i]) && !isEmptyKey(keys[i])) {
                 if (passedEqualSign) {
-                    lastParameterDefault = keys[i].trim();
                     if (keys[i] === '(') { 
                         numBracketPast++; 
                     }
