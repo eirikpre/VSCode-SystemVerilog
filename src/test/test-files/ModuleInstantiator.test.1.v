@@ -300,7 +300,6 @@ endmodule
 // ---------------------------------------------------------------
 module arrer (
   input 	     clk,
-  //keep
   input 	     reset,
   input  [(2+2)-1:0] a [2:0],
   input  [3:0] b [(3-1):0] ,
@@ -329,7 +328,6 @@ endmodule
 module azzer #(parameter SIZE = (2*1)+1,
                parameter SIZE_TWO = 2*(1+1)) (
   input 	     clk,
-  //keep
   input 	     reset,
   input  [3:0] a,
   input  [3:0] b,
