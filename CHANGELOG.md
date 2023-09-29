@@ -10,6 +10,15 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [NEXT_RELEASE]
+
+- Improved format command parsing and error handling per issue #170 `joecrop`
+
+### [0.13.4]
+
+- Updated Verible lint regular expressions for new output format by `joecrop`
+- Fixed Windows path recognition in DocumentCompiler by `joecrop`
+
 ### [0.13.3]
 
 - adding `compileOnOpen` setting option by `joennlae`
@@ -18,6 +27,7 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - fix: #177: Properly handle Windows paths in Verilator output by `agg23`
 - Remote ssh performance by `eirikpre`
 - fix: Added debounce delay for saving indexes by `agg23`
+
 
 ### [0.13.2]
 

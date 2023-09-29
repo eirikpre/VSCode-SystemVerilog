@@ -4,5 +4,6 @@
     "systemverilog.disableIndexing": true,
     "systemverilog.documentSymbolsPrecision": "full",
     "editor.tabSize": 2,
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "systemverilog.formatCommand": "C:\\Program Files\\Git\\bin\\git.exe"
 }
