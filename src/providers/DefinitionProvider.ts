@@ -59,8 +59,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                             return commands
                                 .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
                                 .then((symbols: Array<DocumentSymbol | SymbolInformation>) => {
-                                    results.concat(extractLocations(symbols, word, uri, matchPackage[1]));
-                                    resolve(results);
+                                    resolve(extractLocations(symbols, word, uri, matchPackage[1]));
                                 });
                         } else {
                             resolve(undefined);

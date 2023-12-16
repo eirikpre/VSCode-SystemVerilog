@@ -158,12 +158,12 @@ export class SystemVerilogParser {
 
     private r_params: RegExp = new RegExp(
         [
-            /(?<type>parameter)\s+/,
-            /(?:(?<data_type>\w+\s*)*?)/,
+            /(?<type>parameter)/,
+            /(?:(\s+(?<data_type>\w+))*)/,
             // Multi-dimensional arrays
-            /(?:\[.*?\]\s*)*?/,
+            /(?:\s*\[.*?\]\s*)*?/,
             // Multiple declaration not allowed (yet)
-            /(?<name>\w+)\s*/
+            /\s+(?<name>\w+)\s*/
             // Don't track the value, too many branches
         ]
             .map((x) => (typeof x === 'string' ? x : x.source))
