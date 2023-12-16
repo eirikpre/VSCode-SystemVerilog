@@ -73,14 +73,14 @@ suite('Extension Tests', () => {
             symbolPosition
         )) as vscode.Location[];
 
-        if('length' in definition && definition.length > 0) {
+        if ('length' in definition && definition.length > 0) {
             assert.deepStrictEqual(
                 expected,
                 definition[0].range,
-                "Expected: " + JSON.stringify(expected) + " Got: " + JSON.stringify(definition[0].range)
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
             );
         } else {
-            assert.fail("Definition not found");
+            assert.fail('Definition not found');
         }
     });
 
@@ -97,14 +97,14 @@ suite('Extension Tests', () => {
             symbolPosition
         )) as vscode.Location[];
 
-        if('length' in definition && definition.length > 0) {
+        if ('length' in definition && definition.length > 0) {
             assert.deepStrictEqual(
                 expected,
                 definition[0].range,
-                "Expected: " + JSON.stringify(expected) + " Got: " + JSON.stringify(definition[0].range)
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
             );
         } else {
-            assert.fail("Definition not found");
+            assert.fail('Definition not found');
         }
     });
 
@@ -121,14 +121,14 @@ suite('Extension Tests', () => {
             symbolPosition
         )) as vscode.Location[];
 
-        if('length' in definition && definition.length > 0) {
+        if ('length' in definition && definition.length > 0) {
             assert.deepStrictEqual(
                 expected,
                 definition[0].range,
-                "Expected: " + JSON.stringify(expected) + " Got: " + JSON.stringify(definition[0].range)
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
             );
         } else {
-            assert.fail("Definition not found");
+            assert.fail('Definition not found');
         }
     });
 
@@ -150,20 +150,20 @@ suite('Extension Tests', () => {
             symbolPosition
         )) as vscode.Location[];
 
-        if('length' in definition && definition.length > 0) {
+        if ('length' in definition && definition.length > 0) {
             assert.deepStrictEqual(
                 expectedRange,
                 definition[0].range,
-                "Expected: " + JSON.stringify(expectedRange) + " Got: " + JSON.stringify(definition[0].range)
+                'Expected: ' + JSON.stringify(expectedRange) + ' Got: ' + JSON.stringify(definition[0].range)
             );
 
             assert.strictEqual(
                 expectedUri.path,
                 definition[0].uri.path,
-                "Expected: " + expectedUri.path + " Got: " + definition[0].uri.path
+                'Expected: ' + expectedUri.path + ' Got: ' + definition[0].uri.path
             );
         } else {
-            assert.fail("Definition not found");
+            assert.fail('Definition not found');
         }
     });
 
@@ -180,14 +180,14 @@ suite('Extension Tests', () => {
             symbolPosition
         )) as vscode.Location[];
 
-        if('length' in definition && definition.length > 0) {
+        if ('length' in definition && definition.length > 0) {
             assert.deepStrictEqual(
                 expected,
                 definition[0].range,
-                "Expected: " + JSON.stringify(expected) + " Got: " + JSON.stringify(definition[0].range)
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
             );
         } else {
-            assert.fail("Definition not found");
+            assert.fail('Definition not found');
         }
     });
 });
