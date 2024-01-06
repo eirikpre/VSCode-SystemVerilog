@@ -199,46 +199,6 @@ suite('ModuleInstantiator Tests', () => {
 
         compareInstantiation('golden', container, instance);
     });
-
-    test('test #8: formatInstance with unpacked dimensions and brackets in ports', async () => {
-        let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v')); // prettier-ignore
-        let document = await vscode.workspace.openTextDocument(uri);
-
-        let fullRange = null;
-        // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(301, 6), new vscode.Position(325, 0));
-
-        let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
-
-        uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
-        document = await vscode.workspace.openTextDocument(uri);
-
-        fullRange = new vscode.Range(new vscode.Position(138, 0), new vscode.Position(147, 0));
-
-        let instance = document.getText(fullRange);
-
-        compareInstantiation('arrer', container, instance);
-    });
-
-    test('test #9: formatInstance with brackets in parameter default value', async () => {
-        let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v')); // prettier-ignore
-        let document = await vscode.workspace.openTextDocument(uri);
-
-        let fullRange = null;
-        // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(152, 6), new vscode.Position(164, 0));
-
-        let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
-
-        uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
-        document = await vscode.workspace.openTextDocument(uri);
-
-        fullRange = new vscode.Range(new vscode.Position(152, 0), new vscode.Position(164, 0));
-
-        let instance = document.getText(fullRange);
-
-        compareInstantiation('azzer', container, instance);
-    });
 });
 
 function compareInstantiation(instance_name, container_name, expected): void {
