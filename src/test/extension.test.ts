@@ -59,4 +59,135 @@ suite('Extension Tests', () => {
             assert.strictEqual(0, definition.length);
         }
     });
+
+    test('test #5: DefinitionProvider Parameter', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'parameter_test.sv'));
+
+        // Parameter: EMPTY_PARAMETER
+        const symbolPosition = new vscode.Position(23, 23);
+        const expected = new vscode.Range(10, 4, 10, 29);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            assert.deepStrictEqual(
+                expected,
+                definition[0].range,
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
+            );
+        } else {
+            assert.fail('Definition not found');
+        }
+    });
+
+    test('test #6: DefinitionProvider Typed Parameter', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'parameter_test.sv'));
+
+        // Parameter: int unsigned INT_UNSIGNED_PARAMETER
+        const symbolPosition = new vscode.Position(28, 24);
+        const expected = new vscode.Range(15, 4, 15, 50);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            assert.deepStrictEqual(
+                expected,
+                definition[0].range,
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
+            );
+        } else {
+            assert.fail('Definition not found');
+        }
+    });
+
+    test('test #7: DefinitionProvider Typed Array Parameter', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'parameter_test.sv'));
+
+        // Parameter: bit [31:0] BIT_ARRAY_PARAMETER
+        const symbolPosition = new vscode.Position(26, 24);
+        const expected = new vscode.Range(13, 4, 13, 45);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            assert.deepStrictEqual(
+                expected,
+                definition[0].range,
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
+            );
+        } else {
+            assert.fail('Definition not found');
+        }
+    });
+
+    test('test #8: DefinitionProvider Package Parameter', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'parameter_test.sv'));
+        const expectedUri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'package.sv'));
+
+        // Note: For some reason, the package parameters have a different range than other parameters.
+        // Seems like package parameter range only cover the name of the parameter and potentially the equal sign.
+        // Other parameters have included 'parameter' and the type in the range.
+
+        // Parameter: pa_Package::PARAMETER
+        const symbolPosition = new vscode.Position(16, 56);
+        const expectedRange = new vscode.Range(2, 12, 2, 25);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            assert.deepStrictEqual(
+                expectedRange,
+                definition[0].range,
+                'Expected: ' + JSON.stringify(expectedRange) + ' Got: ' + JSON.stringify(definition[0].range)
+            );
+
+            assert.strictEqual(
+                expectedUri.path,
+                definition[0].uri.path,
+                'Expected: ' + expectedUri.path + ' Got: ' + definition[0].uri.path
+            );
+        } else {
+            assert.fail('Definition not found');
+        }
+    });
+
+    test('test #9: DefinitionProvider Port', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'parameter_test.sv'));
+
+        // Port: dataIn
+        const symbolPosition = new vscode.Position(45, 6);
+        const expected = new vscode.Range(1, 4, 1, 16);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            assert.deepStrictEqual(
+                expected,
+                definition[0].range,
+                'Expected: ' + JSON.stringify(expected) + ' Got: ' + JSON.stringify(definition[0].range)
+            );
+        } else {
+            assert.fail('Definition not found');
+        }
+    });
 });

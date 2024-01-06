@@ -31,18 +31,18 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                     commands
                         .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${container}`)
                         .then((res: SymbolInformation[]) => {
-                            return Promise.all(
-                                res.map(async (x) => {
-                                    commands
-                                        .executeCommand('vscode.executeDocumentSymbolProvider', x.location.uri, word)
-                                        .then((symbols: Array<SymbolInformation | DocumentSymbol>) => {
-                                            results.concat(extractLocations(symbols, word, x.location.uri, container));
-                                        });
-                                })
-                            );
-                        })
-                        .then(() => {
-                            resolve(results);
+                            const locationPromises = res.map((x) => {
+                                return commands
+                                    .executeCommand('vscode.executeDocumentSymbolProvider', x.location.uri, word)
+                                    .then((symbols: Array<SymbolInformation | DocumentSymbol>) => {
+                                        return extractLocations(symbols, word, x.location.uri, container);
+                                    });
+                            });
+
+                            Promise.all(locationPromises).then((locLists: Location[][]) => {
+                                locLists.forEach((locList: Location[]) => results.push(...locList));
+                                resolve(results);
+                            });
                         });
                 }
             }
@@ -60,8 +60,7 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                             return commands
                                 .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
                                 .then((symbols: Array<DocumentSymbol | SymbolInformation>) => {
-                                    results.concat(extractLocations(symbols, word, uri, matchPackage[1]));
-                                    resolve(results);
+                                    resolve(extractLocations(symbols, word, uri, matchPackage[1]));
                                 });
                         } else {
                             resolve(undefined);
