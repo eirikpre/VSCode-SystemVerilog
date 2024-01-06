@@ -430,7 +430,10 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
     }
 
     const output = [];
-    // Filtering out keys beforehand makes it slightly less time consuming to debug
+
+    const keys = container.split(' ');
+    // Filtering out keys beforehand makes it slightly less time consuming to debug but also breaks the comment grabber so don't do this: 
+    /*
     const keys = container.split(' ').filter((el) => {
         if (isEmptyKey(el)) {
             return false;
@@ -438,6 +441,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
             return true;
         }
     });
+    */
 
     // This is a bit funky, but the for loop below actually checks if these varaibles
     // are undefined so it is important that they are initialized as such
