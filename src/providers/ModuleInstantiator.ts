@@ -285,8 +285,6 @@ function cleanUpContainer(container: string): string {
     container = container.replace(/=/g, ' = ');
     container = container.replace(/\(/g, ' ( ');
     container = container.replace(/\)/g, ' ) ');
-    container = container.replace(/\[/g, ' [ ');
-    container = container.replace(/\]/g, ' ] ');
     container = container.replace(/\/\//g, ' // ');
     container = container.replace(/\/\*/g, ' /* ');
 
@@ -328,7 +326,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
     let lastPort: string = undefined; // eslint-disable-line no-undef-init
     let lastParameter: string = undefined; // eslint-disable-line no-undef-init
     let passedEqualSign = false;
-    let numBracketPast = 0;
+
     let state = ProcessingState.INITIAL;
 
     for (let i = 0; i < keys.length; i++) {
@@ -353,13 +351,7 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
             }
         } else if (state === ProcessingState.PARAMETERS) {
             if (keys[i] === ')') {
-                if (numBracketPast === 0) {
-                    state = ProcessingState.PORTS;
-                } else {
-                    numBracketPast -= 1;
-                }
-            } else if (keys[i] === '(') {
-                numBracketPast += 1;
+                state = ProcessingState.PORTS;
             } else if (keys[i] === ',' && lastParameter) {
                 maxLength = Math.max(lastParameter.length, maxLength);
                 lastParameter = undefined;
@@ -377,19 +369,13 @@ function findMaxLength(container: string, moduleIsParameterized: boolean): numbe
                 lastParameter = undefined;
             }
 
-            if (keys[i] === ')' && numBracketPast == 0) {
+            if (keys[i] === ')') {
                 state = ProcessingState.COMPLETE;
             } else if (keys[i] === ',' && lastPort) {
                 maxLength = Math.max(lastPort.length, maxLength);
                 lastPort = undefined;
-            } else if (keys[i] === '[') {
-                numBracketPast += 1;
-            } else if (keys[i] === ']') {
-                numBracketPast -= 1;
             } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
-                if (numBracketPast == 0) {
-                    lastPort = keys[i].trim();
-                }
+                lastPort = keys[i].trim();
             }
         }
 
@@ -430,22 +416,14 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
     }
 
     const output = [];
-    // Filtering out keys beforehand makes it slightly less time consuming to debug
-    const keys = container.split(' ').filter((el) => {
-        if (isEmptyKey(el)) {
-            return false;
-        } else {
-            return true;
-        }
-    });
+    const keys = container.split(' ');
 
     // This is a bit funky, but the for loop below actually checks if these varaibles
     // are undefined so it is important that they are initialized as such
     let lastPort: string = undefined; // eslint-disable-line no-undef-init
     let lastParameter: string = undefined; // eslint-disable-line no-undef-init
-    let parameterDefault = [];
+    let lastParameterDefault: string = undefined; // eslint-disable-line no-undef-init
 
-    let numBracketPast = 0;
     let passedEqualSign = false;
 
     let state = ProcessingState.INITIAL;
@@ -472,19 +450,14 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
             }
         } else if (state === ProcessingState.PARAMETERS) {
             if (keys[i] === ')') {
-                if (numBracketPast === 0) {
-                    state = ProcessingState.PORTS;
-                } else {
-                    numBracketPast -= 1;
-                    parameterDefault.push(keys[i].trim());
-                }
+                state = ProcessingState.PORTS;
             } else if (keys[i] === ',' && lastParameter) {
                 // Set with default value if it exists
                 if (passedEqualSign) {
                     output.push(
                         `${padding}.${lastParameter}${' '.repeat(maxLength - lastParameter.length)}${' '.repeat(4)}(`
                     );
-                    output.push(`${parameterDefault.join('')})`); // This will butcher default values for strings with spaces included, sorry.
+                    output.push(`${lastParameterDefault})`);
 
                     passedEqualSign = false;
                 } else {
@@ -499,13 +472,9 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 lastParameter = undefined;
             } else if (keys[i] === '=') {
                 passedEqualSign = true;
-                parameterDefault = [];
             } else if (!isParameterSymbol(keys[i]) && !isEmptyKey(keys[i])) {
                 if (passedEqualSign) {
-                    if (keys[i] === '(') {
-                        numBracketPast += 1;
-                    }
-                    parameterDefault.push(keys[i].trim());
+                    lastParameterDefault = keys[i].trim();
                 } else {
                     lastParameter = keys[i].trim();
                 }
@@ -517,7 +486,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                     output.push(
                         `${padding}.${lastParameter}${' '.repeat(maxLength - lastParameter.length)}${' '.repeat(4)}(`
                     );
-                    output.push(`${parameterDefault.join('')})\n`);
+                    output.push(`${lastParameterDefault})\n`);
 
                     passedEqualSign = false;
                 } else {
@@ -531,7 +500,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                 lastParameter = undefined;
             }
 
-            if (keys[i] === ')' && numBracketPast == 0) {
+            if (keys[i] === ')') {
                 state = ProcessingState.COMPLETE;
             } else if (keys[i] === ',' && lastPort) {
                 output.push(
@@ -541,13 +510,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
 
                 lastPort = undefined;
             } else if (!isPortSymbol(keys[i]) && !isEmptyKey(keys[i])) {
-                if (keys[i] === '[') {
-                    numBracketPast += 1;
-                } else if (keys[i] === ']') {
-                    numBracketPast -= 1;
-                } else if (numBracketPast == 0) {
-                    lastPort = keys[i].trim();
-                }
+                lastPort = keys[i].trim();
             }
         }
 
@@ -559,7 +522,7 @@ function parseContainer(symbol: string, container: string, moduleIsParameterized
                     output.push(
                         `${padding}.${lastParameter}${' '.repeat(maxLength - lastParameter.length)}${' '.repeat(4)}(`
                     );
-                    output.push(`${parameterDefault.join('')})\n`);
+                    output.push(`${lastParameterDefault})\n`);
 
                     passedEqualSign = false;
                 } else {
