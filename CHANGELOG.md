@@ -10,9 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
-### [NEXT_RELEASE]
+### [0.13.5]
 
 - Improved format command parsing and error handling per issue #170 `joecrop`
+- DefinitionProvider bugfixes by `LarsAur`
 
 ### [0.13.4]
 
