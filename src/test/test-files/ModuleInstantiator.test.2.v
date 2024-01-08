@@ -137,12 +137,12 @@ golden u_golden (
 // ---------------------------------------------------------------
 
 arrer u_arrer (
-  .clk         (clk),
-  .reset       (reset),
-  .a           (a),
-  .b           (b),
-  .valid       (valid),
-  .c           (c)
+  .clk      (clk),
+  .reset    (reset),
+  .a        (a),
+  .b        (b),
+  .valid    (valid),
+  .c        (c)
 );
 
 

@@ -206,14 +206,14 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(301, 6), new vscode.Position(325, 0));
+        fullRange = new vscode.Range(new vscode.Position(300, 6), new vscode.Position(324, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
 
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(new vscode.Position(138, 0), new vscode.Position(147, 0));
+        fullRange = new vscode.Range(new vscode.Position(137, 0), new vscode.Position(146, 0));
 
         let instance = document.getText(fullRange);
 
@@ -226,7 +226,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(152, 6), new vscode.Position(164, 0));
+        fullRange = new vscode.Range(new vscode.Position(328, 6), new vscode.Position(353, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
 
