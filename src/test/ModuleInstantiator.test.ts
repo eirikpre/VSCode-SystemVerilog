@@ -233,7 +233,7 @@ suite('ModuleInstantiator Tests', () => {
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
 
-        fullRange = new vscode.Range(new vscode.Position(152, 0), new vscode.Position(164, 0));
+        fullRange = new vscode.Range(new vscode.Position(151, 0), new vscode.Position(163, 0));
 
         let instance = document.getText(fullRange);
 

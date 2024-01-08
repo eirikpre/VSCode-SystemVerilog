@@ -298,6 +298,7 @@ endmodule
 // ---------------------------------------------------------------
 // -- Example of ports with unpacked dimensions and brackets
 // ---------------------------------------------------------------
+
 module arrer (
   input 	     clk,
   input 	     reset,
@@ -325,6 +326,7 @@ endmodule
 // ---------------------------------------------------------------
 // -- Example of parameters with brackets
 // ---------------------------------------------------------------
+
 module azzer #(parameter SIZE = (2*1)+1,
                parameter SIZE_TWO = 2*(1+1)) (
   input 	     clk,
