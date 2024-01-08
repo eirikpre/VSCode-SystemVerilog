@@ -48,12 +48,16 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 
 ## Settings
 
-- `systemverilog.includeIndexing`: _Array_, Files included for indexing (glob pattern). Examples:
+- `systemverilog.includeIndexing`: _String_, Files included for indexing \([glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns)\). Examples:
   - Include files within the workspace's rtl folder (`*` at front of pattern denotes path is relative to workspace root): `**/rtl/**/*.{sv,v,svh,vh}`
   - Add all files with a '.svp' extension: `**/*.svp`
   - Add files only when in a specific workspace: `/abs/path/to/workspace/rtl/**/*.{sv,v,svh,vh}`
 - `systemverilog.disableIndexing`: _Boolean_, Disable indexing
-- `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on glob
+- `systemverilog.excludeIndexing`: _String_, Exclude files from indexing based on a [glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns). Examples:
+  - Exclude all files in the 'synth' folder: `**/synth/*`
+  - Exclude more than one folder: `**/{synth,pnr}/**`
+  - Exclude .v files in the 'compile' folder: `**/compile/*.v`
+  - Exclude .v files in the 'compile' dir and exclude all files in the 'synth' folder: `{**/synth/**,**/compile/*.v}`
 - `systemverilog.forceFastIndexing`: _Boolean_, Use fast regular expression parsing
 - `systemverilog.enableIncrementalIndexing`: _Boolean_, Enable incremental indexation as files are opened
 - `systemverilog.parallelProcessing`: _Integer_, Number of files to process in parallel during indexing
@@ -76,7 +80,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - `systemverilog.launchConfigurationVerible`: _String_, Command to run when launching Verible
   - Default: _verible-verilog-lint_
   - If not in path, replace _verible-verilog-lint_ with the appropriate command
-- `systemverilog.excludeCompiling`: _String_, Files excluded from compiling when saved based on glob
+- `systemverilog.excludeCompiling`: _String_, Files excluded from compiling when saved based on a [glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns)
 - `systemverilog.compileOnSave`: _Boolean_, Compile files when saved
   - Default: `true`
 - `systemverilog.compilerType`: _String_, Dropdown list to select a compiler type
