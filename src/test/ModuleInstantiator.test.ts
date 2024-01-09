@@ -226,7 +226,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(328, 6), new vscode.Position(353, 0));
+        fullRange = new vscode.Range(new vscode.Position(327, 6), new vscode.Position(353, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
 
