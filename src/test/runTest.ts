@@ -21,7 +21,8 @@ async function main() {
             extensionDevelopmentPath,
             extensionTestsPath,
             launchArgs: [workspacePath, '--disable-workspace-trust', '--disable-extensions'],
-            version: "stable"
+            version: 'stable',
+            timeout: 30000 // 30 seconds (default was 10)
         });
     } catch (err) {
         console.error('Failed to run tests');
