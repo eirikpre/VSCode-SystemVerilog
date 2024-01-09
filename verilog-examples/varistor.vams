@@ -1,0 +1,89 @@
+// Varistor Model
+//  Equations taken from "Modeling Varistors with PSpice: Simulation
+//  Beats Trial and Error" by M. Holzer and W. Zapsky, found in
+//  Compliance Engineering, May/June 1999.
+//  http://www.ce-mag.com/archive/1999/mayjune/Holzer.html
+//  Verilog-A translation by Geoffrey Coram, Analog Devices, Inc.
+//
+// Version 1a, 28 July 03
+//
+// Downloaded from The Designer's Guide (www.designers-guide.org).
+// Post any questions on www.designers-guide.org/Forum.
+//
+// The constitutive equation in the paper is applied for I > Imin
+// and reflected for I < -Imin.  A simple linear interpolation is
+// used between (Imin,V(Imin)) and (-Imin,V(-Imin)).
+//
+// Note that these equations use LOG10 instead of LN (natural log);
+// this was required to match Figure 2 in the paper, though one 
+// might have expected LN to go with the exponentials.
+// Also, the paper mentions in a 100uOhm series resistor, but I don't
+// understand its purpose.  You may set R=0 in this formulation.
+
+`include "disciplines.vams"
+`include "constants.vams"
+
+module varistor(p, n);
+	inout p, n;
+	electrical p, n;
+	electrical pi, mid;
+	branch (p,pi) br_rseries;
+	branch (pi,mid) br_lseries;
+	branch (mid,n) br_cparallel;
+	branch (mid,n) br_nonlin;
+
+	parameter real R = 100u from [0:inf);
+	parameter real T = 1.0 from (0:inf);
+	parameter real C = 1.0e-12 from (0:inf);
+	parameter real L = 1.0e-9 from (0:inf);
+	parameter real B1 = 1.0 from (0:inf);
+	parameter real B2 = 1.0 from (0:inf);
+	parameter real B3 = 0.0 from (-inf:inf);
+	parameter real B4 = 0.0 from (0:inf);
+	parameter real Imax = 1.0e7 from (0:inf);
+	parameter real Imin = 1.0e-7 from (0:inf);
+
+	analog function real powlogV;
+    input logibr, B1, B2, B3, B4;
+    real logibr, B1, B2, B3, B4;
+
+    powlogV = pow(10.0,B1 + B2*(logibr) + B3*exp(-logibr) + B4*exp(logibr));
+	endfunction
+
+	analog begin : the_module
+    real ibranch, logibr, vbranch, rlin;
+
+		// series resistance (may be 0)
+    V(br_rseries) <+ R * I(br_rseries);
+
+		// series inductance
+    V(br_lseries) <+ L * ddt(I(br_lseries));
+
+		// parallel capacitance
+    I(br_cparallel) <+ C * ddt(V(br_cparallel));
+
+		// nonlinear branch
+    ibranch = I(br_nonlin);
+    if (ibranch > Imin) begin
+        logibr = log(ibranch);
+        vbranch = powlogV(logibr,B1,B2,B3,B4);
+    end else if (ibranch < -Imin) begin
+        logibr = log(-ibranch);
+        vbranch = -powlogV(logibr,B1,B2,B3,B4);
+    end else begin
+        // linear interpolation for -Imin < I < Imin
+        logibr = log(Imin);
+        rlin = powlogV(logibr,B1,B2,B3,B4)/Imin;
+        vbranch = rlin * ibranch;
+    end
+    V(br_nonlin) <+ T * vbranch;
+
+		// check maximum current
+    @(cross(abs(ibranch)-Imax, +1))
+        $strobe("Varistor current exceeds Imax.");
+
+    if (analysis("static") && abs(ibranch) > Imax)
+        $strobe("Varistor current exceeds Imax.");
+
+	end  
+endmodule

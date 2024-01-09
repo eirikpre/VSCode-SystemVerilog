@@ -53,10 +53,30 @@
                     "Systemverilog"
                 ],
                 "extensions": [
-                    ".sv",
+                    ".sv"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./resources/sv.svg",
+                    "dark": "./resources/sv.svg"
+                }
+            },
+            {
+                "id": "systemverilogheader",
+                "aliases": [
+                    "SystemVerilog",
+                    "systemverilog",
+                    "System Verilog",
+                    "Systemverilog"
+                ],
+                "extensions": [
                     ".svh"
                 ],
-                "configuration": "./language-configuration.json"
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./resources/svh.svg",
+                    "dark": "./resources/svh.svg"
+                }
             },
             {
                 "id": "verilog",
@@ -65,10 +85,60 @@
                     "verilog"
                 ],
                 "extensions": [
-                    ".v",
+                    ".v"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./resources/v.svg",
+                    "dark": "./resources/v.svg"
+                }
+            },
+            {
+                "id": "verilogheader",
+                "aliases": [
+                    "Verilog",
+                    "verilog"
+                ],
+                "extensions": [
                     ".vh"
                 ],
-                "configuration": "./language-configuration.json"
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./resources/vh-light.svg",
+                    "dark": "./resources/vh-dark.svg"
+                }
+            },
+            {
+                "id": "verilogams",
+                "aliases": [
+                    "Verilog-AMS",
+                    "VerilogAMS",
+                    "verilogams"
+                ],
+                "extensions": [
+                    ".vams"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./resources/vams.svg",
+                    "dark": "./resources/vams.svg"
+                }
+            },
+            {
+                "id": "veriloga",
+                "aliases": [
+                    "Verilog-A",
+                    "VerilogA",
+                    "veriloga"
+                ],
+                "extensions": [
+                    ".va"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./resources/va.svg",
+                    "dark": "./resources/va.svg"
+                }
             }
         ],
         "snippets": [
@@ -78,6 +148,14 @@
             },
             {
                 "language": "verilog",
+                "path": "./snippets/systemverilog.json"
+            },
+            {
+                "language": "systemverilogheader",
+                "path": "./snippets/systemverilog.json"
+            },
+            {
+                "language": "verilogheader",
                 "path": "./snippets/systemverilog.json"
             }
         ],
@@ -89,6 +167,26 @@
             },
             {
                 "language": "verilog",
+                "scopeName": "source.systemverilog",
+                "path": "./syntaxes/systemverilog.tmLanguage.json"
+            },
+            {
+                "language": "systemverilogheader",
+                "scopeName": "source.systemverilog",
+                "path": "./syntaxes/systemverilog.tmLanguage.json"
+            },
+            {
+                "language": "verilogheader",
+                "scopeName": "source.systemverilog",
+                "path": "./syntaxes/systemverilog.tmLanguage.json"
+            },
+            {
+                "language": "verilogams",
+                "scopeName": "source.systemverilog",
+                "path": "./syntaxes/systemverilog.tmLanguage.json"
+            },
+            {
+                "language": "veriloga",
                 "scopeName": "source.systemverilog",
                 "path": "./syntaxes/systemverilog.tmLanguage.json"
             },
@@ -455,6 +553,7 @@
         "@types/vscode": "^1.61.0",
         "@typescript-eslint/eslint-plugin": "^5.14.0",
         "@typescript-eslint/parser": "^5.14.0",
+        "@vscode/test-electron": "^2.3.8",
         "antlr4ts-cli": "^0.5.0-alpha.4",
         "eslint": "^8.11.0",
         "eslint-config-airbnb-base": "15.0.0",
@@ -477,7 +576,6 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
-        "@vscode/test-electron": "^2.3.8",
         "antlr4ts": "^0.5.0-alpha.4",
         "child_process": "^1.0.2",
         "glob": "^7.2.0",
