@@ -10,6 +10,12 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.6]
+
+- Fix auto-instantiation failing on extra parentheses by `richzwart`
+- Added filetype icons inspired by [vscode-material-icon-theme](https://github.com/PKief/vscode-material-icon-theme) by `joecrop`
+- Added support for Verilog-A and Verilog-AMS syntax highlighting by `joecrop`
+
 ### [0.13.5]
 
 - Improved format command parsing and error handling per issue #170 `joecrop`
