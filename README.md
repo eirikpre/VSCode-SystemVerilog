@@ -48,7 +48,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 
 ## Settings
 
-- `systemverilog.includeIndexing`: _String_, Files included for indexing \([glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns)\). Examples:
+- `systemverilog.includeIndexing`: _Array_, Files included for indexing \([glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns)\). Examples:
   - Include files within the workspace's rtl folder (`*` at front of pattern denotes path is relative to workspace root): `**/rtl/**/*.{sv,v,svh,vh}`
   - Add all files with a '.svp' extension: `**/*.svp`
   - Add files only when in a specific workspace: `/abs/path/to/workspace/rtl/**/*.{sv,v,svh,vh}`
