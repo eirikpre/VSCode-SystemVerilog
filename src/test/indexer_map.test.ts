@@ -31,10 +31,10 @@ suite('indexer_map Tests', () => {
         assert.strictEqual(symbols.size, 4);
         let count = await indexer.addDocumentSymbols(sVDocument, symbols);
 
-        assert.strictEqual(count, 8);
+        assert.strictEqual(count, 10);
         assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(symbols.get(uri.fsPath).length, 8);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(symbols.get(uri.fsPath).length, 10);
+        assert.strictEqual(getSymbolsCount(), 23);
 
         documentSymbols.forEach((symbolName) => {
             if (!symbolExists(symbolName)) {
@@ -47,28 +47,28 @@ suite('indexer_map Tests', () => {
         assert.strictEqual(count, 0);
         assert.strictEqual(symbols.size, 5);
         assert.strictEqual(symbols.get(nonSVUri.fsPath), undefined);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(getSymbolsCount(), 23);
 
         // undefined/null document
         count = await indexer.addDocumentSymbols(undefined, symbols);
         assert.strictEqual(count, 0);
         assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(getSymbolsCount(), 23);
 
         count = await indexer.addDocumentSymbols(sVDocument, undefined);
         assert.strictEqual(count, 0);
         assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(getSymbolsCount(), 23);
 
         count = await indexer.addDocumentSymbols(undefined, undefined);
         assert.strictEqual(count, 0);
         assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(getSymbolsCount(), 23);
 
         count = await indexer.addDocumentSymbols(null, symbols);
         assert.strictEqual(count, 0);
         assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(getSymbolsCount(), 23);
     });
 
     test('test #2: removeDocumentSymbols', async () => {
@@ -80,9 +80,9 @@ suite('indexer_map Tests', () => {
         assert.strictEqual(symbols.size, 4);
         let count = await indexer.addDocumentSymbols(sVDocument, symbols);
 
-        assert.strictEqual(count, 8);
+        assert.strictEqual(count, 10);
         assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 21);
+        assert.strictEqual(getSymbolsCount(), 23);
 
         count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, symbols);
 
@@ -92,7 +92,7 @@ suite('indexer_map Tests', () => {
             }
         });
 
-        assert.strictEqual(count, -8);
+        assert.strictEqual(count, -10);
         assert.strictEqual(symbols.size, 4);
         assert.strictEqual(getSymbolsCount(), 13);
 

@@ -293,3 +293,61 @@ module golden(
   assign c = tmp_c;
 
 endmodule
+
+
+// ---------------------------------------------------------------
+// -- Example of ports with unpacked dimensions and brackets
+// ---------------------------------------------------------------
+
+module arrer (
+  input 	     clk,
+  input 	     reset,
+  input  [(2+2)-1:0] a [2:0],
+  input  [3:0] b [(3-1):0] ,
+  input        valid,
+  output [6:0] c
+  );
+
+  input 	     clk;
+  input 	     reset;
+  input  [3:0] a;
+  // keep this single comment
+  input  [3:0] b;
+  /* multiline comment should
+  be kept*/
+  input        valid;
+  output [6:0] c;
+
+  reg [6:0] tmp_c;
+  assign c = tmp_c;
+
+endmodule
+
+// ---------------------------------------------------------------
+// -- Example of parameters with brackets
+// ---------------------------------------------------------------
+
+module azzer #(parameter SIZE = (2*1)+1,
+               parameter SIZE_TWO = 2*(1+1)) (
+  input 	     clk,
+  input 	     reset,
+  input  [3:0] a,
+  input  [3:0] b,
+  input        valid,
+  output [6:0] c
+  );
+
+  input 	     clk;
+  input 	     reset;
+  input  [3:0] a;
+  // keep this single comment
+  input  [3:0] b;
+  /* multiline comment should
+  be kept*/
+  input        valid;
+  output [6:0] c;
+
+  reg [6:0] tmp_c;
+  assign c = tmp_c;
+
+endmodule
