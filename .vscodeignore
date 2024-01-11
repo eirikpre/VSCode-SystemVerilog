@@ -13,6 +13,7 @@ out/
 # out/wip/
 resources/*
 !resources/icon.png
+!resources/*.svg
 src/
 syntaxes/systemverilog.tmLanguage.yaml
 verilog-examples/
