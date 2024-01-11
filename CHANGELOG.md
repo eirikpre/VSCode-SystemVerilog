@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.7]
+
+- Added missing filetype icons by `joecrop`
+
 ### [0.13.6]
 
 - Fix auto-instantiation failing on extra parentheses by `richzwart`
