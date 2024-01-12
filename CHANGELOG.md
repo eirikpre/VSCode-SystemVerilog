@@ -10,6 +10,11 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.8]
+
+- Corrected icons for light themes by `joecrop`
+- Added basic syntax highlighting for .f files by `joecrop`
+
 ### [0.13.7]
 
 - Added missing filetype icons by `joecrop`
