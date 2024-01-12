@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog and SystemVerilog.",
-    "version": "0.13.7",
+    "version": "0.13.8",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -55,10 +55,10 @@
                 "extensions": [
                     ".sv"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./configs/systemVerilog.json",
                 "icon": {
-                    "light": "./resources/sv.svg",
-                    "dark": "./resources/sv.svg"
+                    "light": "./resources/sv_light.svg",
+                    "dark": "./resources/sv_dark.svg"
                 }
             },
             {
@@ -72,10 +72,10 @@
                 "extensions": [
                     ".svh"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./configs/systemVerilog.json",
                 "icon": {
-                    "light": "./resources/svh.svg",
-                    "dark": "./resources/svh.svg"
+                    "light": "./resources/svh_light.svg",
+                    "dark": "./resources/svh_dark.svg"
                 }
             },
             {
@@ -87,10 +87,10 @@
                 "extensions": [
                     ".v"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./configs/systemVerilog.json",
                 "icon": {
-                    "light": "./resources/v.svg",
-                    "dark": "./resources/v.svg"
+                    "light": "./resources/v_light.svg",
+                    "dark": "./resources/v_dark.svg"
                 }
             },
             {
@@ -102,10 +102,10 @@
                 "extensions": [
                     ".vh"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./configs/systemVerilog.json",
                 "icon": {
-                    "light": "./resources/vh-light.svg",
-                    "dark": "./resources/vh-dark.svg"
+                    "light": "./resources/vh_light.svg",
+                    "dark": "./resources/vh_dark.svg"
                 }
             },
             {
@@ -118,7 +118,7 @@
                 "extensions": [
                     ".vams"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./configs/systemVerilog.json",
                 "icon": {
                     "light": "./resources/vams.svg",
                     "dark": "./resources/vams.svg"
@@ -134,10 +134,26 @@
                 "extensions": [
                     ".va"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./configs/systemVerilog.json",
                 "icon": {
                     "light": "./resources/va.svg",
                     "dark": "./resources/va.svg"
+                }
+            },
+            {
+                "id": "verilog-filelist",
+                "aliases": [
+                    "Verilog Filelist",
+                    "verilog-filelist",
+                    "Dot-F File"
+                ],
+                "extensions": [
+                    ".f"
+                ],
+                "configuration": "./configs/verilogFileList.json",
+                "icon": {
+                    "light": "./resources/f_light.svg",
+                    "dark": "./resources/f_dark.svg"
                 }
             }
         ],
@@ -200,6 +216,11 @@
                     "meta.embedded.block.systemverilog": "source.systemverilog",
                     "meta.embedded.block.verilog": "source.verilog"
                 }
+            },
+            {
+                "language": "verilog-filelist",
+                "scopeName": "source.verilog-filelist",
+                "path": "./syntaxes/verilog-filelist.json"
             }
         ],
         "configuration": [
