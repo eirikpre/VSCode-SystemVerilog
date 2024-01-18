@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog and SystemVerilog.",
-    "version": "0.13.8",
+    "version": "0.13.9",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -155,6 +155,34 @@
                     "light": "./resources/f_light.svg",
                     "dark": "./resources/f_dark.svg"
                 }
+            },
+            {
+                "id": "sdc",
+                "aliases": [
+                    "Synopsys Design Constraints"
+                ],
+                "extensions": [
+                    ".sdc"
+                ],
+                "configuration": "./configs/sdc.json",
+                "icon": {
+                    "light": "./resources/sdc_light.svg",
+                    "dark": "./resources/sdc_dark.svg"
+                }
+            },
+            {
+                "id": "xdc",
+                "aliases": [
+                    "Xilinx Design Constraints"
+                ],
+                "extensions": [
+                    ".xdc"
+                ],
+                "configuration": "./configs/sdc.json",
+                "icon": {
+                    "light": "./resources/sdc_light.svg",
+                    "dark": "./resources/sdc_dark.svg"
+                }
             }
         ],
         "snippets": [
@@ -221,6 +249,16 @@
                 "language": "verilog-filelist",
                 "scopeName": "source.verilog-filelist",
                 "path": "./syntaxes/verilog-filelist.json"
+            },
+            {
+                "language": "sdc",
+                "scopeName": "source.sdc",
+                "path": "./syntaxes/sdc.json"
+            },
+            {
+                "language": "xdc",
+                "scopeName": "source.sdc",
+                "path": "./syntaxes/sdc.json"
             }
         ],
         "configuration": [

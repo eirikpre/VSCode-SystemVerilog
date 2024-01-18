@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.9]
+
+- Added basic syntax highlighting support for sdc/xdc files inspired by [https://github.com/mshr-h/vscode-verilog-hdl-support](vscode-verilog-hdl-support) by `joecrop`
+
 ### [0.13.8]
 
 - Corrected icons for light themes by `joecrop`
