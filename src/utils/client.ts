@@ -7,7 +7,7 @@ import { TextDocument } from 'vscode';
     @return true if the document is a SystemVerilog file
 */
 export function isSystemVerilogDocument(document: TextDocument | undefined): boolean {
-    return ((document?.languageId === 'systemverilog') || (document?.languageId === 'systemverilogheader'));
+    return document?.languageId === 'systemverilog' || document?.languageId === 'systemverilogheader';
 }
 
 /**
@@ -17,7 +17,7 @@ export function isSystemVerilogDocument(document: TextDocument | undefined): boo
     @return true if the document is a Verilog file
 */
 export function isVerilogDocument(document: TextDocument | undefined): boolean {
-    return ((document?.languageId === 'verilog') || (document?.languageId === 'verilogheader'));
+    return document?.languageId === 'verilog' || document?.languageId === 'verilogheader';
 }
 
 /**
@@ -27,5 +27,5 @@ export function isVerilogDocument(document: TextDocument | undefined): boolean {
     @return true if the document is a Verilog file
 */
 export function isVerilogAMSDocument(document: TextDocument | undefined): boolean {
-    return ((document?.languageId === 'veriloga') || (document?.languageId === 'verilogams'));
+    return document?.languageId === 'veriloga' || document?.languageId === 'verilogams';
 }

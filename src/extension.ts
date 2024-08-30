@@ -24,7 +24,7 @@ const selector: DocumentSelector = [
     { scheme: 'file', language: 'verilog' },
     { scheme: 'file', language: 'verilogheader' },
     { scheme: 'file', language: 'veriloga' },
-    { scheme: 'file', language: 'verilogams' },
+    { scheme: 'file', language: 'verilogams' }
 ];
 
 let indexer: SystemVerilogIndexer | undefined = undefined;
