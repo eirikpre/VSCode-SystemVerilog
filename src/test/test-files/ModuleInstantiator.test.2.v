@@ -163,5 +163,41 @@ azzer #(
 );
 
 // -------------------------------------------------------
+// -- Example without parameters and with import
+// -------------------------------------------------------
+
+abber u_abber (
+  .clk      (clk),
+  .reset    (reset),
+  .a        (a),
+  // keep this single comment
+  .b        (b),
+  /* multiline comment should
+  be kept*/
+  .valid    (valid),
+  .c        (c)
+);
+
+// -------------------------------------------------------
+// -- Example with parameters and specific import
+// -------------------------------------------------------
+
+affer #(
+  .SIZE        (PARAMETER1),
+  .SIZE_TWO    (SIZE_TWO)
+) u_affer (
+  .clk         (clk),
+  .reset       (reset),
+  .a           (a),
+  // keep this single comment
+  .b           (b),
+  /* multiline comment should
+  be kept*/
+  .valid       (valid),
+  .c           (c)
+);
+
+
+// -------------------------------------------------------
 // -- End file
 // -------------------------------------------------------

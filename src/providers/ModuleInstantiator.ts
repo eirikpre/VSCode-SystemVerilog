@@ -108,7 +108,7 @@ function isModuleParameterized(symbol: string, container: string): boolean {
     // Remove new lines
     container = container.replace(/\r\n|\n|\r/g, ' ');
     // Surround '#(' with space
-    container = container.replace(/#\(/g, ' #( ');
+    container = container.replace(/#\s*\(/g, ' #( ');
     // Replace multiple white spaces with a single whitespace
     container = container.replace(/\t+/g, ' ');
     container = container.replace(/  +/g, ' ');
@@ -118,7 +118,13 @@ function isModuleParameterized(symbol: string, container: string): boolean {
         return false;
     }
 
-    if (keys[0] === symbol && keys[1] === '#(') {
+    // Get only indexes related to module header
+    const subkeys = keys.slice(
+        0,
+        keys.findIndex((element) => element.includes(';') && !element.includes('::'))
+    );
+
+    if (subkeys[0] === symbol && subkeys.find((element) => element === '#(')) {
         return true;
     }
 

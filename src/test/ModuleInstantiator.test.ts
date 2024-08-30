@@ -206,7 +206,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let fullRange = null;
         // Range of the module in the document
-        fullRange = new vscode.Range(new vscode.Position(300, 6), new vscode.Position(324, 0));
+        fullRange = new vscode.Range(new vscode.Position(301, 6), new vscode.Position(324, 0));
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
 
@@ -238,6 +238,46 @@ suite('ModuleInstantiator Tests', () => {
         let instance = document.getText(fullRange);
 
         compareInstantiation('azzer', container, instance);
+    });
+
+    test('test #10: formatInstance without parameters and with import', async () => {
+        let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v')); // prettier-ignore
+        let document = await vscode.workspace.openTextDocument(uri);
+
+        // Range of the module in the document
+        let fullRange = null;
+        fullRange = new vscode.Range(new vscode.Position(358, 6), new vscode.Position(392, 0));
+
+        const container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
+        uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
+        document = await vscode.workspace.openTextDocument(uri);
+        fullRange = new vscode.Range(new vscode.Position(168, 0), new vscode.Position(179, 0));
+
+        let instance = document.getText(fullRange);
+
+        compareInstantiation('abber', container, instance);
+    });
+
+    test('test #11: formatInstance with parameters and specific import', async () => {
+        let uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.1.v')); // prettier-ignore
+        let document = await vscode.workspace.openTextDocument(uri);
+
+        let fullRange = null;
+        // Range of the module in the document
+        fullRange = new vscode.Range(new vscode.Position(395, 6), new vscode.Position(431, 0));
+
+        let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
+
+        console.log('Container \n\r' + container);
+
+        uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
+        document = await vscode.workspace.openTextDocument(uri);
+
+        fullRange = new vscode.Range(new vscode.Position(184, 0), new vscode.Position(198, 0));
+
+        let instance = document.getText(fullRange);
+
+        compareInstantiation('affer', container, instance);
     });
 });
 
