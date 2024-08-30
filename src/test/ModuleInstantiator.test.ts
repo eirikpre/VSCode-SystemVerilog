@@ -268,7 +268,7 @@ suite('ModuleInstantiator Tests', () => {
 
         let container = document.getText(fullRange).replace(/^\s+|\s+$/g, '');
 
-        console.log("Container \n\r"+container);
+        console.log('Container \n\r' + container);
 
         uri = vscode.Uri.file(path.join(__dirname, testFolderLocation, 'test-files', 'ModuleInstantiator.test.2.v'));
         document = await vscode.workspace.openTextDocument(uri);
@@ -279,7 +279,6 @@ suite('ModuleInstantiator Tests', () => {
 
         compareInstantiation('affer', container, instance);
     });
-
 });
 
 function compareInstantiation(instance_name, container_name, expected): void {
