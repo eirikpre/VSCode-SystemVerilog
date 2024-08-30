@@ -119,7 +119,10 @@ function isModuleParameterized(symbol: string, container: string): boolean {
     }
 
     // Get only indexes related to module header
-    const subkeys = keys.slice(0, keys.findIndex((element) => element.includes(";") && !element.includes("::")))
+    const subkeys = keys.slice(
+        0,
+        keys.findIndex((element) => element.includes(";") && !element.includes("::"))
+    );
 
     if (subkeys[0] === symbol && subkeys.find((element) => element === '#(')) {
         return true;
