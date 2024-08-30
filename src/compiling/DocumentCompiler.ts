@@ -4,7 +4,7 @@ import { URI } from 'vscode-uri';
 import * as path from 'path';
 import * as child from 'child_process';
 import { getPathFromUri } from '../utils/common';
-import { isSystemVerilogDocument, isVerilogDocument, getLineRange } from '../utils/server';
+import { isSystemVerilogDocument, isVerilogDocument, isVerilogAMSDocument, getLineRange } from '../utils/server';
 import { DiagnosticData } from './DiagnosticData';
 
 /* 
@@ -45,7 +45,7 @@ export abstract class DocumentCompiler {
                 return;
             }
 
-            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
+            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document) && !isVerilogAMSDocument(document)) {
                 reject(new Error('The document is not a SystemVerilog/Verilog file.'));
                 return;
             }

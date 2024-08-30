@@ -8,7 +8,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
     @return true if the document is a SystemVerilog file
 */
 export function isSystemVerilogDocument(document: TextDocument | undefined): boolean {
-    return document?.languageId === 'systemverilog';
+    return ((document?.languageId === 'systemverilog') || (document?.languageId === 'systemverilogheader'));
 }
 
 /**
@@ -18,7 +18,17 @@ export function isSystemVerilogDocument(document: TextDocument | undefined): boo
     @return true if the document is a Verilog file
 */
 export function isVerilogDocument(document: TextDocument | undefined): boolean {
-    return document?.languageId === 'verilog';
+    return ((document?.languageId === 'verilog') || (document?.languageId === 'verilogheader'));;
+}
+
+/**
+    Check if a given `document` is a Verilog file.
+
+    @param document the document to check
+    @return true if the document is a Verilog file
+*/
+export function isVerilogAMSDocument(document: TextDocument | undefined): boolean {
+    return ((document?.languageId === 'veriloga') || (document?.languageId === 'verilogams'));;
 }
 
 /** 
