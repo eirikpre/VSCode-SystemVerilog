@@ -3,7 +3,7 @@ import { CancellationToken } from 'vscode-languageclient/node';
 import * as glob from 'glob';
 import * as minimatch from 'minimatch';
 import { SystemVerilogParser } from './parser';
-import { isSystemVerilogDocument, isVerilogDocument } from './utils/client';
+import { isSystemVerilogDocument, isVerilogDocument, isVerilogAMSDocument } from './utils/client';
 import { SystemVerilogSymbol } from './symbol';
 
 export class SystemVerilogIndexer {
@@ -136,7 +136,7 @@ export class SystemVerilogIndexer {
                     if (total_files >= 100 * this.parallelProcessing) {
                         return this.parser.get_all_recursive(doc, 'declaration', 0);
                     }
-                    if (doc.lineCount > this.maxLineCountIndexing) {
+                    if (doc.lineCount > this.maxLineCountIndexing.valueOf()) {
                         window.showInformationMessage(
                             `The character count of ${workspace.asRelativePath(uri)} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`
                         ); // prettier-ignore
@@ -182,7 +182,7 @@ export class SystemVerilogIndexer {
     */
     public async onChange(document: TextDocument): Promise<any> {
         return new Promise(() => {
-            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
+            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document) && !isVerilogAMSDocument(document)) {
                 return;
             }
             if (!workspace.getConfiguration().get('systemverilog.enableIncrementalIndexing')) {
@@ -237,7 +237,7 @@ export class SystemVerilogIndexer {
                 return;
             }
 
-            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document)) {
+            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document) && !isVerilogAMSDocument(document)) {
                 resolve(new Array<SystemVerilogSymbol>());
                 return;
             }

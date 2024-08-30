@@ -20,7 +20,11 @@ let closeWindowProgress = true;
 
 const selector: DocumentSelector = [
     { scheme: 'file', language: 'systemverilog' },
-    { scheme: 'file', language: 'verilog' }
+    { scheme: 'file', language: 'systemverilogheader' },
+    { scheme: 'file', language: 'verilog' },
+    { scheme: 'file', language: 'verilogheader' },
+    { scheme: 'file', language: 'veriloga' },
+    { scheme: 'file', language: 'verilogams' }
 ];
 
 let indexer: SystemVerilogIndexer | undefined = undefined;

@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog and SystemVerilog.",
-    "version": "0.13.9",
+    "version": "0.13.10",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -535,6 +535,40 @@
                         "line": 3,
                         "column": 4,
                         "message": 5
+                    }
+                ]
+            },
+            {
+                "name": "verilator-error-v5",
+                "owner": "Verilator",
+                "source": "systemverilog",
+                "severity": "error",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "%Error(-[A-Z0-9]+)?: ((\\S+((\\.sv)|(\\.v))):(\\d+):((\\d+):)? )?(.*)$",
+                        "severity": 1,
+                        "file": 3,
+                        "line": 7,
+                        "column": 9,
+                        "message": 10
+                    }
+                ]
+            },
+            {
+                "name": "verilator-warning-v5",
+                "owner": "Verilator",
+                "source": "systemverilog",
+                "severity": "warning",
+                "fileLocation": "autoDetect",
+                "pattern": [
+                    {
+                        "regexp": "%Warning(-[A-Z0-9]+)?: ((\\S+((\\.sv)|(\\.v))):(\\d+):((\\d+):)? )?(.*)$",
+                        "severity": 1,
+                        "file": 3,
+                        "line": 7,
+                        "column": 9,
+                        "message": 10
                     }
                 ]
             },
