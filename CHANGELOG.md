@@ -10,6 +10,12 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.10]
+
+- Right-justified icons by `joecrop`
+- Added support for symbol resolution in vh, svh, vams, and veriloga files by `joecrop`
+- Added support for import statements within module headers when auto-instantiating modules by `Stavegu`
+
 ### [0.13.9]
 
 - Added basic syntax highlighting support for sdc/xdc files inspired by [https://github.com/mshr-h/vscode-verilog-hdl-support](vscode-verilog-hdl-support) by `joecrop`
