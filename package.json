@@ -157,6 +157,19 @@
                 }
             },
             {
+				"id": "vhdl",
+				"aliases": [
+					"VHDL",
+					"vhdl"
+				],
+				"extensions": [
+					".vhd",
+					".vhdl",
+					".vho"
+				],
+				"configuration": "./configs/vhdl.configuration.json"
+			},
+			{
                 "id": "sdc",
                 "aliases": [
                     "Synopsys Design Constraints"
@@ -251,6 +264,11 @@
                 "path": "./syntaxes/verilog-filelist.json"
             },
             {
+				"language": "vhdl",
+				"scopeName": "source.vhdl",
+				"path": "./syntaxes/vhdl.tmLanguage.json"
+			},
+			{
                 "language": "sdc",
                 "scopeName": "source.sdc",
                 "path": "./syntaxes/sdc.json"
