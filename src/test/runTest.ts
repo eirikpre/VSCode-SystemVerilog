@@ -20,11 +20,13 @@ async function main() {
         await runTests({
             extensionDevelopmentPath,
             extensionTestsPath,
-            launchArgs: [workspacePath, '--disable-workspace-trust'],
+            launchArgs: [workspacePath, '--disable-workspace-trust', '--disable-extensions'],
             version: 'stable',
             timeout: 30000 // 30 seconds (default was 10)
         });
     } catch (err) {
+        console.error(err);
+        console.error(err.message);
         console.error('Failed to run tests');
         process.exit(1);
     }
