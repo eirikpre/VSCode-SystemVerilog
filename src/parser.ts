@@ -16,6 +16,7 @@ export class SystemVerilogParser {
             /(?:automatic\s+)?/,
             ')',
             /(?<name>\w+)/,
+            /(?<import>\s*import\s*\w+::[\w*]+;)?/,
             /(?<params>\s*#\s*\([\w\W]*?\))?/,
             /(?<ports>\s*\([\W\w]*?\))?/,
             /\s*;/,
