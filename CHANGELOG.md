@@ -10,67 +10,71 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.13.11]
+
+* Fix Synopsis/Xilinx Design Constraints Language Config Filename by @MasonEdgar
+
 ### [0.13.10]
 
-- Right-justified icons by `joecrop`
-- Added support for symbol resolution in vh, svh, vams, and veriloga files by `joecrop`
-- Added support for import statements within module headers when auto-instantiating modules by `Stavegu`
+- Right-justified icons by @joecrop
+- Added support for symbol resolution in vh, svh, vams, and veriloga files by @joecrop
+- Added support for import statements within module headers when auto-instantiating modules by @Stavegu
 
 ### [0.13.9]
 
-- Added basic syntax highlighting support for sdc/xdc files inspired by [https://github.com/mshr-h/vscode-verilog-hdl-support](vscode-verilog-hdl-support) by `joecrop`
+- Added basic syntax highlighting support for sdc/xdc files inspired by [https://github.com/mshr-h/vscode-verilog-hdl-support](vscode-verilog-hdl-support) by @joecrop
 
 ### [0.13.8]
 
-- Corrected icons for light themes by `joecrop`
-- Added basic syntax highlighting for .f files by `joecrop`
+- Corrected icons for light themes by @joecrop
+- Added basic syntax highlighting for .f files by @joecrop
 
 ### [0.13.7]
 
-- Added missing filetype icons by `joecrop`
+- Added missing filetype icons by @joecrop
 
 ### [0.13.6]
 
-- Fix auto-instantiation failing on extra parentheses by `richzwart`
-- Added filetype icons inspired by [vscode-material-icon-theme](https://github.com/PKief/vscode-material-icon-theme) by `joecrop`
-- Added support for Verilog-A and Verilog-AMS syntax highlighting by `joecrop`
+- Fix auto-instantiation failing on extra parentheses by @richzwart
+- Added filetype icons inspired by [vscode-material-icon-theme](https://github.com/PKief/vscode-material-icon-theme) by @joecrop
+- Added support for Verilog-A and Verilog-AMS syntax highlighting by @joecrop
 
 ### [0.13.5]
 
-- Improved format command parsing and error handling per issue #170 `joecrop`
-- DefinitionProvider bugfixes by `LarsAur`
+- Improved format command parsing and error handling per issue #170 @joecrop
+- DefinitionProvider bugfixes by @LarsAur
 
 ### [0.13.4]
 
-- Updated Verible lint regular expressions for new output format by `joecrop`
-- Fixed Windows path recognition in DocumentCompiler by `joecrop`
+- Updated Verible lint regular expressions for new output format by @joecrop
+- Fixed Windows path recognition in DocumentCompiler by @joecrop
 
 ### [0.13.3]
 
-- adding `compileOnOpen` setting option by `joennlae`
-- removing cache in hopes that workflow errors will be resolved by `joecrop`
-- bump terser to version 5.15.0 by `joecrop`
-- fix: #177: Properly handle Windows paths in Verilator output by `agg23`
-- Remote ssh performance by `eirikpre`
-- fix: Added debounce delay for saving indexes by `agg23`
+- adding `compileOnOpen` setting option by @joennlae
+- removing cache in hopes that workflow errors will be resolved by @joecrop
+- bump terser to version 5.15.0 by @joecrop
+- fix: #177: Properly handle Windows paths in Verilator output by @agg23
+- Remote ssh performance by @eirikpre
+- fix: Added debounce delay for saving indexes by @agg23
 
 
 ### [0.13.2]
 
-- modified formatter command parser to support windows paths by `joecrop`
-- module instantiator now detects parameters correctly by `joecrop`
+- modified formatter command parser to support windows paths by @joecrop
+- module instantiator now detects parameters correctly by @joecrop
 
 ### [0.13.1]
 
-- Improved remote ssh performance by `eirikpre`
+- Improved remote ssh performance by @eirikpre
 
 ### [0.13]
 
-- input/output/input now have different icons in the outline tree by `joecrop`
-- Format module instance and dropdown list of modules for auto-instantiator by `joecrop`
-- support more file extensions and no extension in antlr parser by `joecrop`
-- Bump minimist from 1.2.5 to 1.2.6 by `dependabot`
-- Include indexing docs by `joecrop`
+- input/output/input now have different icons in the outline tree by @joecrop
+- Format module instance and dropdown list of modules for auto-instantiator by @joecrop
+- support more file extensions and no extension in antlr parser by @joecrop
+- Bump minimist from 1.2.5 to 1.2.6 by @dependabot
+- Include indexing docs by @joecrop
 
 ### [0.12.1]
 
@@ -91,13 +95,13 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 
 ### [0.12.0]
 
-- Implemented 'find references' feature, thanks to `joecrop`
-- Ports and parameters are now recognized as symbols, thanks to `joecrop`
-- Illegal/reserved words contained with symbols is now supported, thanks to `joecrop`
-- Added more consistent syntax highlighting for UDP tables, thanks to `sw23`
-- Added support for verible_verilog_lint as a compiler/linter, thanks to `joecrop`
-- Fixed 'npm run compile' on MacOS, thanks to `sw23`
-- Added 'Contributing' section to documentation, thanks to `gasrodriguez`
+- Implemented 'find references' feature, thanks to @joecrop
+- Ports and parameters are now recognized as symbols, thanks to @joecrop
+- Illegal/reserved words contained with symbols is now supported, thanks to @joecrop
+- Added more consistent syntax highlighting for UDP tables, thanks to @sw23
+- Added support for verible_verilog_lint as a compiler/linter, thanks to @joecrop
+- Fixed 'npm run compile' on MacOS, thanks to @sw23
+- Added 'Contributing' section to documentation, thanks to @gasrodriguez
 
 ### [0.11.2 - 0.11.3]
 
@@ -193,17 +197,17 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 
 ## [0.8.0] - 2019.07.16
 
-- Compile an opened document using `Verilator` simulator, display errors/warnings as `Diagnostics` in documents: `oehaddouchi`
-- Add output channel `SystemVerilog` : `oehaddouchi`
+- Compile an opened document using `Verilator` simulator, display errors/warnings as `Diagnostics` in documents: @oehaddouchi
+- Add output channel `SystemVerilog` : @oehaddouchi
 
 ## [0.7.1] - 2019.07.05
 
 - Back-end update to separate indexation and parsing from the providers
-- Work-in-Progress shell for CompletionProvider thanks to `Eivindfy`
+- Work-in-Progress shell for CompletionProvider thanks to @Eivindfy
 
 ## [0.7.0]
 
-- Instantiate module from already indexed module, big thanks to `oehaddouchi`
+- Instantiate module from already indexed module, big thanks to @oehaddouchi
 - Back-end update with more dynamic data structures
 
 ## [0.6.0]
@@ -216,12 +220,12 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 ## [0.5.3]
 
 - Bugfix to syntax highlighting
-- Bugfix to regex matching, thanks to `patstew`
+- Bugfix to regex matching, thanks to @patstew
 - Added parallelProcessing, the number of files processed in parallel
 
 ## [0.5.0]
 
-- HoverProvider added, big thanks to `toastedcornflakes`
+- HoverProvider added, big thanks to @toastedcornflakes
 - Improvements to DocumentSymbolProvider to better support Hover
 - Improvement to findFiles for better indexing
 
