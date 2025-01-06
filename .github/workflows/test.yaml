@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
           cache: npm
       - name: Install NPM dependencies
         run: npm ci --production=false --unsafe-perm
@@ -30,7 +30,7 @@ jobs:
       - name: Create bundle
         run: npm run webpack
       - name: Run headless tests and collect coverage
-        uses: GabrielBB/xvfb-action@v1
+        uses: smithki/xvfb-action@v1.1.2
         with:
           run: npm run coverage
           working-directory: ./
