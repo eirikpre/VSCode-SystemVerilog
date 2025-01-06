@@ -33,8 +33,7 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run coverage
-          working-directory: ${{ github.workspace }}/test
-          options: ''
+          working-directory: ${{ github.workspace }}
       - name: Upload extension logs
         uses: actions/upload-artifact@v4
         if: failure()
