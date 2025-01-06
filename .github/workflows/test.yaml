@@ -36,12 +36,12 @@ jobs:
           working-directory: ${{ github.workspace }}/test
           options: ''
       - name: Upload extension logs
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: extension-logs
-        path: ${{ github.workspace }}/test/logs
-        if-noo-files-found: ignore
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: extension-logs
+          path: ${{ github.workspace }}/test/logs
+          if-noo-files-found: ignore
       - name: Verify files
         if: runner.os == 'Linux'
         run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
