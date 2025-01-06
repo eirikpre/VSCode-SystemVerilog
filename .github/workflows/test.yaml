@@ -17,12 +17,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Clone vscode-systemverilog
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Node.js
-        uses: actions/setup-node@v2
-        id: node
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 18
+          cache: npm
       - name: Install NPM dependencies
         run: npm ci --production=false --unsafe-perm
       - name: Compile extension
@@ -30,11 +30,9 @@ jobs:
       - name: Create bundle
         run: npm run webpack
       - name: Run headless tests and collect coverage
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run coverage
-          working-directory: ./
-          options: ''
+        run: |
+          xvfb-run -a npm run test
+          npm run coverage
       - name: Verify files
         if: runner.os == 'Linux'
         run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
@@ -43,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone vscode-systemverilog
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install NPM dependencies
         run: npm ci --production=false --unsafe-perm
       - name: Compile ANTLR
