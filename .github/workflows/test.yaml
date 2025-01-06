@@ -30,9 +30,11 @@ jobs:
       - name: Create bundle
         run: npm run webpack
       - name: Run headless tests and collect coverage
-        run: |
-          xvfb-run -a npm run test
-          npm run coverage
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run coverage
+          working-directory: ./
+          options: ''
       - name: Verify files
         if: runner.os == 'Linux'
         run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
