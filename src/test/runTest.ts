@@ -20,9 +20,9 @@ async function main() {
         await runTests({
             extensionDevelopmentPath,
             extensionTestsPath,
-            launchArgs: [workspacePath, '--disable-workspace-trust', '--disable-extensions'],
+            launchArgs: [workspacePath, '--disable-workspace-trust'],
             version: 'stable',
-            timeout: 60000 // 30 seconds (default was 10)
+            timeout: 30000 // 30 seconds (default was 10)
         });
     } catch (err) {
         console.error('Failed to run tests');
