@@ -1,16 +1,13 @@
 import { DocumentSymbolProvider, SymbolInformation, CancellationToken, TextDocument, Uri, SymbolKind, Location, Position, workspace } from 'vscode' // prettier-ignore
 import { SystemVerilogIndexer } from '../indexer';
-import { SystemVerilogParser } from '../parser';
-import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
+import { SystemVerilogSymbol, wireToSymbol } from '../symbol';
 
 export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvider {
-    private parser: SystemVerilogParser;
     private indexer: SystemVerilogIndexer;
     private precision: string;
     private depth = -1;
 
-    constructor(parser, indexer) {
-        this.parser = parser;
+    constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
         const settings = workspace.getConfiguration();
         this.precision = settings.get('systemverilog.documentSymbolsPrecision');
@@ -22,40 +19,46 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
     }
 
     /**
-        Matches the regex pattern with the document's text. If a match is found, it creates a `SystemVerilogSymbol` object.
-        If `documentSymbols` is not `undefined`, than the object is added to it,
-        otherwise add the objects to an empty list and return it.
+        Returns the symbols for the given document. Prefers the cached symbols
+        in the shard-backed index; on a cache miss, asks the worker to parse
+        the document so the main thread stays responsive.
 
         @param document The document in which the command was invoked.
-        @param _token A cancellation token.
-        @return A list of `SystemVerilogSymbol` objects or a thenable that resolves to such. The lack of a result can be
-        signaled by returning `undefined`, `null`, or an empty list.
+        @return A list of `SystemVerilogSymbol` objects.
     */
-    public provideDocumentSymbols(
+    public async provideDocumentSymbols(
         document: TextDocument,
         _token?: CancellationToken
-    ): Thenable<Array<SystemVerilogSymbol>> {
-        return new Promise((resolve) => {
-            let symbols = [];
-            const path = document.uri.fsPath;
-            const allSymbols = this.indexer.symbols.get(path);
-            if (allSymbols) {
-                allSymbols.forEach((symbol) => {
-                    if (symbol.kind !== getSymbolKind('potential_reference')) {
-                        symbols.push(symbol);
-                    }
-                });
-            } else {
-                symbols = this.parser.get_all_recursive(document, this.precision, this.depth);
-            }
-            /*
-            Matches the regex and uses the index from the regex to find the position
-            TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
-                  Use that information to figure out if an instanciated 'unknown' object is of a known type.
-            */
-            resolve(symbols);
-            // resolve(show_SymbolKinds(document.uri));
+    ): Promise<Array<SystemVerilogSymbol>> {
+        const fspath = document.uri.fsPath;
+        const rows = await this.indexer.client.getFileSymbols(fspath, [
+            'potential_reference'
+        ]);
+        if (rows.length > 0) {
+            return rows.map(wireToSymbol);
+        }
+        // No non-reference symbols. If the file is known to the index already,
+        // there's nothing to show — don't re-parse, or we'd overwrite the
+        // `potential_reference` rows that Find References depends on.
+        const meta = await this.indexer.client.getFileMeta([fspath]);
+        if (meta[fspath]) {
+            return [];
+        }
+        // Truly not indexed yet — parse on demand in the worker without
+        // mutating the cache.
+        const text = document.getText();
+        const depth = this.depth >= 0
+            ? this.depth
+            : this.precision === 'full' || this.precision === 'full_no_references' ? 1 : 0;
+        const wireSyms = await this.indexer.client.parseText({
+            path: fspath,
+            text,
+            precision: this.precision,
+            maxDepth: depth
         });
+        return wireSyms
+            .filter((s) => s.type !== 'potential_reference')
+            .map(wireToSymbol);
     }
 }
 

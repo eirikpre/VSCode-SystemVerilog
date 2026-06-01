@@ -3,118 +3,97 @@ import { getSymbolKind } from '../symbol';
 import { regexGetIndexes } from '../utils/common';
 
 export class SystemVerilogDefinitionProvider implements DefinitionProvider {
-    public provideDefinition(
+    public async provideDefinition(
         document: TextDocument,
         position: Position,
         token: CancellationToken
     ): Promise<Definition> {
-        return new Promise<Definition>((resolve, _reject) => {
+        try {
             const range = document.getWordRangeAtPosition(position);
+            if (!range) return [];
+
             const line = document.lineAt(position.line).text;
             const word = document.getText(range);
-            const results: Location[] = [];
 
-            if (!range) {
-                return undefined;
-            }
-            if (isLineInsideComments()) {
-                return undefined;
-            }
+            if (isLineInsideComments(document, range, line)) return [];
 
             const matchPort = line.match(`\\.\\s*${word}\\s*\\(`);
             const matchPackage = line.match(`\\b(\\w+)\\s*::\\s*(${word})`);
 
-            // Return a promise to find object in a portlist
+            // Port connection: ".port(expr)" — definition is the port in the
+            // surrounding module's declaration.
             if (matchPort && matchPort.index === range.start.character - 1) {
                 const container = moduleFromPort(document, range);
-                if (container) {
-                    commands
-                        .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${container}`)
-                        .then((res: SymbolInformation[]) => {
-                            const locationPromises = res.map((x) => {
-                                return commands
-                                    .executeCommand('vscode.executeDocumentSymbolProvider', x.location.uri, word)
-                                    .then((symbols: Array<SymbolInformation | DocumentSymbol>) => {
-                                        return extractLocations(symbols, word, x.location.uri, container);
-                                    });
-                            });
-
-                            Promise.all(locationPromises).then((locLists: Location[][]) => {
-                                locLists.forEach((locList: Location[]) => results.push(...locList));
-                                resolve(results);
-                            });
-                        });
+                if (!container) return [];
+                const res = (await commands.executeCommand<SymbolInformation[]>(
+                    'vscode.executeWorkspaceSymbolProvider',
+                    `¤${container}`,
+                    token
+                )) || [];
+                const locs: Location[] = [];
+                for (const x of res) {
+                    if (token.isCancellationRequested) break;
+                    const symbols = (await commands.executeCommand<Array<SymbolInformation | DocumentSymbol>>(
+                        'vscode.executeDocumentSymbolProvider',
+                        x.location.uri,
+                        word
+                    )) || [];
+                    locs.push(...extractLocations(symbols, word, x.location.uri, container));
                 }
-            }
-            // Return a promise to find object in a package
-            else if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
-                commands
-                    .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${matchPackage[1]}`, token)
-                    .then((ws_symbols: SymbolInformation[]) => {
-                        if (ws_symbols.length && ws_symbols[0].location) {
-                            return ws_symbols[0].location.uri;
-                        }
-                    })
-                    .then((uri) => {
-                        if (uri) {
-                            return commands
-                                .executeCommand('vscode.executeDocumentSymbolProvider', uri, word)
-                                .then((symbols: Array<DocumentSymbol | SymbolInformation>) => {
-                                    resolve(extractLocations(symbols, word, uri, matchPackage[1]));
-                                });
-                        } else {
-                            resolve(undefined);
-                        }
-                    });
-            }
-            // Lookup all symbols in the current document
-            else {
-                commands
-                    .executeCommand('vscode.executeDocumentSymbolProvider', document.uri, word, token)
-                    .then((res: Array<DocumentSymbol | SymbolInformation>) => {
-                        let o = extractLocations(res, word, document.uri);
-                        if (o.length) {
-                            resolve(o);
-                        } else {
-                            // Look up all indexed symbols
-                            commands
-                                .executeCommand('vscode.executeWorkspaceSymbolProvider', `¤${word}`, token)
-                                .then((syms: SymbolInformation[]) => {
-                                    resolve(syms.map((x) => x.location));
-                                });
-                        }
-                    });
+                return locs;
             }
 
-            function isLineInsideComments(): Boolean {
-                /* eslint-disable spaced-comment */
-                //is line commented out with a single line comment (//)?
-                const isSingleComment = /^\s*\/\/.*/.test(line);
-                if (isSingleComment) {
-                    return true;
-                }
-                // only look at text before symbol. If we see a begin comment, an end comment
-                // must be implied and we can ignore looking for one
-                const text = document.getText(new Range(new Position(0, 0), range.start));
-                // Get the locations of begin and end comment blocks
-                const commentStart = regexGetIndexes(document, text, /(?<!\/)\/\*/g, 0);
-                const commentEnd = regexGetIndexes(document, text, /\*\//g, 0);
-
-                // only look at text before symbol. If we see a begin comment, an end comment
-                // must be implied and we can ignore looking for one
-                const lastStartComment = commentStart.find((x) => x.isBeforeOrEqual(range.start));
-                const lastEndComment = commentEnd.find((x) => x.isBeforeOrEqual(range.start));
-
-                // If there is begin comment (/*) that is not yet closed,
-                // we know the symbol must be commented out.
-                if (lastStartComment > lastEndComment) {
-                    // we must be within a block comment
-                    return true;
-                }
-                return false;
+            // Package-qualified name: "Pkg::name" — definition is in Pkg.
+            if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
+                const wsSyms = (await commands.executeCommand<SymbolInformation[]>(
+                    'vscode.executeWorkspaceSymbolProvider',
+                    `¤${matchPackage[1]}`,
+                    token
+                )) || [];
+                if (wsSyms.length === 0 || !wsSyms[0].location) return [];
+                const uri = wsSyms[0].location.uri;
+                const symbols = (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
+                    'vscode.executeDocumentSymbolProvider',
+                    uri,
+                    word
+                )) || [];
+                return extractLocations(symbols, word, uri, matchPackage[1]);
             }
-        });
+
+            // Default path: look in the current document first, then workspace.
+            const docSyms = (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
+                'vscode.executeDocumentSymbolProvider',
+                document.uri,
+                word,
+                token
+            )) || [];
+            const localLocs = extractLocations(docSyms, word, document.uri);
+            if (localLocs.length) return localLocs;
+
+            const wsSyms = (await commands.executeCommand<SymbolInformation[]>(
+                'vscode.executeWorkspaceSymbolProvider',
+                `¤${word}`,
+                token
+            )) || [];
+            return wsSyms.map((x) => x.location);
+        } catch {
+            // Any failure — most often a cancelled executeCommand — surfaces
+            // as an empty Definition rather than a hung promise.
+            return [];
+        }
     }
+}
+
+function isLineInsideComments(document: TextDocument, range: Range, line: string): boolean {
+    /* eslint-disable spaced-comment */
+    if (/^\s*\/\/.*/.test(line)) return true;
+    const text = document.getText(new Range(new Position(0, 0), range.start));
+    const commentStart = regexGetIndexes(document, text, /(?<!\/)\/\*/g, 0);
+    const commentEnd = regexGetIndexes(document, text, /\*\//g, 0);
+    const lastStart = commentStart.find((x) => x.isBeforeOrEqual(range.start));
+    const lastEnd = commentEnd.find((x) => x.isBeforeOrEqual(range.start));
+    if (lastStart && (!lastEnd || lastStart.isAfter(lastEnd))) return true;
+    return false;
 }
 
 function flattenDocumentSymbols(docSyms) {

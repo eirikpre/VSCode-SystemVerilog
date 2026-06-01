@@ -1,4 +1,8 @@
-import { SymbolInformation, SymbolKind, Location } from 'vscode';
+import { SymbolInformation, SymbolKind, Location, Range, Uri } from 'vscode';
+import { getSymbolKindInt } from './symbol-kinds';
+import { SymbolWire } from './wire-types';
+
+export { SymbolWire } from './wire-types';
 
 export class SystemVerilogSymbol extends SymbolInformation {
     public type: string;
@@ -17,93 +21,32 @@ export class SystemVerilogSymbol extends SymbolInformation {
     }
 }
 
-// See resources/SymbolKind_icons.png for an overview of the available icons
-// Use show_SymbolKinds to see the latest symbols
+export function symbolToWire(s: SystemVerilogSymbol): Omit<SymbolWire, 'file'> {
+    const r = s.location.range;
+    return {
+        name: s.name,
+        type: s.type,
+        kind: s.kind as number,
+        container: s.containerName || null,
+        sl: r.start.line,
+        sc: r.start.character,
+        el: r.end.line,
+        ec: r.end.character
+    };
+}
+
+export function wireToSymbol(w: SymbolWire): SystemVerilogSymbol {
+    return new SystemVerilogSymbol(
+        w.name,
+        w.type,
+        w.container || '',
+        new Location(Uri.file(w.file), new Range(w.sl, w.sc, w.el, w.ec))
+    );
+}
+
+// Host-side façade that returns vscode's SymbolKind enum value. The integer
+// table lives in symbol-kinds.ts so the worker (which can't import vscode)
+// can reuse the same mapping.
 export function getSymbolKind(name: string): SymbolKind {
-    if (name === undefined || name === '') {
-        // Ports may be declared without type
-        return SymbolKind.Variable;
-    }
-    if (name.indexOf('[') !== -1) {
-        return SymbolKind.Array;
-    }
-    switch (name) {
-        case 'parameter':
-        case 'localparam':
-        case 'Constant':
-            return SymbolKind.Constant;
-        case 'potential_reference':
-        case 'Key':
-            return SymbolKind.Key;
-        case 'package':
-        case 'program':
-        case 'import':
-        case 'Package':
-            return SymbolKind.Package;
-        case 'begin': // Labels
-        case 'string':
-        case 'String':
-            return SymbolKind.String;
-        case 'class':
-        case 'Class':
-            return SymbolKind.Class;
-        case 'task':
-        case 'Method':
-            return SymbolKind.Method;
-        case 'function':
-        case 'Function':
-            return SymbolKind.Function;
-        case 'interface':
-        case 'Interface':
-            return SymbolKind.Interface;
-        case 'input':
-        case 'output':
-        case 'inout':
-            return SymbolKind.Boolean;
-        case 'assert':
-        case 'event':
-        case 'Event':
-            return SymbolKind.Event;
-        case 'struct':
-        case 'Struct':
-            return SymbolKind.Struct;
-        case 'typedef':
-        case 'TypeParameter':
-            return SymbolKind.TypeParameter;
-        case 'genvar':
-        case 'Operator':
-            return SymbolKind.Operator;
-        case 'enum':
-        case 'Enum':
-            return SymbolKind.Enum;
-        case 'modport':
-        case 'Null':
-            return SymbolKind.Null;
-        case 'define':
-        case 'property':
-        case 'Property':
-            return SymbolKind.Property;
-        case 'wire':
-        case 'reg':
-        case 'bit':
-        case 'logic':
-        case 'int':
-        case 'integer':
-        case 'char':
-        case 'time':
-        case 'float':
-        case 'Variable':
-            return SymbolKind.Variable;
-        case 'module': // It is important that modules don't share a case with any other kind for the module instantiator to work
-            return SymbolKind.Enum;
-        default:
-            return SymbolKind.Field;
-    }
-    /* Unused/Free SymbolKind icons
-        return SymbolKind.Number;
-        return SymbolKind.Enum;
-        return SymbolKind.EnumMember;
-        return SymbolKind.Operator;
-        return SymbolKind.Array;
-    */
+    return getSymbolKindInt(name) as SymbolKind;
 }

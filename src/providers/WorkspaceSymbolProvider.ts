@@ -1,13 +1,8 @@
 import { WorkspaceSymbolProvider, CancellationToken } from 'vscode';
 import { SystemVerilogIndexer } from '../indexer';
-import { getSymbolKind, SystemVerilogSymbol } from '../symbol';
+import { getSymbolKind, SystemVerilogSymbol, wireToSymbol } from '../symbol';
 
 export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
-    /*
-     * this.symbols: filePath => Array<SystemVerilogSymbol>
-     * each entry's key represents a file path,
-     * and the entry's value is a list of the symbols that exist in the file
-     */
     public indexer: SystemVerilogIndexer;
 
     public NUM_FILES = 250;
@@ -17,71 +12,51 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     }
 
     /**
-        Queries a symbol from `this.symbols`, performs an exact match if `exactMatch` is set to true,
-        and a partial match if it's not passed or set to false.
+        Queries a symbol by name, performing an exact match if the query is
+        prefixed with `¤`, otherwise a fuzzy case-insensitive match.
 
-        @param query the symbol's name. If it is prepended with a ¤ it signifies an exact match. If it is prepended with a ¬ it signifies to cull potential matches from the results.
+        @param query the symbol's name. Prefix with `¤` for exact match,
+                     prefix with `¬` to include potential references.
         @param token the CancellationToken
         @return an array of matching SystemVerilogSymbol
     */
-    public provideWorkspaceSymbols(query: string, token: CancellationToken): Thenable<Array<SystemVerilogSymbol>> {
-        return new Promise((resolve, _reject) => {
-            if (query === undefined || query.length === 0) {
-                this.indexer.updateMostRecentSymbols(undefined);
-                resolve(this.indexer.mostRecentSymbols);
-            } else {
-                const pattern = new RegExp(`.*${query.replace(" ", "").split("").map((c) => c).join(".*")}.*`, 'i'); // prettier-ignore
-                const results = new Array<SystemVerilogSymbol>();
-                let exactMatch: Boolean = false;
-                let ignorePotentialReferences: Boolean = true;
-                if (query.startsWith('¬')) {
-                    ignorePotentialReferences = false;
-                    query = query.substr(1);
-                }
-                if (query.startsWith('¤')) {
-                    exactMatch = true;
-                    query = query.substr(1);
-                }
-                this.indexer.symbols.forEach((list) => {
-                    if (token.isCancellationRequested) {
-                        resolve(undefined);
-                    }
-                    list.forEach((symbol) => {
-                        if (token.isCancellationRequested) {
-                            resolve(undefined);
-                        }
-                        if (exactMatch === true) {
-                            if (symbol.name === query) {
-                                if (
-                                    !ignorePotentialReferences ||
-                                    symbol.kind !== getSymbolKind('potential_reference')
-                                ) {
-                                    results.push(symbol);
-                                }
-                            }
-                        } else if (symbol.name.match(pattern)) {
-                            if (!ignorePotentialReferences || symbol.kind !== getSymbolKind('potential_reference')) {
-                                results.push(symbol);
-                            }
-                        }
-                    });
-                });
+    public async provideWorkspaceSymbols(
+        query: string,
+        token: CancellationToken
+    ): Promise<Array<SystemVerilogSymbol>> {
+        if (query === undefined || query.length === 0) {
+            await this.indexer.updateMostRecentSymbols(undefined);
+            return this.indexer.mostRecentSymbols;
+        }
 
-                this.indexer.updateMostRecentSymbols(results.slice(0)); // pass a shallow copy of the array
-                resolve(this.uniquifyResults(results));
-            }
-        });
+        let exactMatch = false;
+        let ignorePotentialReferences = true;
+        if (query.startsWith('¬')) {
+            ignorePotentialReferences = false;
+            query = query.substr(1);
+        }
+        if (query.startsWith('¤')) {
+            exactMatch = true;
+            query = query.substr(1);
+        }
+
+        const excludeTypes = ignorePotentialReferences ? ['potential_reference'] : undefined;
+        const rows = exactMatch
+            ? await this.indexer.client.queryByName(query, { excludeTypes })
+            : await this.indexer.client.queryFuzzy(query, { excludeTypes });
+
+        if (token.isCancellationRequested) {
+            return undefined;
+        }
+
+        const results = rows.map(wireToSymbol);
+        await this.indexer.updateMostRecentSymbols(results.slice(0));
+        return this.uniquifyResults(results);
     }
 
-    public getAllModules(): Thenable<Array<SystemVerilogSymbol>> {
-        return new Promise((resolve) => {
-            let modules: Array<SystemVerilogSymbol> = [];
-            this.indexer.symbols.forEach((list) => {
-                const foundModules = list.filter((symbol) => symbol.kind === getSymbolKind('module'));
-                modules = modules.concat(foundModules);
-            });
-            resolve(modules);
-        });
+    public async getAllModules(): Promise<Array<SystemVerilogSymbol>> {
+        const rows = await this.indexer.client.getAllByType('module');
+        return rows.map(wireToSymbol);
     }
 
     // filter out duplicate locations if any.
@@ -112,30 +87,22 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
     }
 
     /**
-        Queries a `module` with a given name from `this.symbols`, performs an exact match if `exactMatch` is set to true,
-        and a partial match if it's not passed or set to false.
+        Queries a `module` with a given name, performing an exact match.
         @param query the symbol's name
         @return the module's SystemVerilogSymbol
     */
-    public provideWorkspaceModule(query: string): SystemVerilogSymbol {
+    public async provideWorkspaceModule(query: string): Promise<SystemVerilogSymbol> {
         if (query.length === 0) {
             return undefined;
         }
-        let symbolInfo;
-        this.indexer.symbols.forEach((list) => {
-            list.forEach((symbol) => {
-                if (symbol.name === query && symbol.kind === getSymbolKind('module')) {
-                    symbolInfo = symbol;
-                    return false;
-                }
-            });
-
-            if (symbolInfo) {
-                return false;
-            }
-        });
-
-        this.indexer.updateMostRecentSymbols([symbolInfo]);
-        return symbolInfo;
+        const rows = await this.indexer.client.queryByName(query, { limit: 50 });
+        const moduleKind = getSymbolKind('module');
+        const match = rows.find((r) => r.kind === moduleKind);
+        if (!match) {
+            return undefined;
+        }
+        const symbol = wireToSymbol(match);
+        await this.indexer.updateMostRecentSymbols([symbol]);
+        return symbol;
     }
 }
