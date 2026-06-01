@@ -1,4 +1,4 @@
-import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext, ProgressLocation, Uri } from 'vscode'; // prettier-ignore
+import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext, ProgressLocation } from 'vscode'; // prettier-ignore
 import { LanguageClient, ServerOptions, TransportKind, LanguageClientOptions } from 'vscode-languageclient/node';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -34,8 +34,8 @@ function resolveStorageDir(context: ExtensionContext): string {
     const base = context.storageUri || context.globalStorageUri;
     // If we have no workspace storage, fall back to a transient OS temp dir.
     // The cache simply won't persist across restarts in that case.
-    const base_fs = base ? base.fsPath : path.join(require('os').tmpdir(), 'sv-index-transient');
-    const dir = path.join(base_fs, 'sv-index');
+    const baseFs = base ? base.fsPath : path.join(require('os').tmpdir(), 'sv-index-transient');
+    const dir = path.join(baseFs, 'sv-index');
     try {
         fs.mkdirSync(dir, { recursive: true });
     } catch {

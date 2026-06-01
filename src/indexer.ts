@@ -79,7 +79,11 @@ export class SystemVerilogIndexer {
                     const total = uris.length;
                     let lastReportedPct = 0;
 
-                    for (let i = 0; i < total; i++) {
+                    // Yield to the event loop so VSCode can process UI events
+                    // and respond to other provider requests between files.
+                    const yieldToEventLoop = (): Promise<void> => new Promise<void>((resolve) => setImmediate(resolve));
+
+                    for (let i = 0; i < total; i += 1) {
                         if (token.isCancellationRequested) {
                             cancelled = true;
                             break;
@@ -87,10 +91,8 @@ export class SystemVerilogIndexer {
                         // eslint-disable-next-line no-await-in-loop
                         await this.processFile(uris[i], total);
 
-                        // Yield to the event loop so VSCode can process UI events
-                        // and respond to other provider requests between files.
                         // eslint-disable-next-line no-await-in-loop
-                        await new Promise<void>((resolve) => setImmediate(resolve));
+                        await yieldToEventLoop();
 
                         // Report progress at most every 1% to avoid notification spam.
                         const processed = i + 1;
@@ -184,7 +186,7 @@ export class SystemVerilogIndexer {
             const text = await fs.promises.readFile(uri.fsPath, 'utf8');
             // Cheap line-count: number of '\n' + 1. Avoids materialising a doc.
             let lineCount = 1;
-            for (let i = 0; i < text.length; i++) if (text.charCodeAt(i) === 10) lineCount++;
+            for (let i = 0; i < text.length; i++) if (text.charCodeAt(i) === 10) lineCount += 1;
             const precision = this.resolvePrecision(lineCount);
             const maxDepth = this.maxDepthForPrecision(precision);
 

@@ -20,10 +20,7 @@ export class SystemVerilogWorkspaceSymbolProvider implements WorkspaceSymbolProv
         @param token the CancellationToken
         @return an array of matching SystemVerilogSymbol
     */
-    public async provideWorkspaceSymbols(
-        query: string,
-        token: CancellationToken
-    ): Promise<Array<SystemVerilogSymbol>> {
+    public async provideWorkspaceSymbols(query: string, token: CancellationToken): Promise<Array<SystemVerilogSymbol>> {
         if (query === undefined || query.length === 0) {
             await this.indexer.updateMostRecentSymbols(undefined);
             return this.indexer.mostRecentSymbols;

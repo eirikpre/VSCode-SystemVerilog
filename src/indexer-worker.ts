@@ -20,9 +20,7 @@ const parser = new SystemVerilogParser();
 type FileMeta = { mtimeMs: number; size: number; parsedAt: number };
 
 export type Req = { id: number; method: string; params?: any };
-export type Res =
-    | { id: number; ok: true; result: any }
-    | { id: number; ok: false; error: string };
+export type Res = { id: number; ok: true; result: any } | { id: number; ok: false; error: string };
 
 const state = {
     storageDir: '' as string,
@@ -170,12 +168,7 @@ function applyExclude<T extends { type: string }>(rows: T[], excludeTypes?: stri
     return rows.filter((r) => !ex.has(r.type));
 }
 
-function applyUpsert(
-    fspath: string,
-    mtimeMs: number,
-    size: number,
-    symbols: Array<Omit<SymbolWire, 'file'>>
-): void {
+function applyUpsert(fspath: string, mtimeMs: number, size: number, symbols: Array<Omit<SymbolWire, 'file'>>): void {
     const parsedAt = Date.now();
     const wireSyms: SymbolWire[] = symbols.map((s) => ({ ...s, file: fspath }));
     // Write the shard first; if the disk write fails we leave state untouched.
@@ -256,29 +249,13 @@ const handlers: Record<string, (params: any) => any> = {
         return applyExclude(rows, excludeTypes);
     },
 
-    queryByName({
-        name,
-        excludeTypes,
-        limit
-    }: {
-        name: string;
-        excludeTypes?: string[];
-        limit?: number;
-    }) {
+    queryByName({ name, excludeTypes, limit }: { name: string; excludeTypes?: string[]; limit?: number }) {
         const rows = state.byName.get(name) || [];
         const filtered = applyExclude(rows, excludeTypes);
         return limit && filtered.length > limit ? filtered.slice(0, limit) : filtered;
     },
 
-    queryFuzzy({
-        pattern,
-        excludeTypes,
-        limit
-    }: {
-        pattern: string;
-        excludeTypes?: string[];
-        limit?: number;
-    }) {
+    queryFuzzy({ pattern, excludeTypes, limit }: { pattern: string; excludeTypes?: string[]; limit?: number }) {
         const lower = pattern.replace(/\s/g, '').toLowerCase();
         const max = limit ?? 500;
         if (lower.length === 0) {
@@ -318,9 +295,7 @@ const handlers: Record<string, (params: any) => any> = {
 
     getMostRecent({ limit }: { limit: number }) {
         // Build a parsedAt-desc ordering from `files` and walk byFile.
-        const entries = [...state.files.entries()].sort(
-            (a, b) => b[1].parsedAt - a[1].parsedAt
-        );
+        const entries = [...state.files.entries()].sort((a, b) => b[1].parsedAt - a[1].parsedAt);
         const out: SymbolWire[] = [];
         for (const [fspath] of entries) {
             const syms = state.byFile.get(fspath);

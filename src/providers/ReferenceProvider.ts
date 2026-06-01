@@ -28,21 +28,17 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         const defLocation = await this.getDefinitionLocation(document, position, token);
         if (defLocation === undefined) return [];
 
-        const allSymbols =
-            ((await commands.executeCommand<SymbolInformation[]>(
-                'vscode.executeWorkspaceSymbolProvider',
-                `¬¤${word}`,
-                token
-            )) || []) as SymbolInformation[];
+        const allSymbols = ((await commands.executeCommand<SymbolInformation[]>(
+            'vscode.executeWorkspaceSymbolProvider',
+            `¬¤${word}`,
+            token
+        )) || []) as SymbolInformation[];
 
         // Per-candidate timeout + cancellation guard so one stuck provider
         // call cannot stall the whole search.
         const results: Location[] = [];
         const checks = allSymbols.map((symbol) =>
-            withTimeout(
-                this.isLocationDefinedByDefinition(symbol.location, token, defLocation),
-                CANDIDATE_TIMEOUT_MS
-            )
+            withTimeout(this.isLocationDefinedByDefinition(symbol.location, token, defLocation), CANDIDATE_TIMEOUT_MS)
                 .then((r) => {
                     if (r !== undefined) results.push(r);
                 })
@@ -84,11 +80,7 @@ export class SystemVerilogReferenceProvider implements ReferenceProvider {
         } catch {
             return undefined;
         }
-        const thisDefLocation = await this.getDefinitionLocation(
-            document,
-            location.range.start,
-            token
-        );
+        const thisDefLocation = await this.getDefinitionLocation(document, location.range.start, token);
         if (thisDefLocation === undefined) return undefined;
         if (!this.includeDeclaration && this.isLocationShallowEqual(location, defLocation)) {
             return undefined;

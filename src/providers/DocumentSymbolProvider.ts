@@ -31,9 +31,7 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         _token?: CancellationToken
     ): Promise<Array<SystemVerilogSymbol>> {
         const fspath = document.uri.fsPath;
-        const rows = await this.indexer.client.getFileSymbols(fspath, [
-            'potential_reference'
-        ]);
+        const rows = await this.indexer.client.getFileSymbols(fspath, ['potential_reference']);
         if (rows.length > 0) {
             return rows.map(wireToSymbol);
         }
@@ -47,18 +45,15 @@ export class SystemVerilogDocumentSymbolProvider implements DocumentSymbolProvid
         // Truly not indexed yet — parse on demand in the worker without
         // mutating the cache.
         const text = document.getText();
-        const depth = this.depth >= 0
-            ? this.depth
-            : this.precision === 'full' || this.precision === 'full_no_references' ? 1 : 0;
+        const depth =
+            this.depth >= 0 ? this.depth : this.precision === 'full' || this.precision === 'full_no_references' ? 1 : 0;
         const wireSyms = await this.indexer.client.parseText({
             path: fspath,
             text,
             precision: this.precision,
             maxDepth: depth
         });
-        return wireSyms
-            .filter((s) => s.type !== 'potential_reference')
-            .map(wireToSymbol);
+        return wireSyms.filter((s) => s.type !== 'potential_reference').map(wireToSymbol);
     }
 }
 

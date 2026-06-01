@@ -25,19 +25,21 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
             if (matchPort && matchPort.index === range.start.character - 1) {
                 const container = moduleFromPort(document, range);
                 if (!container) return [];
-                const res = (await commands.executeCommand<SymbolInformation[]>(
-                    'vscode.executeWorkspaceSymbolProvider',
-                    `¤${container}`,
-                    token
-                )) || [];
+                const res =
+                    (await commands.executeCommand<SymbolInformation[]>(
+                        'vscode.executeWorkspaceSymbolProvider',
+                        `¤${container}`,
+                        token
+                    )) || [];
                 const locs: Location[] = [];
                 for (const x of res) {
                     if (token.isCancellationRequested) break;
-                    const symbols = (await commands.executeCommand<Array<SymbolInformation | DocumentSymbol>>(
-                        'vscode.executeDocumentSymbolProvider',
-                        x.location.uri,
-                        word
-                    )) || [];
+                    const symbols =
+                        (await commands.executeCommand<Array<SymbolInformation | DocumentSymbol>>(
+                            'vscode.executeDocumentSymbolProvider',
+                            x.location.uri,
+                            word
+                        )) || [];
                     locs.push(...extractLocations(symbols, word, x.location.uri, container));
                 }
                 return locs;
@@ -45,36 +47,40 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
 
             // Package-qualified name: "Pkg::name" — definition is in Pkg.
             if (matchPackage && line.indexOf(word, matchPackage.index) === range.start.character) {
-                const wsSyms = (await commands.executeCommand<SymbolInformation[]>(
-                    'vscode.executeWorkspaceSymbolProvider',
-                    `¤${matchPackage[1]}`,
-                    token
-                )) || [];
+                const wsSyms =
+                    (await commands.executeCommand<SymbolInformation[]>(
+                        'vscode.executeWorkspaceSymbolProvider',
+                        `¤${matchPackage[1]}`,
+                        token
+                    )) || [];
                 if (wsSyms.length === 0 || !wsSyms[0].location) return [];
                 const uri = wsSyms[0].location.uri;
-                const symbols = (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
-                    'vscode.executeDocumentSymbolProvider',
-                    uri,
-                    word
-                )) || [];
+                const symbols =
+                    (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
+                        'vscode.executeDocumentSymbolProvider',
+                        uri,
+                        word
+                    )) || [];
                 return extractLocations(symbols, word, uri, matchPackage[1]);
             }
 
             // Default path: look in the current document first, then workspace.
-            const docSyms = (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
-                'vscode.executeDocumentSymbolProvider',
-                document.uri,
-                word,
-                token
-            )) || [];
+            const docSyms =
+                (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
+                    'vscode.executeDocumentSymbolProvider',
+                    document.uri,
+                    word,
+                    token
+                )) || [];
             const localLocs = extractLocations(docSyms, word, document.uri);
             if (localLocs.length) return localLocs;
 
-            const wsSyms = (await commands.executeCommand<SymbolInformation[]>(
-                'vscode.executeWorkspaceSymbolProvider',
-                `¤${word}`,
-                token
-            )) || [];
+            const wsSyms =
+                (await commands.executeCommand<SymbolInformation[]>(
+                    'vscode.executeWorkspaceSymbolProvider',
+                    `¤${word}`,
+                    token
+                )) || [];
             return wsSyms.map((x) => x.location);
         } catch {
             // Any failure — most often a cancelled executeCommand — surfaces

@@ -76,7 +76,7 @@ export class StringSource implements ParseSource {
         const start = ls[line];
         const end = line + 1 < ls.length ? ls[line + 1] - 1 : this.text.length;
         let endTrim = end;
-        if (endTrim > start && this.text.charCodeAt(endTrim - 1) === 13 /* \r */) endTrim--;
+        if (endTrim > start && this.text.charCodeAt(endTrim - 1) === 13 /* \r */) endTrim -= 1;
         return { text: this.text.slice(start, endTrim) };
     }
 }
@@ -84,6 +84,7 @@ export class StringSource implements ParseSource {
 export class SystemVerilogParser {
     private illegalMatches =
         /(?!\breturn\b|\bbegin\b|\bend\b|\belse\b|\bjoin\b|\bfork\b|\bfor\b|\bif\b|\bvirtual\b|\bstatic\b|\bautomatic\b|\bgenerate\b|\bassign\b|\binitial\b|\bassert\b|\bdisable\b)/;
+
     private comment = /(?:\/\/.*$)?/;
 
     private r_decl_block = new RegExp(
@@ -224,12 +225,7 @@ export class SystemVerilogParser {
     );
 
     private r_params: RegExp = new RegExp(
-        [
-            /(?<type>parameter)/,
-            /(?:(\s+(?<data_type>\w+))*)/,
-            /(?:\s*\[.*?\]\s*)*?/,
-            /\s+(?<name>\w+)\s*/
-        ]
+        [/(?<type>parameter)/, /(?:(\s+(?<data_type>\w+))*)/, /(?:\s*\[.*?\]\s*)*?/, /\s+(?<name>\w+)\s*/]
             .map((x) => (typeof x === 'string' ? x : x.source))
             .join(''),
         'mg'
@@ -353,11 +349,10 @@ export class SystemVerilogParser {
                 if (
                     type !== 'potential_reference' &&
                     subBlocks.some(
-                        (b) =>
-                            match.index! >= b.match.index! &&
-                            match.index! < b.match.index! + b.match[0].length
+                        (b) => match.index! >= b.match.index! && match.index! < b.match.index! + b.match[0].length
                     )
-                ) continue;
+                )
+                    continue;
 
                 const start = source.positionAt(match.index! + offset);
                 const end = source.positionAt(match.index! + match[0].length + offset);

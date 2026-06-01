@@ -54,16 +54,13 @@ export class IndexerClient {
         }
 
         this.worker = new Worker(this.workerPath);
-        this.worker.on(
-            'message',
-            (msg: { id: number; ok: boolean; result?: unknown; error?: string }) => {
-                const call = this.pending.get(msg.id);
-                if (!call) return;
-                this.pending.delete(msg.id);
-                if (msg.ok) call.resolve(msg.result);
-                else call.reject(new Error(msg.error));
-            }
-        );
+        this.worker.on('message', (msg: { id: number; ok: boolean; result?: unknown; error?: string }) => {
+            const call = this.pending.get(msg.id);
+            if (!call) return;
+            this.pending.delete(msg.id);
+            if (msg.ok) call.resolve(msg.result);
+            else call.reject(new Error(msg.error));
+        });
         this.worker.on('error', (err) => this.handleCrash(err));
         this.worker.on('exit', (code) => {
             if (code !== 0 && !this.disposed) {
@@ -88,7 +85,8 @@ export class IndexerClient {
             return Promise.resolve(res.result as T);
         }
         if (!this.worker) return Promise.reject(new Error('indexer worker is not running'));
-        const id = this.nextId++;
+        const id = this.nextId;
+        this.nextId += 1;
         return new Promise<T>((resolve, reject) => {
             this.pending.set(id, { resolve: resolve as (v: unknown) => void, reject });
             this.worker!.postMessage({ id, method, params });
@@ -179,17 +177,11 @@ export class IndexerClient {
         return this.send('getFileSymbols', { path: filePath, excludeTypes });
     }
 
-    public queryByName(
-        name: string,
-        opts?: { excludeTypes?: string[]; limit?: number }
-    ): Promise<SymbolWire[]> {
+    public queryByName(name: string, opts?: { excludeTypes?: string[]; limit?: number }): Promise<SymbolWire[]> {
         return this.send('queryByName', { name, ...opts });
     }
 
-    public queryFuzzy(
-        pattern: string,
-        opts?: { excludeTypes?: string[]; limit?: number }
-    ): Promise<SymbolWire[]> {
+    public queryFuzzy(pattern: string, opts?: { excludeTypes?: string[]; limit?: number }): Promise<SymbolWire[]> {
         return this.send('queryFuzzy', { pattern, ...opts });
     }
 
