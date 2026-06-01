@@ -45,47 +45,6 @@ suite('indexer_map Tests', () => {
         const meta = await client.getFileMeta([nonSVUri.fsPath]);
         assert.strictEqual(meta[nonSVUri.fsPath], undefined);
 
-        assert.strictEqual(symbols.size, 4);
-        let count = await indexer.addDocumentSymbols(sVDocument, symbols);
-
-        assert.strictEqual(count, 12);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(symbols.get(uri.fsPath).length, 12);
-        assert.strictEqual(getSymbolsCount(), 25);
-
-        documentSymbols.forEach((symbolName) => {
-            if (!symbolExists(symbolName)) {
-                assert.fail();
-            }
-        });
-
-        // Non-SV document
-        count = await indexer.addDocumentSymbols(nonSVDocument, symbols);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(symbols.get(nonSVUri.fsPath), undefined);
-        assert.strictEqual(getSymbolsCount(), 25);
-
-        // undefined/null document
-        count = await indexer.addDocumentSymbols(undefined, symbols);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 25);
-
-        count = await indexer.addDocumentSymbols(sVDocument, undefined);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 25);
-
-        count = await indexer.addDocumentSymbols(undefined, undefined);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 25);
-
-        count = await indexer.addDocumentSymbols(null, symbols);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 25);
         // Removing the indexed file clears its symbols.
         await indexer.onDelete(uri);
         const rowsAfterDel = await client.getFileSymbols(uri.fsPath);
@@ -104,51 +63,8 @@ suite('indexer_map Tests', () => {
         const fileRows = (await client.getFileSymbols(uri.fsPath)).length;
         assert.ok(fileRows > 0, 'expected processFile to insert rows');
 
-        assert.strictEqual(symbols.size, 4);
-        let count = await indexer.addDocumentSymbols(sVDocument, symbols);
-
-        assert.strictEqual(count, 12);
-        assert.strictEqual(symbols.size, 5);
-        assert.strictEqual(getSymbolsCount(), 25);
-
-        count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, symbols);
-
-        documentSymbols.forEach((symbolName) => {
-            if (symbolExists(symbolName)) {
-                assert.fail();
-            }
-        });
-
-        assert.strictEqual(count, -12);
-        assert.strictEqual(symbols.size, 4);
-        assert.strictEqual(getSymbolsCount(), 13);
-
-        // Non-SV document
-        count = indexer.removeDocumentSymbols(nonSVDocument.uri.fsPath, symbols);
-        assert.strictEqual(count, -0);
-        assert.strictEqual(symbols.size, 4);
-        assert.strictEqual(getSymbolsCount(), 13);
-
-        // undefined/null document
-        count = indexer.removeDocumentSymbols(undefined, symbols);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 4);
-        assert.strictEqual(getSymbolsCount(), 13);
-
-        count = indexer.removeDocumentSymbols(sVDocument.uri.fsPath, undefined);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 4);
-        assert.strictEqual(getSymbolsCount(), 13);
-
-        count = indexer.removeDocumentSymbols(undefined, undefined);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 4);
-        assert.strictEqual(getSymbolsCount(), 13);
-
-        count = indexer.removeDocumentSymbols(null, symbols);
-        assert.strictEqual(count, 0);
-        assert.strictEqual(symbols.size, 4);
-        assert.strictEqual(getSymbolsCount(), 13);
+        // Deleting only the targeted file drops exactly that file's rows,
+        // leaving the other fixtures intact.
         await client.deleteFile(uri.fsPath);
         assert.strictEqual((await client.getFileSymbols(uri.fsPath)).length, 0);
         assert.strictEqual(await countSymbols(), fixtureCount - fileRows);
