@@ -13,39 +13,43 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-    name: Run extension tests (Node.js 16 on ${{ matrix.os }})
+    name: Run extension tests (Node 20 on ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
       - name: Clone vscode-systemverilog
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         id: node
         with:
-          node-version: '16'
+          node-version: '20'
       - name: Install NPM dependencies
-        run: npm ci --production=false --unsafe-perm
+        run: npm ci --unsafe-perm
       - name: Compile extension
         run: npm run compile
       - name: Create bundle
         run: npm run webpack
       - name: Run headless tests and collect coverage
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1
         with:
           run: npm run coverage
           working-directory: ./
           options: ''
       - name: Verify files
         if: runner.os == 'Linux'
-        run: ls -l dist/client/extension.js dist/server/server.js coverage/index.html
+        run: ls -l dist/client/extension.js dist/client/indexer-worker.js dist/server/server.js coverage/index.html
   qa:
     name: Run quality checks
     runs-on: ubuntu-latest
     steps:
       - name: Clone vscode-systemverilog
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Install NPM dependencies
-        run: npm ci --production=false --unsafe-perm
+        run: npm ci --unsafe-perm
       - name: Compile ANTLR
         run: npm run compile:antlr4ts
       - name: Run ESLint

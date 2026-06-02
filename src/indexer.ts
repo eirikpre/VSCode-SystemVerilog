@@ -1,26 +1,20 @@
 import { StatusBarItem, GlobPattern, window, ProgressLocation, workspace, TextDocument, Uri, OutputChannel } from 'vscode'; // prettier-ignore
 import { CancellationToken } from 'vscode-languageclient/node';
+import * as fs from 'fs';
 import * as glob from 'glob';
 import * as minimatch from 'minimatch';
-import { SystemVerilogParser } from './parser';
 import { isSystemVerilogDocument, isVerilogDocument, isVerilogAMSDocument } from './utils/client';
-import { SystemVerilogSymbol } from './symbol';
+import { IndexerClient } from './utils/indexer-client';
+import { SystemVerilogSymbol, wireToSymbol } from './symbol';
 
 export class SystemVerilogIndexer {
-    /*
-     * this.symbols: filePath => Array<SystemVerilogSymbol>
-     * each entry's key represents a file path,
-     * and the entry's value is a list of the symbols that exist in the file
-     */
-    public symbols: Map<string, Array<SystemVerilogSymbol>>;
+    public client: IndexerClient;
     public mostRecentSymbols: Array<SystemVerilogSymbol>;
     public building = false;
     public statusbar: StatusBarItem;
-    public parser: SystemVerilogParser;
     public symbolsCount: number = 0;
 
     public NUM_FILES: number = 250;
-    public parallelProcessing: number = 1;
     public filesGlob: string = undefined;
     public exclude: GlobPattern = undefined;
     public forceFastIndexing: Boolean = false;
@@ -29,25 +23,34 @@ export class SystemVerilogIndexer {
 
     public outputChannel: OutputChannel;
 
-    constructor(statusbar: StatusBarItem, parser: SystemVerilogParser, channel: OutputChannel) {
+    constructor(statusbar: StatusBarItem, channel: OutputChannel, client: IndexerClient) {
         this.statusbar = statusbar;
-        this.parser = parser;
         this.outputChannel = channel;
-        this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
+        this.client = client;
     }
 
     public initialize() {
         const settings = workspace.getConfiguration();
-        this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
         this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
         this.maxLineCountIndexing = settings.get('systemverilog.maxLineCountIndexing');
         this.documentSymbolPrecision = settings.get('systemverilog.documentSymbolsPrecision');
     }
 
+    /** Resolves the parse precision for one file given the active settings. */
+    public resolvePrecision(lineCount: number): string {
+        if (this.forceFastIndexing) return 'fast';
+        if (lineCount > this.maxLineCountIndexing.valueOf()) return 'fast';
+        return this.documentSymbolPrecision;
+    }
+
+    public maxDepthForPrecision(precision: string): number {
+        return precision === 'full' || precision === 'full_no_references' ? 1 : 0;
+    }
+
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
-        Looks up all the `symbols` that it exist on the queried files,
-        and saves the symbols as `SystemVerilogSymbol` objects to `this.symbols`.
+        Looks up all the `symbols` that exist on the queried files,
+        and saves the symbols to the SQLite-backed index.
 
         @return status message when indexing is successful or failed with an error.
     */
@@ -64,28 +67,52 @@ export class SystemVerilogIndexer {
                     title: 'SystemVerilog Indexing...',
                     cancellable: true
                 },
-                async (_progress, token) => {
-                    if (!this.building) {
-                        this.building = true;
-                        this.symbols = new Map<string, Array<SystemVerilogSymbol>>();
-                        const uris: Uri[] = await this.find_files(token);
-                        console.time('build_index'); // eslint-disable-line no-console
-                        for (let filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
-                            const subset = uris.slice(filenr, filenr + this.parallelProcessing);
-                            if (token.isCancellationRequested) {
-                                cancelled = true;
-                                break;
-                            }
-                            await Promise.all(subset.map((uri) => this.processFile(uri, uris.length))); // eslint-disable-line no-await-in-loop
-                        }
-                    } else {
+                async (progress, token) => {
+                    if (this.building) {
                         return Promise.reject();
                     }
+                    this.building = true;
+                    await this.client.clearAll();
+                    const uris: Uri[] = await this.find_files(token);
+                    console.time('build_index'); // eslint-disable-line no-console
+
+                    const total = uris.length;
+                    let lastReportedPct = 0;
+
+                    // Yield to the event loop so VSCode can process UI events
+                    // and respond to other provider requests between files.
+                    const yieldToEventLoop = (): Promise<void> => new Promise<void>((resolve) => setImmediate(resolve));
+
+                    for (let i = 0; i < total; i += 1) {
+                        if (token.isCancellationRequested) {
+                            cancelled = true;
+                            break;
+                        }
+                        // eslint-disable-next-line no-await-in-loop
+                        await this.processFile(uris[i], total);
+
+                        // eslint-disable-next-line no-await-in-loop
+                        await yieldToEventLoop();
+
+                        // Report progress at most every 1% to avoid notification spam.
+                        const processed = i + 1;
+                        const pct = Math.floor((processed / total) * 100);
+                        if (pct > lastReportedPct) {
+                            progress.report({
+                                increment: pct - lastReportedPct,
+                                message: `${processed}/${total} files`
+                            });
+                            this.statusbar.text = `SystemVerilog: Indexing ${processed}/${total}`;
+                            lastReportedPct = pct;
+                        }
+                    }
+                    return undefined;
                 }
             )
-            .then(() => {
+            .then(async () => {
                 console.timeEnd('build_index'); // eslint-disable-line no-console
                 this.building = false;
+                this.symbolsCount = await this.client.count();
                 if (cancelled) {
                     this.statusbar.text = `SystemVerilog: Indexing cancelled at ${this.symbolsCount} indexed objects`;
                 } else {
@@ -120,171 +147,125 @@ export class SystemVerilogIndexer {
     }
 
     /**
-        Processes one file and updates this.symbols with an entry if symbols exist in the file.
+        Processes one file: stat-gates against the on-disk cache (skip if
+        mtime+size match), reads the file text, and delegates parsing +
+        storage to the worker. The extension-host main thread does no CPU
+        work in this path.
 
         @param uri uri to the document
-        @param total_files total number of files to determine parse-precision
+        @param total_files total number of files (kept for API compat; no longer affects precision)
     */
-    public async processFile(uri: Uri, total_files = 0) {
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve) => {
-            resolve(
-                workspace.openTextDocument(uri).then((doc) => {
-                    if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
-                        return this.parser.get_all_recursive(doc, 'fast', 0);
-                    }
-                    if (total_files >= 100 * this.parallelProcessing) {
-                        return this.parser.get_all_recursive(doc, 'declaration', 0);
-                    }
-                    if (doc.lineCount > this.maxLineCountIndexing.valueOf()) {
-                        window.showInformationMessage(
-                            `The character count of ${workspace.asRelativePath(uri)} is larger than ${this.maxLineCountIndexing}. Falling back to fast parse. To fully parse this file, please set 'systemverilog.maxLineCountIndexing > ${doc.lineCount} in the systemverilog extension settings.`
-                        ); // prettier-ignore
-                        return this.parser.get_all_recursive(doc, 'fast', 0);
-                    }
-                    // Otherwise, we parse the file with the precision requested by the user
-                    return this.parser.get_all_recursive(doc, this.documentSymbolPrecision, 1);
-                })
-            );
-        })
-            .then((output: Array<SystemVerilogSymbol>) => {
-                if (output.length > 0) {
-                    if (this.symbols.has(uri.fsPath)) {
-                        this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
-                    } else {
-                        this.symbolsCount += output.length;
-                    }
-                    this.symbols.set(uri.fsPath, output);
-                    if (total_files === 0) {
-                        // If total files is 0, it is being used onChange
-                        this.statusbar.text = `SystemVerilog: ${this.symbolsCount} indexed objects`;
-                    }
+    public async processFile(uri: Uri, total_files = 0): Promise<void> {
+        const isSingleFilePath = total_files === 0;
+        try {
+            let mtimeMs = 0;
+            let size = 0;
+            try {
+                const st = await fs.promises.stat(uri.fsPath);
+                mtimeMs = st.mtimeMs;
+                size = st.size;
+                const meta = await this.client.getFileMeta([uri.fsPath]);
+                const cached = meta[uri.fsPath];
+                if (cached && cached.mtimeMs === mtimeMs && cached.size === size) {
+                    return;
                 }
-            })
-            .catch((error) => {
-                this.outputChannel.appendLine(`SystemVerilog: Indexing: Unable to process file: ${uri.toString()}`);
-                this.outputChannel.appendLine(error);
-                if (this.symbols.has(uri.fsPath)) {
-                    this.symbolsCount -= this.symbols.get(uri.fsPath).length;
-                    this.symbols.delete(uri.fsPath);
-                }
-                return undefined;
+            } catch {
+                // If stat fails the file may have been deleted between glob
+                // and process — fall through and let the parse fail cleanly.
+            }
+
+            // At this point we know we're going to actually re-parse this file.
+            // Surface that in the status bar so the user knows incremental
+            // indexing is happening on save.
+            if (isSingleFilePath) {
+                this.statusbar.text = 'SystemVerilog: Indexing...';
+            }
+
+            // Read text directly from disk (cheaper than workspace.openTextDocument,
+            // which would also pull the file into VSCode's document model).
+            const text = await fs.promises.readFile(uri.fsPath, 'utf8');
+            // Cheap line-count: number of '\n' + 1. Avoids materialising a doc.
+            let lineCount = 1;
+            for (let i = 0; i < text.length; i++) if (text.charCodeAt(i) === 10) lineCount += 1;
+            const precision = this.resolvePrecision(lineCount);
+            const maxDepth = this.maxDepthForPrecision(precision);
+
+            await this.client.parseAndUpsert({
+                path: uri.fsPath,
+                mtimeMs,
+                size,
+                text,
+                precision,
+                maxDepth
             });
+
+            if (isSingleFilePath) {
+                this.symbolsCount = await this.client.count();
+                this.statusbar.text = `SystemVerilog: ${this.symbolsCount} indexed objects`;
+            }
+        } catch (error) {
+            this.outputChannel.appendLine(`SystemVerilog: Indexing: Unable to process file: ${uri.toString()}`);
+            this.outputChannel.appendLine(String(error));
+            try {
+                await this.client.deleteFile(uri.fsPath);
+            } catch {
+                /* swallow */
+            }
+            // Restore the status bar even on error so it doesn't stay at "Indexing...".
+            if (isSingleFilePath) {
+                try {
+                    this.symbolsCount = await this.client.count();
+                    this.statusbar.text = `SystemVerilog: ${this.symbolsCount} indexed objects`;
+                } catch {
+                    /* swallow */
+                }
+            }
+        }
     }
 
     /**
-        Removes the given `document`'s symbols from `this.symbols`,
-        Gets the current symbols which exist on the document to add to `this.symbols`.
-        Updates the status bar with the current symbols count in the workspace.
-
-        @param document the document that's been changed
-        @return status message when indexing is successful or failed with an error.
+        Re-indexes the given document if it is a SystemVerilog/Verilog file
+        and incremental indexing is enabled.
     */
     public async onChange(document: TextDocument): Promise<any> {
-        return new Promise(() => {
-            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document) && !isVerilogAMSDocument(document)) {
-                return;
-            }
-            if (!workspace.getConfiguration().get('systemverilog.enableIncrementalIndexing')) {
-                return;
-            }
-            if (
-                !minimatch(
-                    document.uri.toString(),
-                    workspace.getConfiguration().get('systemverilog.excludeIndexing').toString()
-                )
-            ) {
-                this.outputChannel.appendLine('Auto Indexing: ' + document.uri.toString());
-                return this.processFile(document.uri);
-            }
-        });
+        if (!isSystemVerilogDocument(document) && !isVerilogDocument(document) && !isVerilogAMSDocument(document)) {
+            return undefined;
+        }
+        if (!workspace.getConfiguration().get('systemverilog.enableIncrementalIndexing')) {
+            return undefined;
+        }
+        if (
+            !minimatch(
+                document.uri.toString(),
+                workspace.getConfiguration().get('systemverilog.excludeIndexing').toString()
+            )
+        ) {
+            this.outputChannel.appendLine('Auto Indexing: ' + document.uri.toString());
+            return this.processFile(document.uri);
+        }
+        return undefined;
     }
 
-    /**
-        Adds the given `document`'s symbols to `this.symbols`.
-        Updates the status bar with the current symbols count in the workspace.
-
-        @param uri the document's Uri
-        @return status message when indexing is successful or failed with an error.
-    */
     public async onCreate(uri: Uri): Promise<any> {
-        return new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
+        const document = await workspace.openTextDocument(uri);
+        return this.onChange(document);
     }
 
-    /**
-        Removes the given `document`'s symbols from `this.symbols`.
-        Updates the status bar with the current symbols count in the workspace.
-
-        @param uri the document's Uri
-        @return status message when indexing is successful or failed with an error.
-    */
     public async onDelete(uri: Uri): Promise<any> {
-        return new Promise(() => workspace.openTextDocument(uri).then((document) => this.onChange(document)));
+        await this.client.deleteFile(uri.fsPath);
+        this.symbolsCount = await this.client.count();
+        this.statusbar.text = `SystemVerilog: ${this.symbolsCount} indexed objects`;
     }
 
     /**
-        Adds the given `document`'s symbols to `symbolsMap`.
-
-        @param fsPath the file path to the document
-        @param symbolsMap the symbols map
-        @return number of added files
-    */
-    addDocumentSymbols(document: TextDocument, symbolsMap: Map<string, Array<SystemVerilogSymbol>>): Thenable<number> {
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve) => {
-            if (!document || !symbolsMap) {
-                resolve(new Array<SystemVerilogSymbol>());
-                return;
-            }
-
-            if (!isSystemVerilogDocument(document) && !isVerilogDocument(document) && !isVerilogAMSDocument(document)) {
-                resolve(new Array<SystemVerilogSymbol>());
-                return;
-            }
-
-            resolve(
-                workspace
-                    .openTextDocument(document.uri)
-                    .then((doc) => this.parser.get_all_recursive(doc, 'declaration', 1))
-            );
-        }).then((output: Array<SystemVerilogSymbol>) => {
-            if (output.length > 0) {
-                symbolsMap.set(document.uri.fsPath, output);
-            }
-            return output.length;
-        });
-    }
-
-    /**
-        Removes the given `document`'s symbols from `symbolsMap`.
-
-        @param fsPath the file path to the document
-        @param symbolsMap the symbols map
-        @return number of deleted files multiplied by -1
-    */
-    removeDocumentSymbols(fsPath: string, symbolsMap: Map<string, Array<SystemVerilogSymbol>>): number {
-        if (!fsPath || !symbolsMap) {
-            return 0;
-        }
-
-        let deletedCount = 0;
-
-        if (symbolsMap.has(fsPath)) {
-            deletedCount = symbolsMap.get(fsPath).length;
-            symbolsMap.delete(fsPath);
-        }
-
-        return deletedCount * -1;
-    }
-
-    /**
-        Updates `mostRecentSymbols` with the most recently used symbols
-        When `mostRecentSymbols` is undefined, add the top `this.NUM_FILES` symbol from `this.symbols`
-        When `mostRecentSymbols` is defined, add the symbols in `recentSymbols` one by one to the top of the array
+        Updates `mostRecentSymbols` with the most recently used symbols.
+        When `recentSymbols` is undefined, populates from the SQLite index
+        using parsed_at ordering. When provided, splices the supplied entries
+        to the top of the in-memory cap-N list.
 
         @param recentSymbols the recent symbols
     */
-    updateMostRecentSymbols(recentSymbols: Array<SystemVerilogSymbol>): void {
+    public async updateMostRecentSymbols(recentSymbols: Array<SystemVerilogSymbol>): Promise<void> {
         if (this.mostRecentSymbols) {
             if (!recentSymbols) {
                 return;
@@ -293,7 +274,6 @@ export class SystemVerilogIndexer {
             while (recentSymbols.length > 0) {
                 const currentSymbol = recentSymbols.pop();
 
-                // If symbol already exists, remove it
                 for (let i = 0; i < this.mostRecentSymbols.length; i++) {
                     const symbol = this.mostRecentSymbols[i];
                     if (symbol === currentSymbol) {
@@ -302,29 +282,16 @@ export class SystemVerilogIndexer {
                     }
                 }
 
-                // If the array has reached maximum capacity, remove the last element
                 if (this.mostRecentSymbols.length >= this.NUM_FILES) {
                     this.mostRecentSymbols.pop();
                 }
 
-                // Add the symbol to the top of the array
                 this.mostRecentSymbols.unshift(currentSymbol);
             }
-        } else {
-            let maxSymbols = new Array<SystemVerilogSymbol>();
-
-            // Collect the top symbols in `this.symbols`
-            for (const list of this.symbols.values()) {
-                if (maxSymbols.length + list.length >= this.NUM_FILES) {
-                    const limit = this.NUM_FILES - maxSymbols.length;
-                    maxSymbols = maxSymbols.concat(list.slice(-1 * limit));
-                    break;
-                } else {
-                    maxSymbols = maxSymbols.concat(list);
-                }
-            }
-
-            this.mostRecentSymbols = maxSymbols;
+            return;
         }
+
+        const rows = await this.client.getMostRecent(this.NUM_FILES);
+        this.mostRecentSymbols = rows.map(wireToSymbol);
     }
 }

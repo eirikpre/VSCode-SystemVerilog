@@ -1,6 +1,7 @@
-import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext, ProgressLocation, Location, Range, Uri } from 'vscode'; // prettier-ignore
+import { workspace, window, languages, commands, StatusBarAlignment, DocumentSelector, ExtensionContext, ProgressLocation } from 'vscode'; // prettier-ignore
 import { LanguageClient, ServerOptions, TransportKind, LanguageClientOptions } from 'vscode-languageclient/node';
 import * as path from 'path';
+import * as fs from 'fs';
 import { SystemVerilogDefinitionProvider } from './providers/DefinitionProvider';
 import { SystemVerilogDocumentSymbolProvider } from './providers/DocumentSymbolProvider';
 import { SystemVerilogFormatProvider } from './providers/FormatProvider';
@@ -8,9 +9,8 @@ import { SystemVerilogHoverProvider } from './providers/HoverProvider';
 import { SystemVerilogWorkspaceSymbolProvider } from './providers/WorkspaceSymbolProvider';
 import { SystemVerilogReferenceProvider } from './providers/ReferenceProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
-import { SystemVerilogParser } from './parser';
 import { SystemVerilogIndexer } from './indexer';
-import { SystemVerilogSymbol } from './symbol';
+import { IndexerClient } from './utils/indexer-client';
 
 // The LSP's client
 let client: LanguageClient;
@@ -28,23 +28,20 @@ const selector: DocumentSelector = [
 ];
 
 let indexer: SystemVerilogIndexer | undefined = undefined;
-let saveIndexTimeout: NodeJS.Timeout | undefined;
+let indexerClient: IndexerClient | undefined = undefined;
 
-function queuedSaveIndex(context: ExtensionContext) {
-    if (saveIndexTimeout !== undefined) {
-        clearTimeout(saveIndexTimeout);
+function resolveStorageDir(context: ExtensionContext): string {
+    const base = context.storageUri || context.globalStorageUri;
+    // If we have no workspace storage, fall back to a transient OS temp dir.
+    // The cache simply won't persist across restarts in that case.
+    const baseFs = base ? base.fsPath : path.join(require('os').tmpdir(), 'sv-index-transient');
+    const dir = path.join(baseFs, 'sv-index');
+    try {
+        fs.mkdirSync(dir, { recursive: true });
+    } catch {
+        /* mkdir is best-effort */
     }
-
-    saveIndexTimeout = setTimeout(function () {
-        saveIndex(context);
-    }, 10000);
-}
-
-function saveIndex(context: ExtensionContext): void {
-    saveIndexTimeout = undefined;
-
-    const syms = [...indexer.symbols];
-    context.workspaceState.update('symbols', syms);
+    return dir;
 }
 
 export function activate(context: ExtensionContext) {
@@ -57,12 +54,26 @@ export function activate(context: ExtensionContext) {
     statusBar.show();
     statusBar.command = 'systemverilog.build_index';
 
+    // One-time cleanup of the legacy monolithic workspaceState blob.
+    if (context.workspaceState.get('symbols') !== undefined) {
+        context.workspaceState.update('symbols', undefined);
+    }
+
+    // Start the indexer worker
+    const storageDir = resolveStorageDir(context);
+    indexerClient = new IndexerClient({
+        storageDir,
+        workerPath: context.asAbsolutePath(path.join('dist', 'client', 'indexer-worker.js')),
+        onCrash: (err) => {
+            outputChannel.appendLine(`SystemVerilog: indexer worker crashed: ${err.stack || err.message}`);
+        }
+    });
+
     // Back-end Classes
-    const parser = new SystemVerilogParser();
-    indexer = new SystemVerilogIndexer(statusBar, parser, outputChannel);
+    indexer = new SystemVerilogIndexer(statusBar, outputChannel, indexerClient);
 
     // Providers
-    const docProvider = new SystemVerilogDocumentSymbolProvider(parser, indexer);
+    const docProvider = new SystemVerilogDocumentSymbolProvider(indexer);
     const symProvider = new SystemVerilogWorkspaceSymbolProvider(indexer);
     const defProvider = new SystemVerilogDefinitionProvider();
     const hoverProvider = new SystemVerilogHoverProvider();
@@ -80,7 +91,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerReferenceProvider(selector, referenceProvider));
 
     const buildHandler = () => {
-        indexer.build_index().then((_) => queuedSaveIndex(context));
+        indexer.build_index();
     };
     const instantiateHandler = () => {
         moduleInstantiator.instantiateModule();
@@ -94,83 +105,48 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(
         workspace.onDidSaveTextDocument((doc) => {
             indexer.onChange(doc);
-            queuedSaveIndex(context);
-        })
-    );
-    context.subscriptions.push(
-        window.onDidChangeActiveTextEditor((editor) => {
-            if (editor !== undefined) {
-                indexer.onChange(editor.document);
-                queuedSaveIndex(context);
-            }
         })
     );
     const watcher = workspace.createFileSystemWatcher('**/*.{sv,v,svh,vh}', false, false, false);
     context.subscriptions.push(
         watcher.onDidCreate((uri) => {
             indexer.onCreate(uri);
-            queuedSaveIndex(context);
         })
     );
     context.subscriptions.push(
         watcher.onDidDelete((uri) => {
             indexer.onDelete(uri);
-            queuedSaveIndex(context);
         })
     );
     context.subscriptions.push(
         watcher.onDidChange((uri) => {
-            indexer.onDelete(uri);
-            queuedSaveIndex(context);
+            // Re-index the changed file (previously this incorrectly called
+            // onDelete, which removed the file's symbols without re-parsing).
+            indexer.onCreate(uri);
         })
     );
     context.subscriptions.push(watcher);
 
-    const settings = workspace.getConfiguration();
-    try {
-        loadIndex();
-    } catch (error) {
-        if (settings.get('systemverilog.disableIndexing')) {
-            statusBar.text = 'SystemVerilog: Indexing disabled on boot';
-        } else {
-            commands.executeCommand('systemverilog.build_index');
+    indexerClient.whenReady().then(
+        async () => {
+            const settings = workspace.getConfiguration();
+            const cached = await indexerClient.count();
+            if (cached > 0) {
+                indexer.symbolsCount = cached;
+                statusBar.text = `SystemVerilog: ${cached} indexed objects`;
+                // Background revalidation will pick up any stale files via the
+                // mtime gate the next time they are saved or opened.
+            } else if (!settings.get('systemverilog.disableIndexing')) {
+                commands.executeCommand('systemverilog.build_index');
+            } else {
+                statusBar.text = 'SystemVerilog: Indexing disabled on boot';
+            }
+        },
+        (err) => {
+            outputChannel.appendLine(`SystemVerilog: indexer init failed: ${err.stack || err.message}`);
+            statusBar.text = 'SystemVerilog: Indexer failed to start';
         }
-    }
-
-    function loadIndex(): void {
-        const symbols: Array<any> = context.workspaceState.get('symbols');
-        let numSymbols = 0;
-        if (symbols) {
-            symbols.forEach((entry) => {
-                // Hack because typecasting didn't work
-                const syms: SystemVerilogSymbol[] = new Array<SystemVerilogSymbol>();
-                entry[1].forEach((s) => {
-                    syms.push(
-                        new SystemVerilogSymbol(
-                            s.name,
-                            s.kind,
-                            s.containerName,
-                            new Location(
-                                Uri.file(entry[0]),
-                                new Range(
-                                    s.location.range[0].line,
-                                    s.location.range[0].character,
-                                    s.location.range[1].line,
-                                    s.location.range[1].character
-                                )
-                            )
-                        )
-                    );
-                    numSymbols += 1;
-                });
-                indexer.symbols.set(entry[0], syms);
-                indexer.symbolsCount = numSymbols;
-            });
-            statusBar.text = `SystemVerilog: ${numSymbols} indexed objects`;
-        } else {
-            throw new Error('Could not load index');
-        }
-    }
+    );
 
     /**
         Sends a notification to the LSP to compile the opened document.
@@ -232,9 +208,6 @@ export function activate(context: ExtensionContext) {
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
         documentSelector: selector as string[]
-        // synchronize: {
-        //     fileEvents: workspace.createFileSystemWatcher(indexer.globPattern)
-        // }
     };
 
     // Create the language client and start the client
@@ -262,12 +235,14 @@ export function activate(context: ExtensionContext) {
     });
 }
 
-export function deactivate(context: ExtensionContext): Thenable<void> | undefined {
-    if (!client) {
-        return undefined;
+export function deactivate(_context: ExtensionContext): Thenable<void> | undefined {
+    const stops: Promise<unknown>[] = [];
+    if (indexerClient) {
+        stops.push(indexerClient.dispose().catch(() => undefined));
+        indexerClient = undefined;
     }
-
-    queuedSaveIndex(context);
-
-    return client.stop();
+    if (client) {
+        stops.push(client.stop());
+    }
+    return Promise.all(stops).then(() => undefined);
 }
