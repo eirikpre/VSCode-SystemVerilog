@@ -761,13 +761,19 @@ repository:
           - include: '#identifiers'
     name: meta.import.systemverilog
   imports-dpi-function:
-    begin: '[ \t\r\n]*\b(import|export)[ \t\r\n]+(\"[a-zA-Z_][a-zA-Z0-9_$]*\")[ \t\r\n]+(function)\b'
+    begin: '[ \t\r\n]*\b(import|export)[ \t\r\n]+(\"DPI-C\"|\"DPI\")[ \t\r\n]+(?:\b(context|pure)\b[ \t\r\n]+)?(?:([a-zA-Z_][a-zA-Z0-9_$]*)[ \t\r\n]*(=)[ \t\r\n]*)?\b(function|task)\b'
     beginCaptures:
       '1':
         name: keyword.control.systemverilog
       '2':
         name: string.quoted.double.systemverilog
       '3':
+        name: storage.modifier.systemverilog
+      '4':
+        name: variable.other.systemverilog
+      '5':
+        name: keyword.operator.assignment.systemverilog
+      '6':
         name: storage.type.function.systemverilog
     end: '(;)'
     endCaptures:
