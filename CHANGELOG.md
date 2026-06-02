@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.14.1]
+
+* Added Workspace Trust support so syntax highlighting and indexing work in untrusted workspaces ([#262](https://github.com/eirikpre/VSCode-SystemVerilog/issues/262)) by @joecrop
+
 ### [0.14.0]
 
 * Improved reference provider worker by @joecrop

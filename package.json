@@ -2,7 +2,7 @@
     "name": "systemverilog",
     "displayName": "SystemVerilog - Language Support",
     "description": "Language support for Verilog and SystemVerilog.",
-    "version": "0.13.11",
+    "version": "0.14.1",
     "publisher": "eirikpre",
     "author": {
         "name": "Eirik Prestegårdshus",
@@ -42,6 +42,18 @@
         "workspaceContains:**/*.{sv,v,svh,vh}"
     ],
     "main": "./dist/client/extension",
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": "limited",
+            "description": "Syntax highlighting, snippets and symbol indexing are available in untrusted workspaces. Settings that launch external programs (the compilers and the formatter) only take effect once the workspace is trusted.",
+            "restrictedConfigurations": [
+                "systemverilog.launchConfigurationVerilator",
+                "systemverilog.launchConfigurationVCS",
+                "systemverilog.launchConfigurationVerible",
+                "systemverilog.formatCommand"
+            ]
+        }
+    },
     "contributes": {
         "languages": [
             {
