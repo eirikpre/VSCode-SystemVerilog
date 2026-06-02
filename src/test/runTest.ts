@@ -16,17 +16,12 @@ async function main() {
 
         const workspacePath = path.resolve(__dirname, '../../verilog-examples');
 
-        // Pin VSCode version so the native better-sqlite3 binary in CI is
-        // built against a known Electron ABI. 1.96.x ships Electron 32
-        // (NODE_MODULE_VERSION 128); see TEST_VSCODE_VERSION below in CI.
-        const vscodeVersion = process.env.TEST_VSCODE_VERSION || '1.96.4';
-
         // Download VS Code, unzip it and run the integration test
         await runTests({
             extensionDevelopmentPath,
             extensionTestsPath,
             launchArgs: [workspacePath, '--disable-workspace-trust', '--disable-extensions'],
-            version: vscodeVersion,
+            version: 'stable',
             timeout: 30000 // 30 seconds (default was 10)
         });
     } catch (err) {

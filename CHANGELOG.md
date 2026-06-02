@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.14.0]
+
+* Improved reference provider worker by @joecrop
+
 ### [0.13.11]
 
 * Fix Synopsis/Xilinx Design Constraints Language Config Filename by @MasonEdgar

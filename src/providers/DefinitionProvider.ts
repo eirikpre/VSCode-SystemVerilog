@@ -102,12 +102,20 @@ function isLineInsideComments(document: TextDocument, range: Range, line: string
     return false;
 }
 
-function flattenDocumentSymbols(docSyms) {
+function flattenDocumentSymbols(docSyms, parentName?: string) {
     let o = [];
     if (docSyms) {
         for (let s of docSyms) {
+            // `executeDocumentSymbolProvider` returns a hierarchical
+            // `DocumentSymbol` tree (no `containerName`); the container lives in
+            // the parent/child structure. Older VS Code returned flat
+            // `SymbolInformation` with `containerName` populated. Cover both:
+            // keep an existing `containerName`, otherwise inherit the parent's.
+            if (!s.containerName && parentName) {
+                s.containerName = parentName;
+            }
             o.push(s);
-            o = o.concat(flattenDocumentSymbols(s.children));
+            o = o.concat(flattenDocumentSymbols(s.children, s.name));
         }
     }
     return o;
