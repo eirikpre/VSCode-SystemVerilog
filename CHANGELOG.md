@@ -10,6 +10,11 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.14.2]
+
+* Fixed syntax highlighting of net/identifier names containing `$`, such as `n$411` ([#257](https://github.com/eirikpre/VSCode-SystemVerilog/issues/257)) by @joecrop
+* Fixed syntax highlighting of verbose port declarations such as `input wire logic clock` ([#254](https://github.com/eirikpre/VSCode-SystemVerilog/issues/254)) by @joecrop
+
 ### [0.14.1]
 
 * Added Workspace Trust support so syntax highlighting and indexing work in untrusted workspaces ([#262](https://github.com/eirikpre/VSCode-SystemVerilog/issues/262)) by @joecrop
