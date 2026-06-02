@@ -671,7 +671,7 @@
         "@types/vscode": "^1.61.0",
         "@typescript-eslint/eslint-plugin": "^5.14.0",
         "@typescript-eslint/parser": "^5.14.0",
-        "@vscode/test-electron": "^2.3.8",
+        "@vscode/test-electron": "^2.5.2",
         "antlr4ts-cli": "^0.5.0-alpha.4",
         "eslint": "^8.11.0",
         "eslint-config-airbnb-base": "15.0.0",
