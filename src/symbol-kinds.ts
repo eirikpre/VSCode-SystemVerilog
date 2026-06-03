@@ -83,6 +83,9 @@ export function getSymbolKindInt(name: string): number {
         case 'enum':
         case 'Enum':
             return SymbolKind.Enum;
+        case 'enum_value':
+        case 'EnumMember':
+            return SymbolKind.EnumMember;
         case 'modport':
         case 'Null':
             return SymbolKind.Null;

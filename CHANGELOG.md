@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.15.0]
+
+* Added member auto-completion: `.` suggests struct/union fields, class members, and module ports; `::` suggests package members; and enum values are suggested in `==`/`!=` comparisons and `case`-item labels ([#82](https://github.com/eirikpre/VSCode-SystemVerilog/issues/82)) by @joecrop
+
 ### [0.14.2]
 
 * Fixed syntax highlighting of parameterized module instantiations (`mod #(...) u_mod (...)`): the module name, instance name and port connections are highlighted again, instead of being shadowed by the class-instance rule by @joecrop

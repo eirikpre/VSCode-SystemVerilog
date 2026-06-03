@@ -12,6 +12,7 @@ import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator'
 import { SystemVerilogIndexer } from './indexer';
 import { IndexerClient } from './utils/indexer-client';
 import { applyIconPreference } from './file-icons';
+import { SystemVerilogCompletionItemProvider } from './providers/CompletionItemProvider';
 
 // The LSP's client
 let client: LanguageClient;
@@ -121,6 +122,7 @@ export function activate(context: ExtensionContext) {
     const formatProvider = new SystemVerilogFormatProvider(outputChannel);
     const moduleInstantiator = new SystemVerilogModuleInstantiator(formatProvider, symProvider);
     const referenceProvider = new SystemVerilogReferenceProvider(defProvider);
+    const completionProvider = new SystemVerilogCompletionItemProvider(indexer);
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(languages.registerDocumentSymbolProvider(selector, docProvider));
@@ -130,6 +132,9 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerDocumentRangeFormattingEditProvider(selector, formatProvider));
     context.subscriptions.push(languages.registerDocumentFormattingEditProvider(selector, formatProvider));
     context.subscriptions.push(languages.registerReferenceProvider(selector, referenceProvider));
+    // Member/port/package completion. Trigger on '.' (members, ports) and ':'
+    // (the provider only acts on a full '::' for package scope).
+    context.subscriptions.push(languages.registerCompletionItemProvider(selector, completionProvider, '.', ':'));
 
     const buildHandler = () => {
         indexer.build_index();

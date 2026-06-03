@@ -14,6 +14,7 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 - Go to symbol in workspace folder (indexed modules/interfaces/programs/classes/packages) (`Ctrl+T`)
 - Go to definition (_works for module/interface/program/class/package names and for ports too!_) (`Ctrl+LeftClick`)
 - Find references (_works for module/interface/program/class/package names and for ports too!_) (`Ctrl+LeftClick`)
+- Member auto-completion for struct/union fields, class members, package members (`pkg::`) and module ports — automatically after `.` / `::`, or with `Ctrl+Space`
 - Quick-start on already indexed workspaces
 - Code snippets for many common blocks
 - Instantiate module from already indexed module
@@ -38,6 +39,15 @@ This VS Code extension provides features to read, navigate and write SystemVeril
 ### Module Instantiation
 
 ![Module Instantiation Example](resources/moduleInit_demo.gif)
+
+### Member Auto-Completion
+
+Type `.` after a variable or `::` after a package name to get context-aware member suggestions:
+
+- `my_struct.` → fields of the struct/union type
+- `my_object.` → properties and methods of the class type
+- `my_package::` → members declared in the package (parameters, typedefs, functions, …)
+- inside a module instantiation, `.` → the instantiated module's ports
 
 ## Recommendations
 
