@@ -300,6 +300,11 @@
                         "default": false,
                         "description": "Disable automatic indexing when opening a folder or workspace."
                     },
+                    "systemverilog.fileIcons": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Show custom file icons for Verilog/SystemVerilog file types in the Explorer and editor tabs. Disable to fall back to your file icon theme's default icons. Changing this rewrites the extension manifest and requires a window reload."
+                    },
                     "systemverilog.includeIndexing": {
                         "type": "array",
                         "default": [
