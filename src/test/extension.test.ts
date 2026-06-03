@@ -11,8 +11,20 @@ suite('Extension Tests', () => {
         const waitFor = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
         // Trigger indexing, this returns when command is triggered and not when indexing is complete
         await vscode.commands.executeCommand('systemverilog.build_index');
-        // Wait for indexing to (hopefully) be complete
-        await waitFor(400);
+        // Indexing is asynchronous. Rather than a fixed delay (which races on slow
+        // CI machines and made later lookups flaky), poll until a known workspace
+        // symbol is available, with a generous timeout.
+        const deadline = Date.now() + 30000;
+        while (Date.now() < deadline) {
+            // eslint-disable-next-line no-await-in-loop
+            const syms = (await vscode.commands.executeCommand(
+                'vscode.executeWorkspaceSymbolProvider',
+                '¤pa_Package'
+            )) as vscode.SymbolInformation[];
+            if (syms && syms.length > 0) break;
+            // eslint-disable-next-line no-await-in-loop
+            await waitFor(200);
+        }
     });
 
     test('test #2: moduleFromPort', async () => {
