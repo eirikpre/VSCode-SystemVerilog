@@ -50,8 +50,8 @@
     ],
     "folding": {
         "markers": {
-            "start": "^[ \\t\\n]*(?://[ \\t\\n]*#?region|`(?:ifdef|ifndef|elsif|else)\\b|\\b(?:(?:macro)?module|class)\\b)",
-            "end": "^[ \\t\\n]*(?://[ \\t\\n]*#?endregion|`(?:elsif|else|endif)\\b|\\b(?:endmodule|endclass)\\b)"
+            "start": "^[ \\t\\n]*(?://[ \\t\\n]*#?region\\b|`(?:ifdef|ifndef)\\b|\\b(?:(?:macro)?module|class)\\b)",
+            "end": "^[ \\t\\n]*(?://[ \\t\\n]*#?endregion\\b|`endif\\b|\\b(?:endmodule|endclass)\\b)"
         }
     }
 }
