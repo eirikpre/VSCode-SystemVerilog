@@ -10,6 +10,10 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 - 💡 Back-end Language Server for Systemverilog
 - 💡 Complete syntax highlighting
 
+### [0.14.2]
+
+* Fixed syntax highlighting of parameterized module instantiations (`mod #(...) u_mod (...)`): the module name, instance name and port connections are highlighted again, instead of being shadowed by the class-instance rule by @joecrop
+
 ### [0.14.1]
 
 * Fixed syntax highlighting of net/identifier names containing `$`, such as `n$411` ([#257](https://github.com/eirikpre/VSCode-SystemVerilog/issues/257)) by @joecrop
