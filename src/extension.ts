@@ -11,6 +11,7 @@ import { SystemVerilogReferenceProvider } from './providers/ReferenceProvider';
 import { SystemVerilogModuleInstantiator } from './providers/ModuleInstantiator';
 import { SystemVerilogIndexer } from './indexer';
 import { IndexerClient } from './utils/indexer-client';
+import { applyIconPreference } from './file-icons';
 
 // The LSP's client
 let client: LanguageClient;
@@ -42,6 +43,46 @@ function resolveStorageDir(context: ExtensionContext): string {
         /* mkdir is best-effort */
     }
     return dir;
+}
+
+/**
+    Reconcile the custom file-icon contributions with the
+    `systemverilog.fileIcons` setting (issue #226). VS Code has no runtime
+    toggle for `contributes.languages[].icon`, so we rewrite the extension's own
+    package.json to add/remove the icons and offer a reload. Idempotent: only
+    writes (and prompts) when the manifest does not already match the setting.
+*/
+async function syncFileIcons(context: ExtensionContext): Promise<void> {
+    const enabled = workspace.getConfiguration().get<boolean>('systemverilog.fileIcons', true);
+    const manifestPath = path.join(context.extensionPath, 'package.json');
+
+    let manifest: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    try {
+        manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    } catch {
+        return; // manifest unreadable — nothing we can do
+    }
+
+    if (!applyIconPreference(manifest, enabled)) {
+        return; // already in the desired state
+    }
+
+    try {
+        fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 4)}\n`);
+    } catch {
+        window.showWarningMessage(
+            'SystemVerilog: could not update the file-icon setting because the extension files are not writable.'
+        );
+        return;
+    }
+
+    const choice = await window.showInformationMessage(
+        `SystemVerilog file icons ${enabled ? 'enabled' : 'disabled'}. Reload the window to apply.`,
+        'Reload Window'
+    );
+    if (choice === 'Reload Window') {
+        commands.executeCommand('workbench.action.reloadWindow');
+    }
 }
 
 export function activate(context: ExtensionContext) {
@@ -100,6 +141,17 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('systemverilog.build_index', buildHandler));
     context.subscriptions.push(commands.registerCommand('systemverilog.auto_instantiate', instantiateHandler));
     context.subscriptions.push(commands.registerCommand('systemverilog.compile', compileOpenedDocument));
+
+    // Reconcile custom file icons with the user's preference now, and whenever
+    // the `systemverilog.fileIcons` setting changes (issue #226).
+    syncFileIcons(context);
+    context.subscriptions.push(
+        workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration('systemverilog.fileIcons')) {
+                syncFileIcons(context);
+            }
+        })
+    );
 
     // Background Processes
     context.subscriptions.push(
