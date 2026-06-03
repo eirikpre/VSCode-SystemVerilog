@@ -104,6 +104,25 @@ export function normalizeTypeName(type: string): string {
     return t.trim().split(/\s+/).pop() || '';
 }
 
+/**
+    Extract the explicit package scope from a declared type, if any: the package
+    immediately enclosing the type. `mypkg::state_e` -> `mypkg`,
+    `a::b::c` -> `b`, plain `state_e`/`logic [7:0]` -> undefined. Pure.
+*/
+export function typeScope(type: string): string | undefined {
+    if (!type) {
+        return undefined;
+    }
+    const t =
+        type
+            .replace(/\[[^\]]*\]/g, ' ')
+            .trim()
+            .split(/\s+/)
+            .pop() || '';
+    const parts = t.split('::');
+    return parts.length >= 2 ? parts[parts.length - 2] : undefined;
+}
+
 export class SystemVerilogCompletionItemProvider implements CompletionItemProvider {
     private indexer: SystemVerilogIndexer;
 
@@ -156,12 +175,13 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
 
         if (ctx.kind === 'member' || ctx.kind === 'value') {
             // Resolve the operand's type, then list that type's members
-            // (struct/class fields for `.`, enum values for `==`/case).
-            const typeName = await this.resolveType(document, ctx.base);
-            if (!typeName) {
+            // (struct/class fields for `.`, enum values for `==`/case). An
+            // explicit `pkg::` scope on the type narrows the lookup precisely.
+            const resolved = await this.resolveType(document, ctx.base);
+            if (!resolved || !resolved.name) {
                 return [];
             }
-            return this.completeMembers(typeName, DEEP, false, document);
+            return this.completeMembers(resolved.name, DEEP, false, document, resolved.scope);
         }
 
         // Port connection: resolve the instantiated module from the surrounding
@@ -222,15 +242,19 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
         type string. Re-parses the current file at depth so locals nested in
         modules/classes are found; falls back to a workspace name lookup.
     */
-    private async resolveType(document: TextDocument, name: string): Promise<string | undefined> {
+    private async resolveType(
+        document: TextDocument,
+        name: string
+    ): Promise<{ name: string; scope?: string } | undefined> {
+        const pick = (raw: string) => ({ name: normalizeTypeName(raw), scope: typeScope(raw) });
         const local = await this.parseDoc(document, DEEP);
         const hit = local.find((s) => s.name === name && s.type && s.type !== 'potential_reference');
         if (hit) {
-            return normalizeTypeName(hit.type);
+            return pick(hit.type);
         }
         const ws = await this.indexer.client.queryByName(name, { excludeTypes: ['potential_reference'], limit: 50 });
         const wsHit = ws.find((s) => s.type && s.type !== 'potential_reference');
-        return wsHit ? normalizeTypeName(wsHit.type) : undefined;
+        return wsHit ? pick(wsHit.type) : undefined;
     }
 
     /**
@@ -247,17 +271,22 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
         containerName: string,
         maxDepth: number,
         asPort: boolean,
-        document: TextDocument
+        document: TextDocument,
+        preferScope?: string
     ): Promise<CompletionItem[]> {
         if (!containerName) {
             return [];
         }
         const matches = (s: SymbolWire) => s.container === containerName && s.type !== 'potential_reference';
 
-        // 1) Local definition in the current file takes precedence.
-        const localMembers = (await this.parseDoc(document, maxDepth)).filter(matches);
-        if (localMembers.length > 0) {
-            return this.toItems(localMembers, asPort);
+        // 1) A local definition wins — unless the reference was explicitly
+        //    package-scoped (`pkg::Type`), which must resolve to that package
+        //    even if a same-named type exists locally.
+        if (!preferScope) {
+            const localMembers = (await this.parseDoc(document, maxDepth)).filter(matches);
+            if (localMembers.length > 0) {
+                return this.toItems(localMembers, asPort);
+            }
         }
 
         // 2) Resolve via the workspace, scoped to the in-scope definition.
@@ -270,11 +299,15 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             return [];
         }
         let chosen = wsSyms;
-        if (wsSyms.length > 1) {
-            const imported = this.importedScopes(document);
-            const scoped = wsSyms.filter((s) => s.containerName && imported.has(s.containerName));
-            // Prefer the imported-package definition(s); otherwise a single
-            // match, never the union of every same-named definition.
+        if (wsSyms.length > 1 || preferScope) {
+            // Prefer a definition whose enclosing package is in scope: an
+            // explicit `pkg::` on the reference, or a wildcard-imported package.
+            const preferred = this.importedScopes(document);
+            if (preferScope) {
+                preferred.add(preferScope);
+            }
+            const scoped = wsSyms.filter((s) => s.containerName && preferred.has(s.containerName));
+            // Otherwise a single match, never the union of every same-named def.
             chosen = scoped.length > 0 ? scoped : [wsSyms[0]];
         }
 

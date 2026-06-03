@@ -128,4 +128,21 @@ suite('Completion Provider Tests', () => {
         assert.ok(!labels.includes('B_BLUE'), 'must NOT include scope_b values; got ' + labels.join(','));
         assert.ok(!labels.includes('B_YELLOW'), 'must NOT include scope_b values; got ' + labels.join(','));
     });
+
+    test('test #8: explicit pkg:: scope resolves to that package (scope)', async () => {
+        // `pkg_x::kind_e v` must complete pkg_x's values, not pkg_y's same-named enum.
+        const uriE = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'scope_explicit.sv'));
+        const doc = await vscode.workspace.openTextDocument(uriE);
+        const offset = doc.getText().indexOf('v == ') + 'v == '.length;
+        const list = (await vscode.commands.executeCommand(
+            'vscode.executeCompletionItemProvider',
+            uriE,
+            doc.positionAt(offset)
+        )) as vscode.CompletionList;
+        const labels = (list?.items || []).map((i) => (typeof i.label === 'string' ? i.label : i.label.label));
+        assert.ok(labels.includes('X_ONE'), 'expected X_ONE; got ' + labels.join(','));
+        assert.ok(labels.includes('X_TWO'), 'expected X_TWO; got ' + labels.join(','));
+        assert.ok(!labels.includes('Y_ALPHA'), 'must NOT include pkg_y values; got ' + labels.join(','));
+        assert.ok(!labels.includes('Y_BETA'), 'must NOT include pkg_y values; got ' + labels.join(','));
+    });
 });
