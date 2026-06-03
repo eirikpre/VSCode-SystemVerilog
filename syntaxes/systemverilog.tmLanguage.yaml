@@ -666,6 +666,7 @@ repository:
         name: support.function.port.systemverilog
     end: \),?
     patterns:
+      - include: '#balanced-parens'
       - include: '#constants'
       - include: '#comments'
       - include: '#operators'
@@ -678,6 +679,23 @@ repository:
         name: storage.modifier.systemverilog
       - include: '#identifiers'
     name: meta.port.binding.systemverilog
+  balanced-parens:
+    # Consume a parenthesised sub-expression as a unit so that nested
+    # parentheses inside a port connection (e.g. `.p(func(a, b))`) do not let
+    # the enclosing rule's `end: \),?` match an inner `)` and corrupt the
+    # following lines (issue #188). Recurses to handle arbitrary nesting.
+    begin: \(
+    end: \)
+    patterns:
+      - include: '#balanced-parens'
+      - include: '#constants'
+      - include: '#comments'
+      - include: '#operators'
+      - include: '#strings'
+      - include: '#storage-scope'
+      - include: '#cast-operator'
+      - include: '#system-tf'
+      - include: '#identifiers'
   parameters:
     begin: '[ \t\r\n]*(#)[ \t\r\n]*(\()'
     beginCaptures:

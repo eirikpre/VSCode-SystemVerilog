@@ -17,6 +17,7 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 * Added Workspace Trust support so syntax highlighting and indexing work in untrusted workspaces ([#262](https://github.com/eirikpre/VSCode-SystemVerilog/issues/262)) by @joecrop
 * Fixed go-to-definition on a module instantiation: the module type now resolves to the module definition (even when the instance shares its name), and the instance name itself is no longer treated as a navigation target ([#242](https://github.com/eirikpre/VSCode-SystemVerilog/issues/242)) by @joecrop
 * Added a `systemverilog.fileIcons` setting to disable the custom file-type icons in the Explorer and editor tabs ([#226](https://github.com/eirikpre/VSCode-SystemVerilog/issues/226)) by @joecrop
+* Fixed syntax highlighting breaking on lines following a port connection that contains nested parentheses, such as `.data(func(a, b))` ([#188](https://github.com/eirikpre/VSCode-SystemVerilog/issues/188)) by @joecrop
 
 ### [0.14.0]
 
