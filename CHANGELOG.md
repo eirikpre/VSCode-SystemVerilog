@@ -24,6 +24,7 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 * Fixed syntax highlighting breaking on lines following a port connection that contains nested parentheses, such as `.data(func(a, b))` ([#188](https://github.com/eirikpre/VSCode-SystemVerilog/issues/188)) by @joecrop
 * Fixed code folding of `` `ifdef ``/`` `else ``/`` `endif `` blocks: an `` `ifdef `` now folds to its matching `` `endif `` with correct nesting instead of overrunning ([#142](https://github.com/eirikpre/VSCode-SystemVerilog/issues/142)) by @joecrop
 * Fixed go-to-definition and hover failing for modules whose ANSI header contains a package import or a comment before the parameter list, e.g. `module foo import pkg::*; #(...)` ([#189](https://github.com/eirikpre/VSCode-SystemVerilog/issues/189)) by @joecrop
+* Added member auto-completion: typing `.` suggests struct/union fields, class members, and module ports, and `::` suggests package members ([#82](https://github.com/eirikpre/VSCode-SystemVerilog/issues/82)) by @joecrop
 
 ### [0.14.0]
 
