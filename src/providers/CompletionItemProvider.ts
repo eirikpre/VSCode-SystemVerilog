@@ -151,7 +151,7 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
 
     private async resolve(ctx: CompletionCtx, document: TextDocument, position: Position): Promise<CompletionItem[]> {
         if (ctx.kind === 'package') {
-            return this.completeMembers(ctx.base, DEEP, false);
+            return this.completeMembers(ctx.base, DEEP, false, document);
         }
 
         if (ctx.kind === 'member' || ctx.kind === 'value') {
@@ -161,7 +161,7 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             if (!typeName) {
                 return [];
             }
-            return this.completeMembers(typeName, DEEP, false);
+            return this.completeMembers(typeName, DEEP, false, document);
         }
 
         // Port connection: resolve the instantiated module from the surrounding
@@ -171,7 +171,7 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
         if (!moduleName) {
             return [];
         }
-        return this.completeMembers(moduleName, 0, true);
+        return this.completeMembers(moduleName, 0, true, document);
     }
 
     /**
@@ -235,23 +235,52 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
 
     /**
         List the children of a container symbol (struct/union/class/package/
-        module) as completion items. Finds the container's defining file via an
-        exact-match workspace query, re-parses it at `maxDepth`, and keeps the
-        symbols whose `container` is the container name.
+        module) as completion items, respecting SystemVerilog scope so that
+        unrelated same-named definitions in other files are not merged in:
+        1. a definition in the current file wins (local scope);
+        2. otherwise resolve via the workspace, but when the name is defined in
+           more than one file, prefer the definition whose package is imported
+           by the current file, falling back to a single (first) match rather
+           than the union of every same-named definition.
     */
-    private async completeMembers(containerName: string, maxDepth: number, asPort: boolean): Promise<CompletionItem[]> {
+    private async completeMembers(
+        containerName: string,
+        maxDepth: number,
+        asPort: boolean,
+        document: TextDocument
+    ): Promise<CompletionItem[]> {
         if (!containerName) {
             return [];
         }
+        const matches = (s: SymbolWire) => s.container === containerName && s.type !== 'potential_reference';
+
+        // 1) Local definition in the current file takes precedence.
+        const localMembers = (await this.parseDoc(document, maxDepth)).filter(matches);
+        if (localMembers.length > 0) {
+            return this.toItems(localMembers, asPort);
+        }
+
+        // 2) Resolve via the workspace, scoped to the in-scope definition.
         const wsSyms =
             (await commands.executeCommand<SymbolInformation[]>(
                 'vscode.executeWorkspaceSymbolProvider',
                 `¤${containerName}`
             )) || [];
+        if (wsSyms.length === 0) {
+            return [];
+        }
+        let chosen = wsSyms;
+        if (wsSyms.length > 1) {
+            const imported = this.importedScopes(document);
+            const scoped = wsSyms.filter((s) => s.containerName && imported.has(s.containerName));
+            // Prefer the imported-package definition(s); otherwise a single
+            // match, never the union of every same-named definition.
+            chosen = scoped.length > 0 ? scoped : [wsSyms[0]];
+        }
 
         const seenFiles = new Set<string>();
-        const items = new Map<string, CompletionItem>();
-        for (const ws of wsSyms) {
+        const members: SymbolWire[] = [];
+        for (const ws of chosen) {
             const fsPath = ws.location.uri.fsPath;
             if (seenFiles.has(fsPath)) {
                 continue;
@@ -260,14 +289,34 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             // eslint-disable-next-line no-await-in-loop
             const doc = await workspace.openTextDocument(ws.location.uri);
             // eslint-disable-next-line no-await-in-loop
-            const wireSyms = await this.parseDoc(doc, maxDepth);
-            for (const s of wireSyms) {
-                if (s.container === containerName && s.type !== 'potential_reference' && !items.has(s.name)) {
-                    items.set(s.name, this.buildItem(s, asPort));
-                }
+            members.push(...(await this.parseDoc(doc, maxDepth)).filter(matches));
+        }
+        return this.toItems(members, asPort);
+    }
+
+    private toItems(members: SymbolWire[], asPort: boolean): CompletionItem[] {
+        const items = new Map<string, CompletionItem>();
+        for (const s of members) {
+            if (!items.has(s.name)) {
+                items.set(s.name, this.buildItem(s, asPort));
             }
         }
         return [...items.values()];
+    }
+
+    // Package names brought into scope by `import pkg::*;` / `import pkg::name;`
+    // in the current document.
+    private importedScopes(document: TextDocument): Set<string> {
+        const set = new Set<string>();
+        const re = /\bimport\s+([a-zA-Z_]\w*)\s*::/g;
+        const text = document.getText();
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const m = re.exec(text);
+            if (m == null) break;
+            set.add(m[1]);
+        }
+        return set;
     }
 
     private buildItem(sym: SymbolWire, asPort: boolean): CompletionItem {

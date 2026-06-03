@@ -110,4 +110,22 @@ suite('Completion Provider Tests', () => {
         assert.ok(labels.includes('GREEN'), 'expected GREEN; got ' + labels.join(','));
         assert.ok(labels.includes('BLUE'), 'expected BLUE; got ' + labels.join(','));
     });
+
+    test('test #7: same-named type in another file is not merged in (scope)', async () => {
+        // scope_a.sv and scope_b.sv both define `scope_color_e` with different
+        // values. Completing in scope_a must only offer scope_a's values.
+        const aUri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'scope_a.sv'));
+        const doc = await vscode.workspace.openTextDocument(aUri);
+        const offset = doc.getText().indexOf('a_state == ') + 'a_state == '.length;
+        const list = (await vscode.commands.executeCommand(
+            'vscode.executeCompletionItemProvider',
+            aUri,
+            doc.positionAt(offset)
+        )) as vscode.CompletionList;
+        const labels = (list?.items || []).map((i) => (typeof i.label === 'string' ? i.label : i.label.label));
+        assert.ok(labels.includes('A_RED'), 'expected A_RED; got ' + labels.join(','));
+        assert.ok(labels.includes('A_GREEN'), 'expected A_GREEN; got ' + labels.join(','));
+        assert.ok(!labels.includes('B_BLUE'), 'must NOT include scope_b values; got ' + labels.join(','));
+        assert.ok(!labels.includes('B_YELLOW'), 'must NOT include scope_b values; got ' + labels.join(','));
+    });
 });
