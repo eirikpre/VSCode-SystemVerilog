@@ -23,6 +23,9 @@ export async function run(): Promise<void> {
     const mocha = new Mocha({
         ui: 'tdd',
         color: true,
+        // Integration tests wait for asynchronous workspace indexing; allow
+        // ample time so slower CI machines don't hit the 2s default.
+        timeout: 60000,
         reporter: 'mocha-multi-reporters',
         reporterOptions: {
             reporterEnabled: 'spec, xunit',

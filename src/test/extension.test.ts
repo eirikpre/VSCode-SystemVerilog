@@ -11,8 +11,20 @@ suite('Extension Tests', () => {
         const waitFor = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
         // Trigger indexing, this returns when command is triggered and not when indexing is complete
         await vscode.commands.executeCommand('systemverilog.build_index');
-        // Wait for indexing to (hopefully) be complete
-        await waitFor(400);
+        // Indexing is asynchronous. Rather than a fixed delay (which races on slow
+        // CI machines and made later lookups flaky), poll until a known workspace
+        // symbol is available, with a generous timeout.
+        const deadline = Date.now() + 30000;
+        while (Date.now() < deadline) {
+            // eslint-disable-next-line no-await-in-loop
+            const syms = (await vscode.commands.executeCommand(
+                'vscode.executeWorkspaceSymbolProvider',
+                '¤pa_Package'
+            )) as vscode.SymbolInformation[];
+            if (syms && syms.length > 0) break;
+            // eslint-disable-next-line no-await-in-loop
+            await waitFor(200);
+        }
     });
 
     test('test #2: moduleFromPort', async () => {
@@ -237,6 +249,31 @@ suite('Extension Tests', () => {
 
         if ('length' in definition) {
             assert.strictEqual(0, definition.length, 'Expected no definition on the instance name');
+        }
+    });
+
+    test('test #12: DefinitionProvider on instance of a module with an import header (#189)', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'import_header_module.sv'));
+
+        // Ctrl+click on the `myfoo` type of "myfoo #(.z(3)) u_foo (...)" (line 18)
+        // should resolve to the module definition (line 7), even though the
+        // module's header carries a package import and a comment.
+        const symbolPosition = new vscode.Position(18, 6);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            assert.strictEqual(
+                definition[0].range.start.line,
+                7,
+                'Expected the module definition on line 7, got line ' + definition[0].range.start.line
+            );
+        } else {
+            assert.fail('Definition not found for module with import in header');
         }
     });
 });
