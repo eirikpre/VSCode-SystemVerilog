@@ -1,4 +1,4 @@
-import { CompletionItemProvider, CompletionItem, CompletionItemKind, TextDocument, Position, Range, CancellationToken, CompletionList, SnippetString, workspace, commands, SymbolInformation } from 'vscode'; // prettier-ignore
+import { CompletionItemProvider, CompletionItem, CompletionItemKind, TextDocument, Position, Range, CancellationToken, CompletionList, SnippetString, workspace, window, commands, SymbolInformation } from 'vscode'; // prettier-ignore
 import { SystemVerilogIndexer } from '../indexer';
 import { SymbolWire } from '../wire-types';
 import { moduleFromPort } from './DefinitionProvider';
@@ -98,6 +98,11 @@ export function normalizeTypeName(type: string): string {
 export class SystemVerilogCompletionItemProvider implements CompletionItemProvider {
     private indexer: SystemVerilogIndexer;
 
+    // Per-file parse cache keyed by `fsPath|maxDepth`, invalidated by the
+    // document version. Avoids re-parsing the same (unchanged) file on every
+    // completion — the bulk of the latency. One entry per (file, depth).
+    private parseCache = new Map<string, { version: number; syms: SymbolWire[] }>();
+
     constructor(indexer: SystemVerilogIndexer) {
         this.indexer = indexer;
     }
@@ -107,37 +112,66 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
         position: Position,
         _token: CancellationToken
     ): Promise<CompletionItem[] | CompletionList> {
+        let ctx: CompletionCtx | null = null;
         try {
             const linePrefix = document.lineAt(position.line).text.slice(0, position.character);
-            const ctx = detectContext(linePrefix);
-            if (!ctx) {
-                return [];
-            }
-
-            if (ctx.kind === 'package') {
-                return this.completeMembers(ctx.base, DEEP, false);
-            }
-
-            if (ctx.kind === 'member') {
-                const typeName = await this.resolveType(document, ctx.base);
-                if (!typeName) {
-                    return [];
-                }
-                return this.completeMembers(typeName, DEEP, false);
-            }
-
-            // Port connection: resolve the instantiated module from the
-            // surrounding text, then offer its ports (depth 0 == header ports
-            // only, so internal nets of the module are not suggested).
-            const moduleName = moduleFromPort(document, new Range(position, position));
-            if (!moduleName) {
-                return [];
-            }
-            return this.completeMembers(moduleName, 0, true);
+            ctx = detectContext(linePrefix);
         } catch {
-            // Completion must never throw; surface no suggestions instead.
             return [];
         }
+        if (!ctx) {
+            return [];
+        }
+
+        // Show a transient status-bar spinner while the (potentially slow)
+        // member resolution runs; it clears automatically when the work
+        // settles. Completion must never throw — fall back to no suggestions.
+        const work = this.resolve(ctx, document, position).catch(() => [] as CompletionItem[]);
+        window.setStatusBarMessage('$(sync~spin) SystemVerilog: resolving members…', work);
+        return work;
+    }
+
+    private async resolve(ctx: CompletionCtx, document: TextDocument, position: Position): Promise<CompletionItem[]> {
+        if (ctx.kind === 'package') {
+            return this.completeMembers(ctx.base, DEEP, false);
+        }
+
+        if (ctx.kind === 'member') {
+            const typeName = await this.resolveType(document, ctx.base);
+            if (!typeName) {
+                return [];
+            }
+            return this.completeMembers(typeName, DEEP, false);
+        }
+
+        // Port connection: resolve the instantiated module from the surrounding
+        // text, then offer its ports (depth 0 == header ports only, so internal
+        // nets of the module are not suggested).
+        const moduleName = moduleFromPort(document, new Range(position, position));
+        if (!moduleName) {
+            return [];
+        }
+        return this.completeMembers(moduleName, 0, true);
+    }
+
+    /**
+        Parse a document at `maxDepth`, reusing a cached result while the
+        document version is unchanged.
+    */
+    private async parseDoc(doc: TextDocument, maxDepth: number): Promise<SymbolWire[]> {
+        const key = `${doc.uri.fsPath}|${maxDepth}`;
+        const cached = this.parseCache.get(key);
+        if (cached && cached.version === doc.version) {
+            return cached.syms;
+        }
+        const syms = await this.indexer.client.parseText({
+            path: doc.uri.fsPath,
+            text: doc.getText(),
+            precision: 'full_no_references',
+            maxDepth
+        });
+        this.parseCache.set(key, { version: doc.version, syms });
+        return syms;
     }
 
     /**
@@ -146,12 +180,7 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
         modules/classes are found; falls back to a workspace name lookup.
     */
     private async resolveType(document: TextDocument, name: string): Promise<string | undefined> {
-        const local = await this.indexer.client.parseText({
-            path: document.uri.fsPath,
-            text: document.getText(),
-            precision: 'full_no_references',
-            maxDepth: DEEP
-        });
+        const local = await this.parseDoc(document, DEEP);
         const hit = local.find((s) => s.name === name && s.type && s.type !== 'potential_reference');
         if (hit) {
             return normalizeTypeName(hit.type);
@@ -188,12 +217,7 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             // eslint-disable-next-line no-await-in-loop
             const doc = await workspace.openTextDocument(ws.location.uri);
             // eslint-disable-next-line no-await-in-loop
-            const wireSyms = await this.indexer.client.parseText({
-                path: fsPath,
-                text: doc.getText(),
-                precision: 'full_no_references',
-                maxDepth
-            });
+            const wireSyms = await this.parseDoc(doc, maxDepth);
             for (const s of wireSyms) {
                 if (s.container === containerName && s.type !== 'potential_reference' && !items.has(s.name)) {
                     items.set(s.name, this.buildItem(s, asPort));
