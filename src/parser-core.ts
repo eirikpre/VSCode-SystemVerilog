@@ -94,6 +94,11 @@ export class SystemVerilogParser {
             /(?:automatic\s+)?/,
             ')',
             /(?<name>\w+)/,
+            // ANSI module headers may carry package-import declarations and/or
+            // comments between the name and the parameter/port lists (issue
+            // #189). Consume any number of them (non-capturing so the `end\1`
+            // back-reference to the `type` group is unaffected).
+            /(?:\s*(?:\/\/[^\n]*|\/\*[\w\W]*?\*\/|import\s+\w+\s*::\s*[\w*]+(?:\s*,\s*\w+\s*::\s*[\w*]+)*\s*;))*/,
             /(?<params>\s*#\s*\([\w\W]*?\))?/,
             /(?<ports>\s*\([\W\w]*?\))?/,
             /\s*;/,
