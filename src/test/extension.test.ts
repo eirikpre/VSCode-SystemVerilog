@@ -190,4 +190,53 @@ suite('Extension Tests', () => {
             assert.fail('Definition not found');
         }
     });
+
+    test('test #10: DefinitionProvider instance name matching module name (#242)', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'instance_name_equals_module.sv'));
+
+        // Ctrl+click on the module *type* of "my_test_module my_test_module (...)"
+        // should resolve to the module definition (line 3), not the instance (line 10).
+        const symbolPosition = new vscode.Position(10, 5);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition && definition.length > 0) {
+            // The fix resolves to the module definition only (line 3), not the
+            // same-named instance — so exactly one location, on line 3.
+            assert.strictEqual(
+                definition.length,
+                1,
+                'Expected exactly the module definition, got ' + definition.length
+            );
+            assert.strictEqual(
+                definition[0].range.start.line,
+                3,
+                'Expected the module definition on line 3, got line ' + definition[0].range.start.line
+            );
+        } else {
+            assert.fail('Definition not found');
+        }
+    });
+
+    test('test #11: DefinitionProvider instance name is not clickable (#242)', async () => {
+        const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'instance_name_equals_module.sv'));
+
+        // Ctrl+click on the instance *name* (second token) of
+        // "my_test_module my_test_module (...)" should resolve to nothing.
+        const symbolPosition = new vscode.Position(10, 20);
+
+        const definition = (await vscode.commands.executeCommand(
+            'vscode.executeDefinitionProvider',
+            uri,
+            symbolPosition
+        )) as vscode.Location[];
+
+        if ('length' in definition) {
+            assert.strictEqual(0, definition.length, 'Expected no definition on the instance name');
+        }
+    });
 });

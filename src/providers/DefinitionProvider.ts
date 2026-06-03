@@ -64,6 +64,40 @@ export class SystemVerilogDefinitionProvider implements DefinitionProvider {
                 return extractLocations(symbols, word, uri, matchPackage[1]);
             }
 
+            // Module instantiation: "ModuleType [#(...)] inst_name (...)". When the
+            // instance is given the same name as its module (issue #242), the local
+            // document-symbol lookup below would resolve the type to the instance
+            // itself. Detect a click on the type position and jump to the module
+            // definition instead. The type is the first token on the line and is
+            // followed by an optional parameter list, the instance name, then '(' or '#'.
+            const beforeWord = line.slice(0, range.start.character);
+            const afterWord = line.slice(range.end.character);
+            const isInstantiationType =
+                /^\s*$/.test(beforeWord) && /^\s*(?:#\s*\([\s\S]*?\)\s*)?[a-zA-Z_]\w*\s*[#(]/.test(afterWord);
+            if (isInstantiationType) {
+                const moduleKind = getSymbolKind('module');
+                const wsModules =
+                    (await commands.executeCommand<SymbolInformation[]>(
+                        'vscode.executeWorkspaceSymbolProvider',
+                        `¤${word}`,
+                        token
+                    )) || [];
+                const moduleLocs = wsModules.filter((s) => s.kind === moduleKind).map((x) => x.location);
+                if (moduleLocs.length) return moduleLocs;
+            }
+
+            // Conversely, the instance *name* is its own declaration — there is no
+            // definition to navigate to — so only the module type should be
+            // clickable (issue #242). Suppress go-to-definition when the click is on
+            // the instance name: a type token (not a declaration keyword), an
+            // optional parameter list, then this word, then a port list '('.
+            const declKeyword =
+                /^(?:module|macromodule|interface|program|package|primitive|config|checker|class|function|task|property|sequence|modport|typedef|import|export|extern|virtual|static|automatic)$/;
+            const typeBefore = beforeWord.match(/^\s*([a-zA-Z_][\w:]*)\s*(?:#\s*\([\s\S]*?\)\s*)?$/);
+            const isInstanceName =
+                !!typeBefore && !declKeyword.test(typeBefore[1]) && /^\s*(?:\[[^\]]*\]\s*)*\(/.test(afterWord);
+            if (isInstanceName) return [];
+
             // Default path: look in the current document first, then workspace.
             const docSyms =
                 (await commands.executeCommand<Array<DocumentSymbol | SymbolInformation>>(
