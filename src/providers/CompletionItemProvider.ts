@@ -41,6 +41,8 @@ export function getCompletionItemKind(name: string): CompletionItemKind {
             return CompletionItemKind.Struct;
         case 'enum':
             return CompletionItemKind.Enum;
+        case 'enum_value':
+            return CompletionItemKind.EnumMember;
         case 'typedef':
             return CompletionItemKind.TypeParameter;
         default:
@@ -48,15 +50,16 @@ export function getCompletionItemKind(name: string): CompletionItemKind {
     }
 }
 
-export type CompletionCtx = { kind: 'package' | 'member' | 'port'; base: string };
+export type CompletionCtx = { kind: 'package' | 'member' | 'port' | 'value'; base: string };
 
 /**
     Classify what the user is completing from the text before the cursor. Pure
     (string-only) so it can be unit tested. Returns null when no member/port/
-    package completion applies.
-    - `pkg::`      -> package members
-    - `ident.`     -> struct/union/class members of `ident`
-    - `(`/`,`/`.`  -> a port connection slot inside an instantiation
+    package/value completion applies.
+    - `pkg::`        -> package members
+    - `ident.`       -> struct/union/class members of `ident`
+    - `ident ==`     -> values of `ident`'s type (e.g. enum values)
+    - `(`/`,`/`.`    -> a port connection slot inside an instantiation
 */
 export function detectContext(linePrefix: string): CompletionCtx | null {
     // Package scope. Match `::` specifically; a lone `:` (also a trigger char)
@@ -69,6 +72,12 @@ export function detectContext(linePrefix: string): CompletionCtx | null {
     const member = linePrefix.match(/([a-zA-Z_]\w*)\s*\.\s*$/);
     if (member) {
         return { kind: 'member', base: member[1] };
+    }
+    // Comparison against a value of the operand's type (typically an enum):
+    // `expr ==`/`!=`/`===`/`!==`. The right-hand side may be partially typed.
+    const cmp = linePrefix.match(/([a-zA-Z_]\w*)\s*(?:===|!==|==|!=)\s*[a-zA-Z_]?\w*$/);
+    if (cmp) {
+        return { kind: 'value', base: cmp[1] };
     }
     // Port connection slot: a dot that is NOT preceded by an identifier
     // (start of line, or after `(` or `,`). The enclosing module is resolved
@@ -116,6 +125,15 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
         try {
             const linePrefix = document.lineAt(position.line).text.slice(0, position.character);
             ctx = detectContext(linePrefix);
+            if (!ctx && /^\s*\w*$/.test(linePrefix)) {
+                // A bare identifier at the start of a line may be a case-item
+                // label; offer the values of the enclosing `case (expr)`
+                // selector's type (typically an enum).
+                const caseVar = this.enclosingCaseExpr(document, position.line);
+                if (caseVar) {
+                    ctx = { kind: 'value', base: caseVar };
+                }
+            }
         } catch {
             return [];
         }
@@ -136,7 +154,9 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             return this.completeMembers(ctx.base, DEEP, false);
         }
 
-        if (ctx.kind === 'member') {
+        if (ctx.kind === 'member' || ctx.kind === 'value') {
+            // Resolve the operand's type, then list that type's members
+            // (struct/class fields for `.`, enum values for `==`/case).
             const typeName = await this.resolveType(document, ctx.base);
             if (!typeName) {
                 return [];
@@ -152,6 +172,29 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
             return [];
         }
         return this.completeMembers(moduleName, 0, true);
+    }
+
+    /**
+        If `line` is inside a `case (expr) … endcase`, return the case selector
+        identifier. Scans upward, skipping already-closed case blocks, so nested
+        cases resolve to the innermost enclosing one. Bounded for performance.
+    */
+    private enclosingCaseExpr(document: TextDocument, line: number): string | undefined {
+        let closed = 0;
+        for (let ln = line - 1; ln >= 0 && line - ln < 200; ln -= 1) {
+            const text = document.lineAt(ln).text;
+            if (/\bendcase\b/.test(text)) {
+                closed += 1;
+            }
+            const m = text.match(/\bcase[xz]?\s*\(\s*([a-zA-Z_]\w*)/);
+            if (m) {
+                if (closed === 0) {
+                    return m[1];
+                }
+                closed -= 1;
+            }
+        }
+        return undefined;
     }
 
     /**
@@ -229,7 +272,11 @@ export class SystemVerilogCompletionItemProvider implements CompletionItemProvid
 
     private buildItem(sym: SymbolWire, asPort: boolean): CompletionItem {
         const item = new CompletionItem(sym.name, getCompletionItemKind(sym.type));
-        if (sym.type) {
+        // For enum values the raw type is the internal 'enum_value' marker, so
+        // show the enum type (the container) instead; otherwise show the type.
+        if (sym.type === 'enum_value') {
+            item.detail = sym.container || 'enum';
+        } else if (sym.type) {
             item.detail = sym.type;
         }
         if (asPort) {

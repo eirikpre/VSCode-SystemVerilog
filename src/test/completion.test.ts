@@ -13,6 +13,9 @@ suite('Completion Context Tests', () => {
         assert.deepStrictEqual(detectContext('  alias_a = s.'), { kind: 'member', base: 's' });
         assert.deepStrictEqual(detectContext('  mc_sub u_sub (.'), { kind: 'port', base: '' });
         assert.deepStrictEqual(detectContext('    .'), { kind: 'port', base: '' });
+        // Comparison against a value (e.g. an enum value).
+        assert.deepStrictEqual(detectContext('  if (fsm_state == '), { kind: 'value', base: 'fsm_state' });
+        assert.deepStrictEqual(detectContext('  x = a != b'), { kind: 'value', base: 'a' });
         // A lone ':' (also a trigger char) must not be treated as package scope.
         assert.strictEqual(detectContext('  x = mc_pkg:'), null);
         // Plain text with no trigger.
@@ -33,9 +36,8 @@ suite('Completion Provider Tests', () => {
     const uri = vscode.Uri.file(path.join(__dirname, examplesFolderLocation, 'member_completion.sv'));
     const waitFor = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
-    async function labelsAt(after: string): Promise<string[]> {
+    async function labelsAtOffset(offset: number): Promise<string[]> {
         const doc = await vscode.workspace.openTextDocument(uri);
-        const offset = doc.getText().indexOf(after) + after.length;
         const position = doc.positionAt(offset);
         const list = (await vscode.commands.executeCommand(
             'vscode.executeCompletionItemProvider',
@@ -43,6 +45,18 @@ suite('Completion Provider Tests', () => {
             position
         )) as vscode.CompletionList;
         return (list?.items || []).map((i) => (typeof i.label === 'string' ? i.label : i.label.label));
+    }
+
+    // Position the cursor immediately after `after`.
+    async function labelsAt(after: string): Promise<string[]> {
+        const doc = await vscode.workspace.openTextDocument(uri);
+        return labelsAtOffset(doc.getText().indexOf(after) + after.length);
+    }
+
+    // Position the cursor immediately before `before`.
+    async function labelsBefore(before: string): Promise<string[]> {
+        const doc = await vscode.workspace.openTextDocument(uri);
+        return labelsAtOffset(doc.getText().indexOf(before));
     }
 
     suiteSetup(async () => {
@@ -80,5 +94,20 @@ suite('Completion Provider Tests', () => {
         const labels = await labelsAt('u_sub (.');
         assert.ok(labels.includes('clk_in'), 'expected clk_in; got ' + labels.join(','));
         assert.ok(labels.includes('data_out'), 'expected data_out; got ' + labels.join(','));
+    });
+
+    test('test #5: enum values after "==" comparison', async () => {
+        const labels = await labelsAt('fsm_state == ');
+        assert.ok(labels.includes('RED'), 'expected RED; got ' + labels.join(','));
+        assert.ok(labels.includes('GREEN'), 'expected GREEN; got ' + labels.join(','));
+        assert.ok(labels.includes('BLUE'), 'expected BLUE; got ' + labels.join(','));
+    });
+
+    test('test #6: enum values as case-item labels', async () => {
+        // Cursor at the start of the "RED:" label line (prefix is whitespace).
+        const labels = await labelsBefore('RED:');
+        assert.ok(labels.includes('RED'), 'expected RED; got ' + labels.join(','));
+        assert.ok(labels.includes('GREEN'), 'expected GREEN; got ' + labels.join(','));
+        assert.ok(labels.includes('BLUE'), 'expected BLUE; got ' + labels.join(','));
     });
 });

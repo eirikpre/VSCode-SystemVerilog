@@ -67,4 +67,15 @@ suite('Parser Tests', () => {
             'port y under foo'
         );
     });
+
+    test('test #6: enum values are indexed as members of the enum type (#82)', () => {
+        const text = 'package p;\n  typedef enum logic [1:0] { RED, GREEN = 2, BLUE } color_e;\nendpackage\n';
+        const syms = symbols(text);
+        const values = syms.filter((s) => s.container === 'color_e').map((s) => s.name);
+        assert.deepStrictEqual(values, ['RED', 'GREEN', 'BLUE']);
+        assert.ok(
+            syms.every((s) => s.type !== 'enum_value' || s.container === 'color_e'),
+            'enum values are contained by the enum type'
+        );
+    });
 });

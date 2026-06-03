@@ -12,7 +12,7 @@ More details can be found on the [Releases](https://github.com/eirikpre/VSCode-S
 
 ### [0.15.0]
 
-* Added member auto-completion: typing `.` suggests struct/union fields, class members, and module ports, and `::` suggests package members ([#82](https://github.com/eirikpre/VSCode-SystemVerilog/issues/82)) by @joecrop
+* Added member auto-completion: `.` suggests struct/union fields, class members, and module ports; `::` suggests package members; and enum values are suggested in `==`/`!=` comparisons and `case`-item labels ([#82](https://github.com/eirikpre/VSCode-SystemVerilog/issues/82)) by @joecrop
 
 ### [0.14.2]
 

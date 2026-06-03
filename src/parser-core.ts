@@ -397,10 +397,16 @@ export class SystemVerilogParser {
                         );
                     }
                     if (match.groups!.body) {
-                        subBlocks.push({
-                            match,
-                            bodyOffset: match.index! + offset + match[0].indexOf(match.groups!.body)
-                        });
+                        const bodyOffset = match.index! + offset + match[0].indexOf(match.groups!.body);
+                        if (type === 'typedef' && /\benum\b/.test(match[0]) && precision.includes('full')) {
+                            // An enum body is a comma-separated value list, not
+                            // declarations, so extract the values directly as
+                            // members of the enum type (so they can be completed
+                            // in `==`/case contexts).
+                            symbols.push(...this.getEnumValues(source, match.groups!.body, bodyOffset, name));
+                        } else {
+                            subBlocks.push({ match, bodyOffset });
+                        }
                     }
                 }
             }
@@ -440,6 +446,34 @@ export class SystemVerilogParser {
             default:
                 throw new Error(`Illegal precision: ${precision}`);
         }
+    }
+
+    // Extract the value identifiers from an enum body (the text between the
+    // braces), e.g. `RED, GREEN = 2, BLUE[1:0]` -> RED, GREEN, BLUE. Each is
+    // emitted as a member of the enum type `parent`.
+    private getEnumValues(source: ParseSource, text: string, offset: number, parent: string): SymbolWire[] {
+        const out: SymbolWire[] = [];
+        const re = /(?:^|,)\s*([a-zA-Z_]\w*)/g;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const m = re.exec(text);
+            if (m == null) break;
+            const nameStart = m.index + m[0].indexOf(m[1]);
+            const start = source.positionAt(nameStart + offset);
+            const end = source.positionAt(nameStart + m[1].length + offset);
+            out.push({
+                name: m[1],
+                type: 'enum_value',
+                kind: getSymbolKindInt('enum_value'),
+                container: parent,
+                file: source.fsPath,
+                sl: start.line,
+                sc: start.character,
+                el: end.line,
+                ec: end.character
+            });
+        }
+        return out;
     }
 
     private getPorts(source: ParseSource, text: string, offset: number, parent: string): SymbolWire[] {
